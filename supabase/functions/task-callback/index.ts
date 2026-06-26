@@ -18,11 +18,11 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Verify webhook secret (in production)
-    const webhookSecret = req.headers.get('x-webhook-secret')
-    if (webhookSecret !== Deno.env.get('TASK_WEBHOOK_SECRET')) {
-      // Skip check in development
-      if (Deno.env.get('DENO_ENV') === 'production') {
+    // Verify webhook secret (production only)
+    if (Deno.env.get('DENO_ENV') === 'production') {
+      const webhookSecret = req.headers.get('x-webhook-secret')
+      const expected = Deno.env.get('TASK_WEBHOOK_SECRET')
+      if (expected && webhookSecret !== expected) {
         return new Response(
           JSON.stringify({ error: 'Invalid webhook secret' }),
           { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
