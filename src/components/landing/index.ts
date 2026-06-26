@@ -1,0 +1,11 @@
+export { Landing } from './Landing';
+export { Navbar } from './Navbar';
+export { Hero } from './Hero';
+export { Logos } from './Logos';
+export { HowItWorks } from './HowItWorks';
+export { Features } from './Features';
+export { Testimonials } from './Testimonials';
+export { Pricing } from './Pricing';
+export { FAQ } from './FAQ';
+export { CTAFinal } from './CTAFinal';
+export { Footer } from './Footer';
