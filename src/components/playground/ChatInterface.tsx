@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChatMessage, type Message } from './ChatMessage';
+import { createTask, pollTaskStatus, getTaskResults } from '../../lib/api';
+import { useAuth } from '../../hooks/useAuth';
 import type { Skill } from './skills';
 
 interface ChatInterfaceProps {
@@ -30,6 +32,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,17 +45,21 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
   // Reset messages when skill changes
   useEffect(() => {
     if (skill) {
+      const welcomeMessage = user
+        ? `Hola! Soy Mizpa Agent. Seleccionaste: **${skill.name}**\n\n${skill.description}\n\nPegá una URL y arranco el análisis.`
+        : `Hola! Soy Mizpa Agent. Seleccionaste: **${skill.name}**\n\n${skill.description}\n\n⚠️ Modo demo — sin autenticar. Pegá una URL para ver una respuesta simulada.\n\nPara usar los agentes reales, [iniciá sesión](/login).`;
+
       setMessages([
         {
           id: 'welcome',
           role: 'assistant',
-          content: `Hola! Soy Mizpa Agent. Seleccionaste: **${skill.name}**\n\n${skill.description}\n\nPegá una URL y arranco el análisis.`,
+          content: welcomeMessage,
           timestamp: new Date(),
           skillId: skill.id,
         },
       ]);
     }
-  }, [skill]);
+  }, [skill, user]);
 
   const handleSend = async () => {
     if (!input.trim() || !skill) return;
@@ -68,18 +75,90 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
     setInput('');
     setIsTyping(true);
 
-    // Simulate agent thinking
-    await new Promise((r) => setTimeout(r, 1500 + Math.random() * 1000));
+    // If user is authenticated, use real API
+    if (user) {
+      try {
+        // Create task via Edge Function
+        const { taskId, vmId } = await createTask(skill.id, input.trim());
 
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: getMockResponse(skill.id),
-      timestamp: new Date(),
-      skillId: skill.id,
-    };
+        // Add status message
+        const statusMessage: Message = {
+          id: `status-${Date.now()}`,
+          role: 'assistant',
+          content: `⏳ **Tarea creada**\n\n- Task ID: \`${taskId.slice(0, 8)}\`\n- VM: \`${vmId}\`\n- Skill: ${skill.name}\n\nIniciando agente...`,
+          timestamp: new Date(),
+          skillId: skill.id,
+        };
+        setMessages((prev) => [...prev, statusMessage]);
 
-    setMessages((prev) => [...prev, assistantMessage]);
+        // Poll for status (with timeout)
+        try {
+          const finalStatus = await pollTaskStatus(taskId, (status) => {
+            console.log('Task status:', status.status);
+          }, 2000, 30); // 30 attempts = 60 seconds max
+
+          if (finalStatus.status === 'completed') {
+            // Get results
+            const results = await getTaskResults(taskId);
+
+            const resultMessage: Message = {
+              id: `result-${Date.now()}`,
+              role: 'assistant',
+              content: results.length > 0
+                ? results.map(r => typeof r.content === 'string' ? r.content : JSON.stringify(r.content, null, 2)).join('\n\n')
+                : '✅ Tarea completada. (Sin resultados detallados aún)',
+              timestamp: new Date(),
+              skillId: skill.id,
+            };
+            setMessages((prev) => [...prev, resultMessage]);
+          } else {
+            // Failed
+            const errorMessage: Message = {
+              id: `error-${Date.now()}`,
+              role: 'assistant',
+              content: `❌ **Tarea fallida**\n\n${finalStatus.error_message || 'Error desconocido'}`,
+              timestamp: new Date(),
+              skillId: skill.id,
+            };
+            setMessages((prev) => [...prev, errorMessage]);
+          }
+        } catch {
+          // Polling timeout — show mock as fallback
+          const fallbackMessage: Message = {
+            id: `fallback-${Date.now()}`,
+            role: 'assistant',
+            content: `⚠️ Timeout esperando resultados de la VM. Mostrando respuesta simulada:\n\n${getMockResponse(skill.id)}`,
+            timestamp: new Date(),
+            skillId: skill.id,
+          };
+          setMessages((prev) => [...prev, fallbackMessage]);
+        }
+      } catch (error) {
+        // API error — show mock as fallback
+        console.error('API error:', error);
+        const errorMessage: Message = {
+          id: `api-error-${Date.now()}`,
+          role: 'assistant',
+          content: `⚠️ Error conectando con el backend: ${error instanceof Error ? error.message : 'Unknown error'}\n\nMostrando respuesta simulada:\n\n${getMockResponse(skill.id)}`,
+          timestamp: new Date(),
+          skillId: skill.id,
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+      }
+    } else {
+      // Mock mode for unauthenticated users
+      await new Promise((r) => setTimeout(r, 1500 + Math.random() * 1000));
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `📋 **Demo Mode** — respuesta simulada\n\n${getMockResponse(skill.id)}`,
+        timestamp: new Date(),
+        skillId: skill.id,
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+    }
+
     setIsTyping(false);
   };
 
