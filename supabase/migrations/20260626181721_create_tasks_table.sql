@@ -1,12 +1,9 @@
 -- Mizpa Database Schema
 -- Tasks, VM sessions, and results for the agent playground
 
--- Enable UUID extension
-create extension if not exists "uuid-ossp";
-
 -- Tasks table - tracks each agent task
 create table public.tasks (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete cascade,
   skill text not null check (skill in ('replica', 'audit', 'generate')),
   url text not null,
@@ -21,7 +18,7 @@ create table public.tasks (
 
 -- Task results - stores output from agent execution
 create table public.task_results (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   task_id uuid not null references public.tasks(id) on delete cascade,
   result_type text not null check (result_type in ('audit', 'replica', 'frontend', 'log', 'error')),
   content jsonb not null default '{}'::jsonb,
@@ -30,7 +27,7 @@ create table public.task_results (
 
 -- VM sessions - tracks VM lifecycle for debugging/billing
 create table public.vm_sessions (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   task_id uuid not null references public.tasks(id) on delete cascade,
   vm_id text not null,
   status text not null default 'creating' check (status in ('creating', 'running', 'stopping', 'stopped', 'deleted')),
