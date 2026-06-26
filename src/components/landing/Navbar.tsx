@@ -28,7 +28,7 @@ export function Navbar() {
         <a href="#faq" className="text-slate text-sm no-underline transition-colors hover:text-cream">
           {t('nav.faq')}
         </a>
-        <a href="#audit" className="bg-mint text-navy px-5 py-2 rounded-lg text-sm font-semibold no-underline transition-opacity hover:opacity-90">
+        <a href="/login" className="bg-mint text-navy px-5 py-2 rounded-lg text-sm font-semibold no-underline transition-opacity hover:opacity-90">
           {t('nav.cta')}
         </a>
       </div>

@@ -44,7 +44,7 @@ export function Pricing() {
               ))}
             </ul>
             <a
-              href="#audit"
+              href="/login"
               className={`block w-full text-center py-3 rounded-[10px] text-sm font-semibold no-underline transition-opacity hover:opacity-85 ${
                 plan.featured
                   ? 'bg-mint text-navy'

@@ -9,7 +9,7 @@ export function CTAFinal() {
         <h2 className="font-display text-[clamp(28px,4vw,48px)] font-extrabold tracking-tight mb-4 whitespace-pre-line">{t('ctaFinal.title')}</h2>
         <p className="text-[17px] text-slate mb-9">{t('ctaFinal.subtitle')}</p>
         <div className="flex gap-3 justify-center flex-wrap">
-          <a href="#audit" className="bg-mint text-navy px-9 py-4 rounded-xl text-base font-semibold no-underline transition-opacity hover:opacity-90">{t('ctaFinal.primary')}</a>
+          <a href="/login" className="bg-mint text-navy px-9 py-4 rounded-xl text-base font-semibold no-underline transition-opacity hover:opacity-90">{t('ctaFinal.primary')}</a>
           <a href="#precios" className="bg-transparent border border-white/20 text-cream px-9 py-4 rounded-xl text-base font-medium no-underline transition-colors hover:border-white/40">{t('ctaFinal.secondary')}</a>
         </div>
       </div>
