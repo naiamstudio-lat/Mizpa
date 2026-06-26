@@ -3,6 +3,7 @@ import { Landing } from './components/landing';
 import { LoginPage } from './components/auth/LoginPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { DashboardPage } from './components/dashboard/DashboardPage';
+import { PlaygroundPage } from './components/playground/PlaygroundPage';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/playground" element={<PlaygroundPage />} />
         <Route
           path="/dashboard"
           element={
