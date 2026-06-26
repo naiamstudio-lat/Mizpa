@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RankMind — Secuencia de Emails de Nurturing</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0F172A; --navy-mid: #1E293B; --mint: #6EE7B7;
+  --green: #059669; --slate: #94A3B8; --white: #F8FAFC;
+  --red: #EF4444; --amber: #F59E0B; --border: rgba(255,255,255,0.07);
+}
+body { font-family: 'Inter', sans-serif; background: var(--navy); color: var(--white); line-height: 1.6; }
+
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 40px; border-bottom: 0.5px solid var(--border);
+  position: sticky; top: 0; background: var(--navy); z-index: 10;
+}
+.logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+.logo span { color: var(--mint); }
+.nav-meta { font-size: 13px; color: var(--slate); }
+
+.container { max-width: 960px; margin: 0 auto; padding: 48px 40px; }
+
+.page-header { margin-bottom: 48px; }
+.page-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--mint); margin-bottom: 10px; }
+.page-h1 { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 12px; }
+.page-sub { font-size: 16px; color: var(--slate); max-width: 560px; line-height: 1.7; }
+
+.sequence-overview {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+  margin-bottom: 48px;
+}
+.day-pill {
+  background: var(--navy-mid); border: 0.5px solid var(--border);
+  border-radius: 8px; padding: 10px 6px; text-align: center;
+  cursor: pointer; transition: border-color .15s;
+}
+.day-pill:hover { border-color: rgba(110,231,183,0.3); }
+.day-pill.active { border-color: var(--mint); background: rgba(110,231,183,0.06); }
+.day-num { font-size: 11px; color: var(--mint); font-weight: 500; margin-bottom: 3px; }
+.day-name { font-size: 10px; color: var(--slate); line-height: 1.3; }
+
+.email-wrapper {
+  display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start;
+}
+
+.sidebar { position: sticky; top: 80px; }
+.email-nav { display: flex; flex-direction: column; gap: 6px; }
+.email-nav-item {
+  padding: 12px 14px; border-radius: 10px;
+  border: 0.5px solid var(--border);
+  cursor: pointer; transition: all .15s;
+  background: var(--navy-mid);
+}
+.email-nav-item:hover { border-color: rgba(110,231,183,0.2); }
+.email-nav-item.active { border-color: var(--mint); background: rgba(110,231,183,0.06); }
+.env-day { font-size: 11px; color: var(--mint); font-weight: 500; margin-bottom: 3px; }
+.env-subject { font-size: 13px; font-weight: 500; color: var(--white); line-height: 1.4; }
+.env-goal { font-size: 11px; color: var(--slate); margin-top: 2px; }
+
+.email-display { min-height: 400px; }
+.email-meta {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 16px; background: var(--navy-mid);
+  border-radius: 12px 12px 0 0; border: 0.5px solid var(--border);
+  border-bottom: none;
+}
+.meta-row { display: flex; gap: 10px; align-items: flex-start; }
+.meta-key { font-size: 12px; color: var(--slate); min-width: 60px; margin-top: 1px; }
+.meta-val { font-size: 13px; color: var(--white); }
+.email-card {
+  background: #ffffff;
+  border-radius: 0 0 12px 12px;
+  border: 0.5px solid var(--border);
+  overflow: hidden;
+}
+.email-inner { max-width: 600px; margin: 0 auto; padding: 0; color: #1E293B; font-family: 'Inter', sans-serif; }
+.email-header-bar {
+  background: #0F172A; padding: 24px 32px;
+  display: flex; align-items: center; gap: 12px;
+}
+.email-logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: #F8FAFC; }
+.email-logo span { color: #6EE7B7; }
+.email-tagline { font-size: 11px; color: #94A3B8; margin-top: 2px; }
+.email-body { padding: 32px; }
+.email-body p { font-size: 15px; color: #334155; line-height: 1.75; margin-bottom: 16px; }
+.email-body strong { color: #0F172A; font-weight: 600; }
+.email-highlight {
+  background: #F0FDF4; border-left: 3px solid #059669;
+  padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 20px 0;
+}
+.email-highlight p { font-size: 14px; color: #065F46; margin: 0; }
+.email-highlight strong { color: #065F46; }
+.email-warning {
+  background: #FFF7ED; border-left: 3px solid #F59E0B;
+  padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 20px 0;
+}
+.email-warning p { font-size: 14px; color: #92400E; margin: 0; }
+.email-stat-row {
+  display: flex; gap: 16px; margin: 20px 0;
+}
+.email-stat {
+  flex: 1; background: #F8FAFC; border-radius: 10px; padding: 16px;
+  text-align: center; border: 0.5px solid #E2E8F0;
+}
+.email-stat .num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: #0F172A; }
+.email-stat .lab { font-size: 11px; color: #64748B; margin-top: 2px; }
+.email-cta-btn {
+  display: block; background: #059669; color: #ffffff;
+  text-align: center; padding: 16px 32px; border-radius: 10px;
+  font-size: 16px; font-weight: 600; text-decoration: none;
+  margin: 24px 0; transition: opacity .2s;
+}
+.email-cta-btn:hover { opacity: .9; }
+.email-cta-btn.secondary {
+  background: transparent; border: 1.5px solid #059669;
+  color: #059669; padding: 12px 24px; font-size: 14px;
+}
+.email-list { margin: 16px 0 16px 0; padding: 0; list-style: none; }
+.email-list li {
+  font-size: 15px; color: #334155; padding: 8px 0;
+  border-bottom: 0.5px solid #E2E8F0; display: flex; gap: 10px;
+}
+.email-list li:last-child { border-bottom: none; }
+.email-footer {
+  padding: 20px 32px; background: #F8FAFC; border-top: 0.5px solid #E2E8F0;
+}
+.email-footer p { font-size: 11px; color: #94A3B8; margin-bottom: 4px; }
+.email-footer a { color: #059669; text-decoration: none; }
+.email-ps { font-size: 14px; color: #64748B; font-style: italic; margin-top: 16px; }
+.gif-mock {
+  background: #1E293B; border-radius: 10px; padding: 24px;
+  text-align: center; margin: 20px 0; border: 0.5px solid rgba(255,255,255,0.08);
+}
+.gif-mock p { font-size: 13px; color: #94A3B8; margin: 8px 0 0; }
+
+.strategy-box {
+  background: var(--navy-mid); border: 0.5px solid var(--border);
+  border-radius: 10px; padding: 16px;
+  margin-top: 16px;
+}
+.strategy-box h4 { font-size: 12px; font-weight: 500; color: var(--mint); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.strategy-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
+.strategy-row:last-child { border-bottom: none; }
+.s-key { color: var(--slate); }
+.s-val { color: var(--white); font-weight: 500; }
+
+@media (max-width: 768px) {
+  .container { padding: 24px 16px; }
+  nav { padding: 14px 20px; }
+  .sequence-overview { grid-template-columns: repeat(4, 1fr); }
+  .email-wrapper { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .email-nav { flex-direction: row; overflow-x: auto; padding-bottom: 8px; }
+  .email-nav-item { min-width: 160px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Rank<span>Mind</span></div>
+  <span class="nav-meta">Secuencia de Nurturing · 7 emails · 7 días</span>
+</nav>
+
+<div class="container">
+  <div class="page-header">
+    <p class="page-label">Funnel · Etapa 3</p>
+    <h1 class="page-h1">Secuencia de emails de nurturing</h1>
+    <p class="page-sub">7 emails enviados en 7 días. Objetivo: llevar al lead desde "me interesa" hasta "quiero pagar". Cada email tiene un rol específico en la conversión.</p>
+  </div>
+
+  <div class="sequence-overview">
+    <div class="day-pill active" onclick="showEmail(0, this)">
+      <div class="day-num">DÍA 1</div>
+      <div class="day-name">Informe + dolor visible</div>
+    </div>
+    <div class="day-pill" onclick="showEmail(1, this)">
+      <div class="day-num">DÍA 2</div>
+      <div class="day-name">Quick win accionable</div>
+    </div>
+    <div class="day-pill" onclick="showEmail(2, this)">
+      <div class="day-num">DÍA 3</div>
+      <div class="day-name">Caso de éxito</div>
+    </div>
+    <div class="day-pill" onclick="showEmail(3, this)">
+      <div class="day-num">DÍA 4</div>
+      <div class="day-name">El mercado cambió</div>
+    </div>
+    <div class="day-pill" onclick="showEmail(4, this)">
+      <div class="day-num">DÍA 5</div>
+      <div class="day-name">Demo de la réplica</div>
+    </div>
+    <div class="day-pill" onclick="showEmail(5, this)">
+      <div class="day-num">DÍA 6</div>
+      <div class="day-name">Objeciones</div>
+    </div>
+    <div class="day-pill" onclick="showEmail(6, this)">
+      <div class="day-num">DÍA 7</div>
+      <div class="day-name">Oferta de trial</div>
+    </div>
+  </div>
+
+  <div class="email-wrapper">
+    <div class="sidebar">
+      <div class="email-nav" id="email-nav">
+        <div class="email-nav-item active" onclick="showEmail(0, null, this)">
+          <div class="env-day">Día 1</div>
+          <div class="env-subject">Tu web tiene 3 errores que te cuestan clientes</div>
+          <div class="env-goal">Activar urgencia con el dolor concreto</div>
+        </div>
+        <div class="email-nav-item" onclick="showEmail(1, null, this)">
+          <div class="env-day">Día 2</div>
+          <div class="env-subject">Un cambio de 5 minutos que mejora tu ranking esta semana</div>
+          <div class="env-goal">Dar valor inmediato, construir confianza</div>
+        </div>
+        <div class="email-nav-item" onclick="showEmail(2, null, this)">
+          <div class="env-day">Día 3</div>
+          <div class="env-subject">Cómo una agencia pasó de página 4 a posición 6 en 3 semanas</div>
+          <div class="env-goal">Prueba social, resultado tangible</div>
+        </div>
+        <div class="email-nav-item" onclick="showEmail(3, null, this)">
+          <div class="env-day">Día 4</div>
+          <div class="env-subject">ChatGPT ya no encuentra a tu cliente. ¿Y ahora?</div>
+          <div class="env-goal">Crear urgencia con el cambio del mercado</div>
+        </div>
+        <div class="email-nav-item" onclick="showEmail(4, null, this)">
+          <div class="env-day">Día 5</div>
+          <div class="env-subject">Mirá lo que le hicimos a un sitio en 48 horas</div>
+          <div class="env-goal">Demo del producto, el AHA moment</div>
+        </div>
+        <div class="email-nav-item" onclick="showEmail(5, null, this)">
+          <div class="env-day">Día 6</div>
+          <div class="env-subject">"¿Y si el SEO no funciona?" (y otras dudas que vale la pena responder)</div>
+          <div class="env-goal">Eliminar objeciones, reducir fricción</div>
+        </div>
+        <div class="email-nav-item" onclick="showEmail(6, null, this)">
+          <div class="env-day">Día 7</div>
+          <div class="env-subject">14 días gratis · Sin tarjeta · Última vez que te lo ofrezco</div>
+          <div class="env-goal">Cerrar la conversión</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="email-display" id="email-display">
+      <!-- EMAIL 0 -->
+      <div class="email-panel" id="ep-0">
+        <div class="email-meta">
+          <div class="meta-row"><span class="meta-key">Asunto</span><span class="meta-val">Tu web tiene 3 errores que te cuestan clientes</span></div>
+          <div class="meta-row"><span class="meta-key">Preview</span><span class="meta-val">Analizamos tudominio.com y encontramos algo importante...</span></div>
+          <div class="meta-row"><span class="meta-key">Envío</span><span class="meta-val">Inmediatamente después del registro</span></div>
+        </div>
+        <div class="email-card">
+          <div class="email-inner">
+            <div class="email-header-bar">
+              <div><div class="email-logo">Rank<span>Mind</span></div><div class="email-tagline">SEO Intelligence Platform</div></div>
+            </div>
+            <div class="email-body">
+              <p>Hola [Nombre],</p>
+              <p>Analizamos <strong>tudominio.com</strong> y el resultado no es el que esperabas ver.</p>
+              <div class="email-stat-row">
+                <div class="email-stat"><div class="num" style="color:#EF4444">34</div><div class="lab">Tu score actual</div></div>
+                <div class="email-stat"><div class="num" style="color:#F59E0B">67</div><div class="lab">Promedio del sector</div></div>
+                <div class="email-stat"><div class="num" style="color:#059669">89</div><div class="lab">Tu competidor</div></div>
+              </div>
+              <p>Esto significa que mientras tu competidor aparece en los primeros resultados, tu web está en la página 3 o más abajo — donde nadie hace clic.</p>
+              <p>Los <strong>3 problemas más críticos</strong> que encontramos:</p>
+              <ul class="email-list">
+                <li><span style="color:#EF4444">🔴</span><span><strong>Velocidad de carga: 6.2 segundos.</strong> Google penaliza a partir de 3s. Estás perdiendo el 53% de los visitantes antes de que vean tu página.</span></li>
+                <li><span style="color:#EF4444">🔴</span><span><strong>Sin schema markup.</strong> Ninguna de tus páginas tiene datos estructurados. Google y las IAs no entienden de qué trata tu negocio.</span></li>
+                <li><span style="color:#EF4444">🔴</span><span><strong>Invisible para IA.</strong> ChatGPT y Perplexity no pueden citar tu contenido. Eso es tráfico que se va a tu competidor.</span></li>
+              </ul>
+              <p>El informe completo tiene 24 páginas con cada problema detectado, su impacto estimado en tu tráfico y las instrucciones exactas para corregirlo.</p>
+              <a href="#" class="email-cta-btn">Ver mi informe completo →</a>
+              <p class="email-ps">P.D.: El informe también incluye una simulación de cómo quedaría tu web después de la optimización. Es bastante impactante verlo.</p>
+            </div>
+            <div class="email-footer">
+              <p>Recibiste este email porque analizaste tudominio.com en RankMind.</p>
+              <p><a href="#">Desuscribirse</a> · <a href="#">Ver en el navegador</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="strategy-box">
+          <h4>Estrategia del email</h4>
+          <div class="strategy-row"><span class="s-key">Objetivo</span><span class="s-val">Activar urgencia con datos concretos</span></div>
+          <div class="strategy-row"><span class="s-key">Palanca psicológica</span><span class="s-val">Comparación con competidor (loss aversion)</span></div>
+          <div class="strategy-row"><span class="s-key">CTA principal</span><span class="s-val">Ver informe completo (captura de email si no lo dieron)</span></div>
+          <div class="strategy-row"><span class="s-key">KPI a medir</span><span class="s-val">Open rate · Click en "ver informe"</span></div>
+          <div class="strategy-row"><span class="s-key">Open rate esperado</span><span class="s-val">45–55% (primer email, alta relevancia)</span></div>
+        </div>
+      </div>
+
+      <!-- EMAIL 1 -->
+      <div class="email-panel" id="ep-1" style="display:none">
+        <div class="email-meta">
+          <div class="meta-row"><span class="meta-key">Asunto</span><span class="meta-val">Un cambio de 5 minutos que mejora tu ranking esta semana</span></div>
+          <div class="meta-row"><span class="meta-key">Preview</span><span class="meta-val">No necesitás esperar al informe completo para empezar...</span></div>
+          <div class="meta-row"><span class="meta-key">Envío</span><span class="meta-val">Día 2 · 10:00 AM hora local</span></div>
+        </div>
+        <div class="email-card">
+          <div class="email-inner">
+            <div class="email-header-bar">
+              <div><div class="email-logo">Rank<span>Mind</span></div><div class="email-tagline">Tip del día</div></div>
+            </div>
+            <div class="email-body">
+              <p>Hola [Nombre],</p>
+              <p>Antes de que te sumerjás en el informe completo, te quiero dar algo que podés implementar <strong>hoy mismo</strong>.</p>
+              <p>El problema número uno que detectamos en webs como la tuya es el meta title mal optimizado. Mirá la diferencia:</p>
+              <div class="email-warning">
+                <p><strong>❌ Lo que tenés ahora:</strong><br>
+                "Inicio — Tu Empresa SRL"</p>
+              </div>
+              <div class="email-highlight">
+                <p><strong>✅ Lo que debería decir:</strong><br>
+                "[Tu servicio principal] en [Ciudad] | [Beneficio clave] — [Tu Empresa]"</p>
+              </div>
+              <p>Este cambio tarda literalmente 5 minutos en WordPress (Yoast SEO → Título SEO). Google lo rastrea en 3 a 7 días.</p>
+              <p>¿Por qué funciona? Porque Google y los usuarios ven primero el title. Si no incluye lo que la gente busca, nunca hacen clic — aunque aparezcas en la posición 1.</p>
+              <div class="email-highlight">
+                <p><strong>Tarea para hoy:</strong> Abrí tu CMS, buscá el meta title de tu página principal y reescribilo con esta fórmula. Después respondé este email y contame cómo quedó — te doy feedback gratis.</p>
+              </div>
+              <p>Mañana te mando algo más impactante: el caso de una agencia que multiplicó por 3 el tráfico de un cliente usando exactamente lo que RankMind genera automáticamente.</p>
+              <a href="#" class="email-cta-btn secondary">Ver mi informe completo mientras tanto →</a>
+            </div>
+            <div class="email-footer">
+              <p>Recibiste este email porque analizaste tu web en RankMind.</p>
+              <p><a href="#">Desuscribirse</a> · <a href="#">Ver en el navegador</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="strategy-box">
+          <h4>Estrategia del email</h4>
+          <div class="strategy-row"><span class="s-key">Objetivo</span><span class="s-val">Dar valor inmediato, construir autoridad y confianza</span></div>
+          <div class="strategy-row"><span class="s-key">Palanca psicológica</span><span class="s-val">Reciprocidad (doy algo gratis, generan disposición a comprar)</span></div>
+          <div class="strategy-row"><span class="s-key">Truco</span><span class="s-val">Invitar a responder el email aumenta deliverability futura</span></div>
+          <div class="strategy-row"><span class="s-key">Open rate esperado</span><span class="s-val">35–42%</span></div>
+        </div>
+      </div>
+
+      <!-- EMAIL 2 -->
+      <div class="email-panel" id="ep-2" style="display:none">
+        <div class="email-meta">
+          <div class="meta-row"><span class="meta-key">Asunto</span><span class="meta-val">Cómo una agencia pasó de página 4 a posición 6 en 3 semanas</span></div>
+          <div class="meta-row"><span class="meta-key">Preview</span><span class="meta-val">Y lo único que hicieron diferente fue...</span></div>
+          <div class="meta-row"><span class="meta-key">Envío</span><span class="meta-val">Día 3 · 10:00 AM hora local</span></div>
+        </div>
+        <div class="email-card">
+          <div class="email-inner">
+            <div class="email-header-bar">
+              <div><div class="email-logo">Rank<span>Mind</span></div><div class="email-tagline">Caso de éxito</div></div>
+            </div>
+            <div class="email-body">
+              <p>Hola [Nombre],</p>
+              <p>Quiero contarte lo que le pasó a <strong>Digital Boost</strong>, una agencia de Medellín con 12 clientes activos.</p>
+              <p>Tenían un problema: sus clientes les preguntaban por qué no rankeaban, y ellos no tenían respuesta técnica clara. Hacían auditorías manuales en Excel que tardaban 3 días y eran difíciles de explicar.</p>
+              <div class="email-stat-row">
+                <div class="email-stat"><div class="num" style="color:#EF4444">Pág. 4</div><div class="lab">Antes</div></div>
+                <div class="email-stat"><div class="num" style="color:#059669">Pos. 6</div><div class="lab">3 semanas después</div></div>
+                <div class="email-stat"><div class="num">+340%</div><div class="lab">Tráfico orgánico</div></div>
+              </div>
+              <p>¿Qué hicieron diferente? Implementaron la réplica web que generó RankMind para uno de sus clientes. <strong>El trabajo técnico les llevó menos de 2 horas</strong>.</p>
+              <div class="email-highlight">
+                <p>"Lo que más me sorprendió fue que el cliente nos preguntó si habíamos rediseñado su web. No la rediseñamos — la optimizamos. Pero la diferencia era tan notoria que lo parecía." — Roberto Leal, SEO Lead</p>
+              </div>
+              <p>El resultado para la agencia: ese cliente renovó por un año y los refirió a dos empresas del mismo sector.</p>
+              <p>¿Querés ver cómo quedaría la réplica de <strong>tudominio.com</strong>?</p>
+              <a href="#" class="email-cta-btn">Ver la simulación de mi web optimizada →</a>
+              <p class="email-ps">P.D.: La simulación es gratuita. La generamos con los datos de la auditoría que ya hicimos de tu sitio.</p>
+            </div>
+            <div class="email-footer">
+              <p><a href="#">Desuscribirse</a> · <a href="#">Ver en el navegador</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="strategy-box">
+          <h4>Estrategia del email</h4>
+          <div class="strategy-row"><span class="s-key">Objetivo</span><span class="s-val">Prueba social con resultado específico y creíble</span></div>
+          <div class="strategy-row"><span class="s-key">Palanca psicológica</span><span class="s-val">Social proof + identificación con el protagonista</span></div>
+          <div class="strategy-row"><span class="s-key">Detalle clave</span><span class="s-val">Usar números concretos, no vagos ("de página 4 a posición 6")</span></div>
+          <div class="strategy-row"><span class="s-key">Open rate esperado</span><span class="s-val">32–38%</span></div>
+        </div>
+      </div>
+
+      <!-- EMAIL 3 -->
+      <div class="email-panel" id="ep-3" style="display:none">
+        <div class="email-meta">
+          <div class="meta-row"><span class="meta-key">Asunto</span><span class="meta-val">ChatGPT ya no encuentra a tu cliente. ¿Y ahora?</span></div>
+          <div class="meta-row"><span class="meta-key">Preview</span><span class="meta-val">El 36% de las búsquedas ya pasan por IAs. Tu competidor lo sabe.</span></div>
+          <div class="meta-row"><span class="meta-key">Envío</span><span class="meta-val">Día 4 · 11:00 AM hora local</span></div>
+        </div>
+        <div class="email-card">
+          <div class="email-inner">
+            <div class="email-header-bar">
+              <div><div class="email-logo">Rank<span>Mind</span></div><div class="email-tagline">El mercado cambió</div></div>
+            </div>
+            <div class="email-body">
+              <p>Hola [Nombre],</p>
+              <p>Hacé esta prueba ahora mismo: abrí ChatGPT y escribí:</p>
+              <div class="email-warning">
+                <p>"¿Cuáles son las mejores [empresas de tu rubro] en [tu ciudad]?"</p>
+              </div>
+              <p>¿Apareció tu empresa o la de tu cliente? Si la respuesta es no, <strong>estás perdiendo clientes todos los días sin saberlo</strong>.</p>
+              <p>Esto no es el futuro. Es hoy. El 36% de las búsquedas de servicios profesionales ya pasan primero por una IA antes de llegar a Google. Y las IAs sólo citan webs que están correctamente estructuradas.</p>
+              <p>La réplica que genera RankMind incluye <strong>optimización específica para ser citado por:</strong></p>
+              <ul class="email-list">
+                <li>🤖 <span>ChatGPT y sus respuestas de búsqueda</span></li>
+                <li>🔍 <span>Perplexity AI (el buscador que crece 300% año a año)</span></li>
+                <li>⭐ <span>Google SGE (la nueva búsqueda con IA integrada)</span></li>
+                <li>🌐 <span>Bing Copilot y otros asistentes IA</span></li>
+              </ul>
+              <p>Tu competidor que sí aparece en estas IAs tiene una ventaja que se vuelve más grande cada mes. El costo de no actuar ahora es mayor que el costo de la herramienta.</p>
+              <a href="#" class="email-cta-btn">Ver cómo optimizar mi web para IAs →</a>
+            </div>
+            <div class="email-footer">
+              <p><a href="#">Desuscribirse</a> · <a href="#">Ver en el navegador</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="strategy-box">
+          <h4>Estrategia del email</h4>
+          <div class="strategy-row"><span class="s-key">Objetivo</span><span class="s-val">Crear urgencia con el cambio del mercado (FOMO)</span></div>
+          <div class="strategy-row"><span class="s-key">Palanca psicológica</span><span class="s-val">Fear of missing out + prueba interactiva inmediata</span></div>
+          <div class="strategy-row"><span class="s-key">Truco</span><span class="s-val">El "hacé esta prueba ahora" genera engagement activo</span></div>
+          <div class="strategy-row"><span class="s-key">Open rate esperado</span><span class="s-val">30–35%</span></div>
+        </div>
+      </div>
+
+      <!-- EMAIL 4 -->
+      <div class="email-panel" id="ep-4" style="display:none">
+        <div class="email-meta">
+          <div class="meta-row"><span class="meta-key">Asunto</span><span class="meta-val">Mirá lo que le hicimos a un sitio en 48 horas</span></div>
+          <div class="meta-row"><span class="meta-key">Preview</span><span class="meta-val">No es magia. Es lo que pasa cuando la estructura es correcta.</span></div>
+          <div class="meta-row"><span class="meta-key">Envío</span><span class="meta-val">Día 5 · 10:00 AM hora local</span></div>
+        </div>
+        <div class="email-card">
+          <div class="email-inner">
+            <div class="email-header-bar">
+              <div><div class="email-logo">Rank<span>Mind</span></div><div class="email-tagline">Demo · Antes y después</div></div>
+            </div>
+            <div class="email-body">
+              <p>Hola [Nombre],</p>
+              <p>Las palabras sólo llegan hasta cierto punto. Mejor te muestro.</p>
+              <div class="gif-mock">
+                <div style="background:#0F172A; border-radius:8px; padding:20px; display:flex; gap:16px; align-items:center; justify-content:center;">
+                  <div style="text-align:center;">
+                    <div style="font-size:11px; color:#94A3B8; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">ANTES</div>
+                    <div style="width:140px; height:90px; background:#1E293B; border-radius:6px; border:0.5px solid rgba(239,68,68,0.4); display:flex; align-items:center; justify-content:center;">
+                      <span style="font-size:24px; font-weight:700; color:#EF4444;">34</span>
+                    </div>
+                    <div style="font-size:11px; color:#EF4444; margin-top:6px;">Score SEO · Página 4</div>
+                  </div>
+                  <div style="font-size:20px; color:#94A3B8;">→</div>
+                  <div style="text-align:center;">
+                    <div style="font-size:11px; color:#6EE7B7; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">DESPUÉS</div>
+                    <div style="width:140px; height:90px; background:#1E293B; border-radius:6px; border:0.5px solid rgba(5,150,105,0.4); display:flex; align-items:center; justify-content:center;">
+                      <span style="font-size:24px; font-weight:700; color:#6EE7B7;">87</span>
+                    </div>
+                    <div style="font-size:11px; color:#059669; margin-top:6px;">Score SEO · Posición 6</div>
+                  </div>
+                </div>
+                <p style="color:#64748B; font-size:12px; margin-top:12px;">Sitio de servicio profesional · Sector salud · Buenos Aires</p>
+              </div>
+              <p>¿Qué cambió? La réplica generada por RankMind corrigió <strong>47 problemas técnicos</strong>, reescribió los metadatos de 12 páginas y agregó schema markup para que Google entendiera el contenido.</p>
+              <p>El equipo de la agencia tardó <strong>menos de 2 horas</strong> en implementar los cambios. Nosotros generamos el 90% del trabajo.</p>
+              <div class="email-highlight">
+                <p>Si quisieras obtener este resultado para <strong>tudominio.com</strong>, podés empezar hoy mismo con los 14 días de prueba gratuita.</p>
+              </div>
+              <a href="#" class="email-cta-btn">Empezar mi prueba gratuita →</a>
+              <p style="font-size:14px; color:#64748B; text-align:center;">Sin tarjeta de crédito · Cancelás cuando quieras</p>
+            </div>
+            <div class="email-footer">
+              <p><a href="#">Desuscribirse</a> · <a href="#">Ver en el navegador</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="strategy-box">
+          <h4>Estrategia del email</h4>
+          <div class="strategy-row"><span class="s-key">Objetivo</span><span class="s-val">Mostrar el producto en acción (AHA moment)</span></div>
+          <div class="strategy-row"><span class="s-key">Palanca psicológica</span><span class="s-val">Demostración visual del resultado (ver para creer)</span></div>
+          <div class="strategy-row"><span class="s-key">Primer intento de conversión</span><span class="s-val">Sí — CTA hacia trial gratuito</span></div>
+          <div class="strategy-row"><span class="s-key">Open rate esperado</span><span class="s-val">28–33%</span></div>
+        </div>
+      </div>
+
+      <!-- EMAIL 5 -->
+      <div class="email-panel" id="ep-5" style="display:none">
+        <div class="email-meta">
+          <div class="meta-row"><span class="meta-key">Asunto</span><span class="meta-val">"¿Y si el SEO no funciona?" (y otras dudas que vale la pena responder)</span></div>
+          <div class="meta-row"><span class="meta-key">Preview</span><span class="meta-val">Las preguntas que nos hacen antes de empezar, respondidas con honestidad.</span></div>
+          <div class="meta-row"><span class="meta-key">Envío</span><span class="meta-val">Día 6 · 10:00 AM hora local</span></div>
+        </div>
+        <div class="email-card">
+          <div class="email-inner">
+            <div class="email-header-bar">
+              <div><div class="email-logo">Rank<span>Mind</span></div><div class="email-tagline">Respondemos tus dudas</div></div>
+            </div>
+            <div class="email-body">
+              <p>Hola [Nombre],</p>
+              <p>Antes de que tomes una decisión, quiero responderte las preguntas que más nos hacen. Con honestidad.</p>
+              <ul class="email-list">
+                <li><span>💬</span><div><strong>"¿Qué pasa si la réplica rompe algo en mi web?"</strong><br><span style="font-size:14px; color:#64748B;">La réplica es un archivo separado. Tu web original no se toca. Probás la réplica en un servidor de prueba antes de publicar nada.</span></div></li>
+                <li><span>💬</span><div><strong>"¿En cuánto tiempo veo resultados en Google?"</strong><br><span style="font-size:14px; color:#64748B;">Los primeros movimientos en posiciones generalmente se ven en la semana 3 a 6. Google necesita rastrear los cambios primero.</span></div></li>
+                <li><span>💬</span><div><strong>"¿Tengo que saber de programación para usarlo?"</strong><br><span style="font-size:14px; color:#64748B;">No. La herramienta está diseñada para agencias y pymes sin equipo técnico propio. Si sabés subir un archivo a WordPress, ya sabés suficiente.</span></div></li>
+                <li><span>💬</span><div><strong>"¿Funciona para Shopify / Wix / Squarespace?"</strong><br><span style="font-size:14px; color:#64748B;">Sí para todos. Los agentes adaptan las recomendaciones y la réplica a la plataforma que usés.</span></div></li>
+                <li><span>💬</span><div><strong>"¿Y si no estoy conforme?"</strong><br><span style="font-size:14px; color:#64748B;">Tenés 30 días de garantía total. Si no ves valor, te devolvemos el dinero sin preguntas y sin trámites.</span></div></li>
+              </ul>
+              <p>¿Hay algo más que te genera duda? Respondé este email y te contesto personalmente — generalmente en menos de 2 horas.</p>
+              <a href="#" class="email-cta-btn">Empezar con 14 días gratis →</a>
+            </div>
+            <div class="email-footer">
+              <p><a href="#">Desuscribirse</a> · <a href="#">Ver en el navegador</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="strategy-box">
+          <h4>Estrategia del email</h4>
+          <div class="strategy-row"><span class="s-key">Objetivo</span><span class="s-val">Eliminar las últimas objeciones antes del cierre</span></div>
+          <div class="strategy-row"><span class="s-key">Palanca psicológica</span><span class="s-val">Transparencia y honestidad generan confianza</span></div>
+          <div class="strategy-row"><span class="s-key">Truco</span><span class="s-val">Invitar a responder filtra leads calientes para follow-up manual</span></div>
+          <div class="strategy-row"><span class="s-key">Open rate esperado</span><span class="s-val">26–30%</span></div>
+        </div>
+      </div>
+
+      <!-- EMAIL 6 -->
+      <div class="email-panel" id="ep-6" style="display:none">
+        <div class="email-meta">
+          <div class="meta-row"><span class="meta-key">Asunto</span><span class="meta-val">14 días gratis · Sin tarjeta · Última vez que te lo ofrezco</span></div>
+          <div class="meta-row"><span class="meta-key">Preview</span><span class="meta-val">Después de hoy, volvés a nuestra lista general de newsletters.</span></div>
+          <div class="meta-row"><span class="meta-key">Envío</span><span class="meta-val">Día 7 · 9:00 AM hora local (hora de máximo open rate)</span></div>
+        </div>
+        <div class="email-card">
+          <div class="email-inner">
+            <div class="email-header-bar">
+              <div><div class="email-logo">Rank<span>Mind</span></div><div class="email-tagline">Última oportunidad</div></div>
+            </div>
+            <div class="email-body">
+              <p>Hola [Nombre],</p>
+              <p>Esta es la última vez que te escribo sobre el trial de RankMind. No te voy a enviar más emails de seguimiento después de hoy — sólo el newsletter mensual si querés recibirlo.</p>
+              <p>Esta semana te mostré:</p>
+              <ul class="email-list">
+                <li>✅ <span>Los 3 errores críticos que detectamos en tudominio.com</span></li>
+                <li>✅ <span>Un quick win que podés implementar en 5 minutos</span></li>
+                <li>✅ <span>Cómo una agencia pasó de página 4 a posición 6 en 3 semanas</span></li>
+                <li>✅ <span>Por qué el 36% de las búsquedas ahora pasan primero por una IA</span></li>
+                <li>✅ <span>Un antes y después real de lo que genera nuestra herramienta</span></li>
+              </ul>
+              <p>Si después de todo esto todavía no es el momento, no hay problema. Vas a poder volver cuando estés listo.</p>
+              <p>Pero si sí querés probar, <strong>hoy es el día</strong>:</p>
+              <div class="email-highlight">
+                <p>✔ <strong>14 días completamente gratis</strong><br>
+                ✔ Sin tarjeta de crédito<br>
+                ✔ Cancelás cuando quieras<br>
+                ✔ 30 días de garantía si pagás y no quedás conforme</p>
+              </div>
+              <a href="#" class="email-cta-btn">Activar mi prueba gratuita ahora →</a>
+              <p style="font-size:13px; color:#64748B; text-align:center; margin-top:8px;">tudominio.com merece estar en la primera página.</p>
+            </div>
+            <div class="email-footer">
+              <p>Este es el último email de esta secuencia. Quedarás en nuestra lista de newsletter mensual.</p>
+              <p><a href="#">Desuscribirse de todo</a> · <a href="#">Ver en el navegador</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="strategy-box">
+          <h4>Estrategia del email</h4>
+          <div class="strategy-row"><span class="s-key">Objetivo</span><span class="s-val">Cerrar la conversión con urgencia real (no artificial)</span></div>
+          <div class="strategy-row"><span class="s-key">Palanca psicológica</span><span class="s-val">Escasez genuina (fin de secuencia) + resumen del valor dado</span></div>
+          <div class="strategy-row"><span class="s-key">Tono</span><span class="s-val">Honesto y sin presión falsa — respeta la decisión del lead</span></div>
+          <div class="strategy-row"><span class="s-key">Open rate esperado</span><span class="s-val">28–34% (los emails de cierre abren más por curiosidad)</span></div>
+          <div class="strategy-row"><span class="s-key">Conversión esperada</span><span class="s-val">2–4% de la secuencia total → trial activado</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showEmail(index, pillEl, navEl) {
+  document.querySelectorAll('.email-panel').forEach((p, i) => {
+    p.style.display = i === index ? 'block' : 'none';
+  });
+  if (pillEl) {
+    document.querySelectorAll('.day-pill').forEach(p => p.classList.remove('active'));
+    pillEl.classList.add('active');
+  }
+  if (navEl) {
+    document.querySelectorAll('.email-nav-item').forEach(n => n.classList.remove('active'));
+    navEl.classList.add('active');
+  } else {
+    document.querySelectorAll('.email-nav-item').forEach((n, i) => {
+      n.classList.toggle('active', i === index);
+    });
+  }
+  if (!pillEl) {
+    document.querySelectorAll('.day-pill').forEach((p, i) => {
+      p.classList.toggle('active', i === index);
+    });
+  }
+}
+</script>
+</body>
+</html>

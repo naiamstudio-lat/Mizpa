@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RankMind — Auditoría SEO Gratuita</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0F172A; --navy-mid: #1E293B; --navy-light: #334155;
+  --mint: #6EE7B7; --green: #059669; --green-bg: rgba(5,150,105,0.08);
+  --slate: #94A3B8; --white: #F8FAFC;
+  --red: #EF4444; --red-bg: rgba(239,68,68,0.08);
+  --amber: #F59E0B; --amber-bg: rgba(245,158,11,0.08);
+  --border: rgba(255,255,255,0.07);
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; }
+
+/* NAV */
+nav {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 32px; border-bottom: 0.5px solid var(--border);
+}
+.logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+.logo span { color: var(--mint); }
+.nav-sep { color: var(--border); }
+.nav-tool { font-size: 14px; color: var(--slate); }
+
+/* SCREENS */
+.screen { display: none; min-height: calc(100vh - 57px); }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; }
+
+/* SCREEN 1 — INPUT */
+#s-input .hero-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--mint); margin-bottom: 16px;
+}
+#s-input h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(32px, 5vw, 54px); font-weight: 800;
+  letter-spacing: -2px; text-align: center;
+  max-width: 640px; line-height: 1.08; margin-bottom: 16px;
+}
+#s-input h1 span { color: var(--mint); }
+#s-input .sub { font-size: 17px; color: var(--slate); text-align: center; margin-bottom: 40px; max-width: 440px; line-height: 1.6; }
+.input-card {
+  background: var(--navy-mid);
+  border: 0.5px solid var(--border);
+  border-radius: 16px; padding: 32px;
+  width: 100%; max-width: 500px;
+}
+.input-row { display: flex; flex-direction: column; gap: 10px; }
+.input-label { font-size: 13px; color: var(--slate); }
+.url-input {
+  background: var(--navy);
+  border: 0.5px solid rgba(255,255,255,0.12);
+  color: var(--white); border-radius: 10px;
+  padding: 14px 16px; font-size: 16px; font-family: 'Inter', sans-serif;
+  outline: none; transition: border-color .2s; width: 100%;
+}
+.url-input:focus { border-color: var(--mint); }
+.url-input::placeholder { color: var(--slate); }
+.scan-btn {
+  width: 100%; background: var(--mint); color: var(--navy);
+  border: none; border-radius: 10px; padding: 14px;
+  font-size: 16px; font-weight: 600; font-family: 'Inter', sans-serif;
+  cursor: pointer; transition: opacity .2s; margin-top: 4px;
+}
+.scan-btn:hover { opacity: .9; }
+.scan-btn:disabled { opacity: .5; cursor: not-allowed; }
+.input-micro { font-size: 12px; color: var(--slate); text-align: center; margin-top: 10px; }
+.trust-row {
+  display: flex; gap: 20px; margin-top: 28px; flex-wrap: wrap; justify-content: center;
+}
+.trust-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--slate); }
+.trust-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mint); }
+
+/* SCREEN 2 — SCANNING */
+#s-scanning { text-align: center; }
+.scan-logo { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 40px; }
+.scan-logo span { color: var(--mint); }
+.scan-circle {
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 2px solid rgba(110,231,183,0.2);
+  border-top-color: var(--mint);
+  animation: spin 1.2s linear infinite;
+  margin: 0 auto 32px; position: relative;
+}
+.scan-circle-inner {
+  position: absolute; inset: 12px; border-radius: 50%;
+  border: 1px solid rgba(110,231,183,0.1);
+  border-top-color: rgba(110,231,183,0.4);
+  animation: spin 1.8s linear infinite reverse;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.scan-domain { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.scan-status { font-size: 14px; color: var(--slate); margin-bottom: 32px; }
+.scan-steps { display: flex; flex-direction: column; gap: 8px; max-width: 340px; margin: 0 auto; }
+.scan-step {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: 8px;
+  background: var(--navy-mid); border: 0.5px solid var(--border);
+  font-size: 13px; color: var(--slate); transition: all .3s;
+}
+.scan-step.done { border-color: rgba(5,150,105,0.3); background: var(--green-bg); color: var(--white); }
+.scan-step.active { border-color: rgba(110,231,183,0.3); color: var(--mint); }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--navy-light); flex-shrink: 0; }
+.step-dot.done { background: var(--green); }
+.step-dot.active { background: var(--mint); animation: pulse2 1s ease-in-out infinite; }
+@keyframes pulse2 { 0%,100%{opacity:1} 50%{opacity:.3} }
+.scan-bar-wrap { width: 300px; height: 4px; background: var(--navy-mid); border-radius: 2px; margin: 24px auto 0; overflow: hidden; }
+.scan-bar-fill { height: 100%; background: var(--mint); border-radius: 2px; width: 0%; transition: width .4s ease; }
+
+/* SCREEN 3 — EMAIL GATE */
+#s-gate { text-align: center; }
+.gate-card {
+  background: var(--navy-mid); border: 0.5px solid var(--border);
+  border-radius: 20px; padding: 40px 36px;
+  max-width: 480px; width: 100%;
+}
+.gate-score-preview {
+  width: 100px; height: 100px; border-radius: 50%;
+  border: 3px solid var(--amber);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 0 auto 24px;
+  background: rgba(245,158,11,0.06);
+}
+.gate-num { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: var(--amber); line-height: 1; }
+.gate-denom { font-size: 13px; color: var(--slate); }
+.gate-h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+.gate-sub { font-size: 14px; color: var(--slate); margin-bottom: 24px; line-height: 1.6; }
+.gate-preview-bars { margin-bottom: 24px; }
+.gpb-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.gpb-label { font-size: 12px; color: var(--slate); min-width: 140px; text-align: left; }
+.gpb-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.gpb-fill { height: 100%; border-radius: 3px; }
+.gpb-val { font-size: 12px; font-weight: 500; min-width: 32px; text-align: right; }
+.gate-blur-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px; opacity: .4;
+  filter: blur(3px);
+}
+.gate-divider { border: none; border-top: 0.5px solid var(--border); margin: 16px 0; }
+.gate-form { display: flex; flex-direction: column; gap: 10px; }
+.gate-input {
+  background: var(--navy); border: 0.5px solid rgba(255,255,255,0.12);
+  color: var(--white); border-radius: 10px; padding: 12px 14px;
+  font-size: 15px; font-family: 'Inter', sans-serif; outline: none;
+  transition: border-color .2s;
+}
+.gate-input:focus { border-color: var(--mint); }
+.gate-input::placeholder { color: var(--slate); }
+.gate-btn {
+  background: var(--mint); color: var(--navy);
+  border: none; border-radius: 10px; padding: 14px;
+  font-size: 15px; font-weight: 600; font-family: 'Inter', sans-serif;
+  cursor: pointer; transition: opacity .2s;
+}
+.gate-btn:hover { opacity: .9; }
+.gate-micro { font-size: 11px; color: var(--slate); margin-top: 6px; }
+
+/* SCREEN 4 — REPORT */
+#s-report { align-items: stretch; padding: 32px; max-width: 900px; margin: 0 auto; width: 100%; justify-content: flex-start; }
+.report-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
+.report-title-area h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
+.report-title-area p { font-size: 14px; color: var(--slate); }
+.report-score-big {
+  text-align: center; background: var(--navy-mid);
+  border-radius: 16px; padding: 20px 28px;
+  border: 0.5px solid var(--border);
+}
+.rsb-num { font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800; color: var(--amber); line-height: 1; }
+.rsb-label { font-size: 12px; color: var(--slate); margin-top: 4px; }
+.rsb-badge { display: inline-block; background: var(--amber-bg); color: var(--amber); font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-top: 6px; }
+
+.report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
+.metric-card {
+  background: var(--navy-mid); border-radius: 12px; padding: 20px;
+  border: 0.5px solid var(--border); transition: border-color .2s;
+}
+.mc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.mc-name { font-size: 13px; font-weight: 500; }
+.mc-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+.badge-red { background: var(--red-bg); color: var(--red); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); }
+.badge-green { background: var(--green-bg); color: var(--green); }
+.mc-bar-wrap { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+.mc-bar { height: 100%; border-radius: 4px; transition: width 1.5s ease; }
+.mc-score { font-size: 22px; font-weight: 600; }
+.mc-sub { font-size: 12px; color: var(--slate); margin-top: 2px; }
+
+.issues-section { margin-bottom: 24px; }
+.issues-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.issues-list { display: flex; flex-direction: column; gap: 8px; }
+.issue-item {
+  background: var(--navy-mid); border-radius: 10px; padding: 14px 16px;
+  border: 0.5px solid var(--border); display: flex; gap: 12px; align-items: flex-start;
+}
+.issue-sev { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.issue-text h4 { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+.issue-text p { font-size: 12px; color: var(--slate); line-height: 1.5; }
+.issue-impact { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 10px; align-self: flex-start; flex-shrink: 0; margin-left: auto; }
+
+.cta-report {
+  background: linear-gradient(135deg, rgba(5,150,105,0.12), rgba(110,231,183,0.05));
+  border: 0.5px solid rgba(110,231,183,0.2);
+  border-radius: 16px; padding: 32px; text-align: center;
+}
+.cta-report h3 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+.cta-report p { font-size: 14px; color: var(--slate); margin-bottom: 24px; }
+.cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.btn-main { background: var(--mint); color: var(--navy); padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; border: none; cursor: pointer; transition: opacity .2s; }
+.btn-main:hover { opacity: .9; }
+.btn-ghost { background: transparent; border: 0.5px solid rgba(255,255,255,0.2); color: var(--white); padding: 14px 24px; border-radius: 10px; font-size: 14px; cursor: pointer; transition: border-color .2s; }
+.btn-ghost:hover { border-color: rgba(255,255,255,0.4); }
+
+@media (max-width: 640px) {
+  .report-grid { grid-template-columns: 1fr; }
+  #s-report { padding: 20px 16px; }
+  .gate-card { padding: 28px 20px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition-duration: 0ms !important; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Rank<span>Mind</span></div>
+  <span class="nav-sep">|</span>
+  <span class="nav-tool">Auditoría SEO Gratuita</span>
+</nav>
+
+<!-- SCREEN 1: URL INPUT -->
+<div class="screen active" id="s-input">
+  <p class="hero-label">Gratis · Sin registro · 60 segundos</p>
+  <h1>Descubrí por qué tu web no <span>rankea</span> donde debería</h1>
+  <p class="sub">Analizamos más de 80 factores SEO y te decimos exactamente qué está fallando.</p>
+
+  <div class="input-card">
+    <div class="input-row">
+      <label class="input-label">Ingresá la URL de tu web</label>
+      <input type="url" class="url-input" id="url-field" placeholder="https://tudominio.com" autofocus>
+      <button class="scan-btn" id="scan-btn" onclick="startScan()">Analizar mi web gratis →</button>
+    </div>
+    <p class="input-micro">Resultado completo en menos de 60 segundos</p>
+  </div>
+
+  <div class="trust-row">
+    <div class="trust-item"><div class="trust-dot"></div>Sin tarjeta de crédito</div>
+    <div class="trust-item"><div class="trust-dot"></div>Sin instalar nada</div>
+    <div class="trust-item"><div class="trust-dot"></div>+1.200 webs analizadas</div>
+  </div>
+</div>
+
+<!-- SCREEN 2: SCANNING -->
+<div class="screen" id="s-scanning">
+  <div class="scan-logo">Rank<span>Mind</span></div>
+  <div class="scan-circle"><div class="scan-circle-inner"></div></div>
+  <div class="scan-domain" id="scan-domain-text">tudominio.com</div>
+  <div class="scan-status" id="scan-status-text">Iniciando análisis...</div>
+
+  <div class="scan-steps" id="scan-steps">
+    <div class="scan-step" id="ss-0"><div class="step-dot"></div>Rastreando estructura del sitio</div>
+    <div class="scan-step" id="ss-1"><div class="step-dot"></div>Analizando velocidad y Core Web Vitals</div>
+    <div class="scan-step" id="ss-2"><div class="step-dot"></div>Verificando metadatos y schema markup</div>
+    <div class="scan-step" id="ss-3"><div class="step-dot"></div>Evaluando visibilidad para IAs</div>
+    <div class="scan-step" id="ss-4"><div class="step-dot"></div>Calculando score y generando informe</div>
+  </div>
+
+  <div class="scan-bar-wrap">
+    <div class="scan-bar-fill" id="scan-bar"></div>
+  </div>
+</div>
+
+<!-- SCREEN 3: EMAIL GATE -->
+<div class="screen" id="s-gate">
+  <div class="gate-card">
+    <div class="gate-score-preview">
+      <div class="gate-num" id="gate-score">34</div>
+      <div class="gate-denom">/100</div>
+    </div>
+    <h2 class="gate-h2">Tu score SEO es <span id="gate-score-inline" style="color:var(--amber)">34/100</span></h2>
+    <p class="gate-sub">Encontramos <strong id="gate-issues">12 problemas</strong> que están limitando tu posicionamiento. Acá está el adelanto:</p>
+
+    <div class="gate-preview-bars">
+      <div class="gpb-row">
+        <span class="gpb-label">Velocidad de carga</span>
+        <div class="gpb-bar"><div class="gpb-fill" style="width:28%; background:var(--red)"></div></div>
+        <span class="gpb-val" style="color:var(--red)">28%</span>
+      </div>
+      <div class="gpb-row">
+        <span class="gpb-label">Estructura de contenido</span>
+        <div class="gpb-bar"><div class="gpb-fill" style="width:51%; background:var(--amber)"></div></div>
+        <span class="gpb-val" style="color:var(--amber)">51%</span>
+      </div>
+      <div class="gpb-row">
+        <span class="gpb-label">Metadatos y schema</span>
+        <div class="gpb-bar"><div class="gpb-fill" style="width:19%; background:var(--red)"></div></div>
+        <span class="gpb-val" style="color:var(--red)">19%</span>
+      </div>
+      <div class="gate-blur-row">
+        <span class="gpb-label">Visibilidad en IAs</span>
+        <div class="gpb-bar" style="flex:1; height:6px; background:rgba(255,255,255,.06); border-radius:3px"></div>
+        <span style="font-size:12px">🔒</span>
+      </div>
+      <div class="gate-blur-row">
+        <span class="gpb-label">Backlinks y autoridad</span>
+        <div class="gpb-bar" style="flex:1; height:6px; background:rgba(255,255,255,.06); border-radius:3px"></div>
+        <span style="font-size:12px">🔒</span>
+      </div>
+    </div>
+
+    <hr class="gate-divider">
+
+    <p style="font-size:13px; font-weight:500; margin-bottom:12px;">Ingresá tu email para ver el informe completo gratuito</p>
+    <div class="gate-form">
+      <input type="text" class="gate-input" id="gate-name" placeholder="Tu nombre">
+      <input type="email" class="gate-input" id="gate-email" placeholder="tu@email.com" required>
+      <button class="gate-btn" onclick="showReport()">Ver mi informe completo →</button>
+    </div>
+    <p class="gate-micro">Sin spam. Podés desuscribirte cuando quieras.</p>
+  </div>
+</div>
+
+<!-- SCREEN 4: FULL REPORT -->
+<div class="screen" id="s-report">
+  <div class="report-header">
+    <div class="report-title-area">
+      <h2>Informe de auditoría SEO</h2>
+      <p id="report-domain-label">tudominio.com · Generado por RankMind</p>
+    </div>
+    <div class="report-score-big">
+      <div class="rsb-num">34</div>
+      <div class="rsb-label">Score SEO global</div>
+      <div class="rsb-badge">Crítico — acción urgente</div>
+    </div>
+  </div>
+
+  <div class="report-grid">
+    <div class="metric-card">
+      <div class="mc-header">
+        <span class="mc-name">Velocidad de carga</span>
+        <span class="mc-badge badge-red">Crítico</span>
+      </div>
+      <div class="mc-bar-wrap"><div class="mc-bar" style="width:0%; background:var(--red)" id="bar-vel"></div></div>
+      <div class="mc-score" style="color:var(--red)">28<span style="font-size:14px; color:var(--slate)">/100</span></div>
+      <div class="mc-sub">LCP: 6.2s · CLS: 0.28 · FID: 340ms · Tiempo de carga 53% por encima del umbral de Google</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="mc-header">
+        <span class="mc-name">Metadatos y schema</span>
+        <span class="mc-badge badge-red">Crítico</span>
+      </div>
+      <div class="mc-bar-wrap"><div class="mc-bar" style="width:0%; background:var(--red)" id="bar-meta"></div></div>
+      <div class="mc-score" style="color:var(--red)">19<span style="font-size:14px; color:var(--slate)">/100</span></div>
+      <div class="mc-sub">0 páginas con schema markup · 7 titles duplicados · 3 meta descriptions vacías</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="mc-header">
+        <span class="mc-name">Estructura de contenido</span>
+        <span class="mc-badge badge-amber">Mejorable</span>
+      </div>
+      <div class="mc-bar-wrap"><div class="mc-bar" style="width:0%; background:var(--amber)" id="bar-cont"></div></div>
+      <div class="mc-score" style="color:var(--amber)">51<span style="font-size:14px; color:var(--slate)">/100</span></div>
+      <div class="mc-sub">Estructura H1/H2 inconsistente · Densidad de keywords baja en páginas clave</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="mc-header">
+        <span class="mc-name">Visibilidad en IAs</span>
+        <span class="mc-badge badge-red">Crítico</span>
+      </div>
+      <div class="mc-bar-wrap"><div class="mc-bar" style="width:0%; background:var(--red)" id="bar-ai"></div></div>
+      <div class="mc-score" style="color:var(--red)">12<span style="font-size:14px; color:var(--slate)">/100</span></div>
+      <div class="mc-sub">Sin FAQ estructurado · Sin datos de negocio legibles para IAs · Contenido no citable</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="mc-header">
+        <span class="mc-name">Backlinks y autoridad</span>
+        <span class="mc-badge badge-amber">Mejorable</span>
+      </div>
+      <div class="mc-bar-wrap"><div class="mc-bar" style="width:0%; background:var(--amber)" id="bar-back"></div></div>
+      <div class="mc-score" style="color:var(--amber)">44<span style="font-size:14px; color:var(--slate)">/100</span></div>
+      <div class="mc-sub">DA: 18 · 24 backlinks · 6 dominios referentes · Sin links desde medios del sector</div>
+    </div>
+
+    <div class="metric-card">
+      <div class="mc-header">
+        <span class="mc-name">Mobile & UX</span>
+        <span class="mc-badge badge-amber">Mejorable</span>
+      </div>
+      <div class="mc-bar-wrap"><div class="mc-bar" style="width:0%; background:var(--mint)" id="bar-mob"></div></div>
+      <div class="mc-score" style="color:var(--mint)">62<span style="font-size:14px; color:var(--slate)">/100</span></div>
+      <div class="mc-sub">Responsive: sí · Imágenes sin lazy loading · CTAs poco visibles en mobile</div>
+    </div>
+  </div>
+
+  <div class="issues-section">
+    <div class="issues-title">
+      🔴 <span>Problemas críticos que necesitan acción inmediata</span>
+    </div>
+    <div class="issues-list">
+      <div class="issue-item">
+        <div class="issue-sev" style="background:var(--red)"></div>
+        <div class="issue-text">
+          <h4>Sin schema markup en ninguna página</h4>
+          <p>Google y ChatGPT no pueden entender el tipo de negocio, servicios o ubicación. Impacto estimado: -35% en visibilidad local y -60% en citabilidad por IAs.</p>
+        </div>
+        <span class="issue-impact badge-red">Alto impacto</span>
+      </div>
+      <div class="issue-item">
+        <div class="issue-sev" style="background:var(--red)"></div>
+        <div class="issue-text">
+          <h4>Tiempo de carga: 6.2 segundos</h4>
+          <p>Google penaliza webs con más de 3 segundos. Estás perdiendo el 53% de los visitantes antes de que cargue la página. Solución: optimización de imágenes y caché.</p>
+        </div>
+        <span class="issue-impact badge-red">Alto impacto</span>
+      </div>
+      <div class="issue-item">
+        <div class="issue-sev" style="background:var(--red)"></div>
+        <div class="issue-text">
+          <h4>7 páginas con meta titles duplicados</h4>
+          <p>Google no puede distinguir el contenido de cada página. Las páginas compiten entre sí en vez de complementarse.</p>
+        </div>
+        <span class="issue-impact badge-red">Alto impacto</span>
+      </div>
+      <div class="issue-item">
+        <div class="issue-sev" style="background:var(--amber)"></div>
+        <div class="issue-text">
+          <h4>Sin FAQ estructurado para IAs</h4>
+          <p>Las IAs priorizan contenido en formato pregunta-respuesta para sus respuestas. Sin esto, tu competidor te reemplaza en cada consulta relacionada a tu rubro.</p>
+        </div>
+        <span class="issue-impact badge-amber">Impacto medio</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-report">
+    <h3>¿Querés que RankMind solucione todo esto automáticamente?</h3>
+    <p>Nuestros agentes IA generan la versión optimizada de tu web con todos estos problemas corregidos. Sin código, sin consultores.</p>
+    <div class="cta-btns">
+      <button class="btn-main" onclick="openTrial()">Empezar prueba gratuita 14 días →</button>
+      <button class="btn-ghost" onclick="window.print()">Descargar informe PDF</button>
+    </div>
+    <p style="font-size:12px; color:var(--slate); margin-top:14px">Sin tarjeta de crédito · Cancelás cuando quieras · Garantía 30 días</p>
+  </div>
+</div>
+
+<script>
+let scannedDomain = '';
+
+function startScan() {
+  const val = document.getElementById('url-field').value.trim();
+  if (!val) { document.getElementById('url-field').focus(); return; }
+  scannedDomain = val.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  document.getElementById('scan-domain-text').textContent = scannedDomain;
+  showScreen('s-scanning');
+  runScanAnimation();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = '';
+  });
+  document.getElementById(id).classList.add('active');
+  document.getElementById(id).style.display = 'flex';
+}
+
+function runScanAnimation() {
+  const steps = [
+    { status: 'Rastreando páginas del sitio...', pct: 20 },
+    { status: 'Analizando velocidad y Core Web Vitals...', pct: 40 },
+    { status: 'Verificando metadatos y schema markup...', pct: 60 },
+    { status: 'Evaluando visibilidad en IAs...', pct: 80 },
+    { status: 'Generando informe completo...', pct: 100 },
+  ];
+
+  steps.forEach((s, i) => {
+    setTimeout(() => {
+      document.getElementById('scan-status-text').textContent = s.status;
+      document.getElementById('scan-bar').style.width = s.pct + '%';
+
+      const el = document.getElementById('ss-' + i);
+      const dot = el.querySelector('.step-dot');
+      if (i > 0) {
+        const prev = document.getElementById('ss-' + (i - 1));
+        prev.classList.remove('active');
+        prev.classList.add('done');
+        prev.querySelector('.step-dot').classList.remove('active');
+        prev.querySelector('.step-dot').classList.add('done');
+      }
+      el.classList.add('active');
+      dot.classList.add('active');
+
+      if (i === steps.length - 1) {
+        setTimeout(() => {
+          el.classList.remove('active'); el.classList.add('done');
+          dot.classList.remove('active'); dot.classList.add('done');
+          document.getElementById('gate-score').textContent = '34';
+          document.getElementById('gate-score-inline').textContent = '34/100';
+          document.getElementById('gate-issues').textContent = '12 problemas';
+          showScreen('s-gate');
+        }, 800);
+      }
+    }, i * 900 + 400);
+  });
+}
+
+function showReport() {
+  const email = document.getElementById('gate-email').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('gate-email').focus();
+    document.getElementById('gate-email').style.borderColor = 'var(--red)';
+    setTimeout(() => { document.getElementById('gate-email').style.borderColor = ''; }, 2000);
+    return;
+  }
+  document.getElementById('report-domain-label').textContent = scannedDomain + ' · Generado por RankMind';
+  showScreen('s-report');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  setTimeout(() => {
+    document.getElementById('bar-vel').style.width = '28%';
+    document.getElementById('bar-meta').style.width = '19%';
+    document.getElementById('bar-cont').style.width = '51%';
+    document.getElementById('bar-ai').style.width = '12%';
+    document.getElementById('bar-back').style.width = '44%';
+    document.getElementById('bar-mob').style.width = '62%';
+  }, 300);
+}
+
+function openTrial() {
+  alert('Redirigiendo al registro del trial gratuito...\n\n(Conectar con la URL de registro de RankMind)');
+}
+
+document.getElementById('url-field').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') startScan();
+});
+</script>
+</body>
+</html>
