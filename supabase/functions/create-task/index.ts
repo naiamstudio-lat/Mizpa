@@ -218,13 +218,25 @@ serve(async (req) => {
     const callbackUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/task-callback`
     const taskId = task.id
 
+    // Read Cloudflare credentials at task level (visible in response)
+    const cfAccountId = Deno.env.get('CLOUDFLARE_ACCOUNT_ID')
+    const cfApiToken = Deno.env.get('CLOUDFLARE_API_TOKEN')
+    const cfStatus = cfAccountId && cfApiToken ? 'SET' : 'MISSING'
+
     ;(async () => {
       try {
         // Signal starting
         await vm.exec(`curl -s -X POST "${callbackUrl}" -H "Content-Type: application/json" -d '{"taskId":"${taskId}","status":"running","results":[{"type":"log","content":{"message":"Starting ${skill} on ${url}..."}}]}'`)
 
         // Run the agent via entrypoint script (pre-installed in snapshot)
+        console.log(`Cloudflare creds: account=${cfAccountId ? 'SET:' + cfAccountId.slice(0,6) + '...' : 'UNDEFINED'}, token=${cfApiToken ? 'SET:' + cfApiToken.slice(0,6) + '...' : 'UNDEFINED'}`)
+        const envPrefix = cfAccountId && cfApiToken ? [
+          `CLOUDFLARE_ACCOUNT_ID="${cfAccountId}"`,
+          `CLOUDFLARE_API_TOKEN="${cfApiToken}"`,
+        ].join(' ') + ' ' : ''
+
         const agentCmd = [
+          envPrefix,
           'bash /opt/mizpa/agent.sh',
           `"${skill}"`,
           `"${url}"`,
@@ -252,7 +264,7 @@ serve(async (req) => {
     })()
 
     return new Response(
-      JSON.stringify({ taskId: task.id, vmId, status: 'running', message: 'Task created, VM provisioning from snapshot started' }),
+      JSON.stringify({ taskId: task.id, vmId, status: 'running', cfStatus, message: 'Task created, VM provisioning from snapshot started' }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
