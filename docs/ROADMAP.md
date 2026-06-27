@@ -1,102 +1,102 @@
 # Mizpa Roadmap
 
-Este documento describe los próximos pasos para el desarrollo de Mizpa, manteniendo el enfoque en el objetivo actual del producto y la estabilidad de la rama `main` mediante CI y tests.
+This document outlines the next steps for Mizpa development, keeping the focus on the current product goal and the stability of the `main` branch through CI and tests.
 
-## Visión del proyecto
+## Project vision
 
-Mizpa es un agente de IA que:
-- audita sitios web para SEO y geolocalización,
-- genera réplicas modernas en React + Tailwind,
-- despliega código a Cloudflare Pages de forma controlada.
+Mizpa is an AI agent that:
+- audits websites for SEO and geo-localization,
+- generates modern React + Tailwind replicas,
+- deploys code to Cloudflare Pages in a controlled way.
 
-El objetivo inmediato es construir una herramienta que permita a freelancers, equipos de desarrollo y emprendedores modernizar sitios web existentes con un flujo reproducible y con las garantías de calidad que brinda un pipeline de pruebas.
+The immediate goal is to build a tool that allows freelancers, development teams, and entrepreneurs to modernize existing websites with a reproducible flow and the quality guarantees provided by a test pipeline.
 
-## Estado actual
+## Current status
 
-Basado en el repositorio actual:
-- Frontend en Vite + React 19 + TypeScript + Tailwind
-- Backend en Supabase (Auth, Postgres, Edge Functions)
-- E2E con Puppeteer
-- CI en GitHub Actions con una rama `main` protegida
-- Auto-merge configurado para PRs `main` con etiqueta `automerge`
-- Deploy controlado a Cloudflare Pages desde `release/**`
+Based on the current repository:
+- Frontend using Vite + React 19 + TypeScript + Tailwind
+- Backend using Supabase (Auth, Postgres, Edge Functions)
+- E2E tests with Puppeteer
+- CI in GitHub Actions with a protected `main` branch
+- Auto-merge configured for PRs to `main` with the `automerge` label
+- Controlled deploys to Cloudflare Pages from `release/**`
 
-## Principales áreas de trabajo
+## Main work areas
 
-### 1. Estabilidad del flujo CI
+### 1. CI flow stability
 
-Prioridad:
-- `main` debe ser siempre estable.
-- Los cambios ingresan mediante PRs.
-- Todos los PRs deben pasar el workflow `CI` antes de merge.
-- El `automerge` solo se aplica a PRs hacia `main` con etiqueta `automerge`.
+Priority:
+- `main` must always remain stable.
+- Changes must enter through PRs.
+- All PRs must pass the `CI` workflow before merging.
+- Auto-merge only applies to PRs targeting `main` with the `automerge` label.
 
-Próximos pasos:
-- mantener y ampliar los tests E2E para cubrir rutas clave.
-- garantizar que el preview server arranque correctamente en CI.
-- documentar y validar el flujo de `CI` + `Auto-merge`.
+Next steps:
+- maintain and expand E2E tests to cover key routes.
+- ensure the preview server starts correctly in CI.
+- document and validate the `CI` + `Auto-merge` flow.
 
-### 2. Cobertura de pruebas y calidad
+### 2. Test coverage and quality
 
-Prioridad:
-- continuar agregando tests que cubran el funcionamiento real de la app.
-- usar el pipeline para validar la experiencia usuario y la integración con Supabase.
+Priority:
+- continue adding tests that cover the real behavior of the app.
+- use the pipeline to validate the user experience and Supabase integration.
 
-Próximos pasos:
-- crear o mejorar tests para los flujos de autenticación.
-- agregar tests para la lógica de creación de tareas y navegación de la app.
-- asegurar que el `README` y la documentación de desarrollo incluyan cómo ejecutar pruebas locales.
+Next steps:
+- create or improve tests for authentication flows.
+- add tests for task creation logic and app navigation.
+- ensure `README` and development docs include how to run tests locally.
 
-### 3. Desarrollo de producto
+### 3. Product development
 
-Prioridad:
-- consolidar las tres habilidades centrales: `audit`, `generate` y `replica`.
-- evitar que el desarrollo se desvíe de la propuesta de valor: modernizar sitios web existentes.
+Priority:
+- consolidate the core skills: `audit`, `generate`, and `replica`.
+- avoid drifting away from the value proposition: modernizing existing websites.
 
-Próximos pasos:
-- estabilizar la experiencia del auditor SEO/GEO.
-- asegurar que la generación de réplicas React+Tailwind produzca código legible y utilizable.
-- validar el deploy controlado a Cloudflare Pages desde ramas `release/*`.
+Next steps:
+- stabilize the SEO/GEO audit experience.
+- ensure React + Tailwind replica generation produces readable, usable code.
+- validate controlled deploys to Cloudflare Pages from `release/*` branches.
 
-### 4. Procesos y gobernanza
+### 4. Processes and governance
 
-Prioridad:
-- tener reglas claras de rama y PR.
-- documentar los criterios para `main`, `develop`, `release/*` y `hotfix/*`.
+Priority:
+- maintain clear branch and PR rules.
+- document the criteria for `main`, `develop`, `release/*`, and `hotfix/*`.
 
-Próximos pasos:
-- mantener `CONTRIBUTING.md` actualizado con el proceso de auto-merge.
-- usar `BRANCH_STRATEGY.md` como referencia para colaboradores.
-- reforzar que `main` solo se actualiza con PRs aprobados y CI exitoso.
+Next steps:
+- keep `CONTRIBUTING.md` updated with the auto-merge process.
+- use `BRANCH_STRATEGY.md` as a reference for collaborators.
+- reinforce that `main` only updates through approved PRs with successful CI.
 
-## Roadmap táctico
+## Tactical roadmap
 
-### Corto plazo (1-2 sprints)
+### Short term (1-2 sprints)
 
-- fijar el pipeline `CI` y confirmar su estabilidad.
-- cubrir los flujos críticos con E2E: login, dashboard, playground, task.
-- validar el auto-merge en PRs hacia `main`.
-- publicar `docs/ROADMAP.md` y mantener `CONTRIBUTING.md` coherente.
+- stabilize the `CI` pipeline and confirm its reliability.
+- cover critical flows with E2E tests: login, dashboard, playground, task.
+- validate auto-merge for PRs targeting `main`.
+- publish `docs/ROADMAP.md` and keep `CONTRIBUTING.md` consistent.
 
-### Mediano plazo (3-5 sprints)
+### Mid term (3-5 sprints)
 
-- mejorar la cobertura de tests y mantener un entorno reproducible.
-- refinar el agente `audit` para ofrecer resultados más útiles.
-- automatizar despliegues controlados desde `release/**`.
-- garantizar que cualquier ajuste en CI sea pequeño y seguro.
+- improve test coverage and maintain a reproducible environment.
+- refine the `audit` skill to deliver more useful results.
+- automate controlled deploys from `release/**`.
+- ensure any CI adjustments remain small and safe.
 
-### Largo plazo
+### Long term
 
-- extender la generación de réplicas a más tipos de sitios.
-- integrar mejores capacidades de análisis de diseño y contenido.
-- convertir a Mizpa en una herramienta confiable para migraciones de sitios existentes.
+- extend replica generation to more site types.
+- integrate better design and content analysis capabilities.
+- make Mizpa a reliable tool for migrating existing websites.
 
-## Cómo usar este roadmap
+## How to use this roadmap
 
-- Cualquier cambio mayor debe ser planificado en una rama feature y revisado.
-- Los issues y PRs deben mapearse a los objetivos de corto o mediano plazo.
-- El objetivo principal es que cada avance pase por CI y que `main` permanezca estable.
+- Any major change should be planned in a feature branch and reviewed.
+- Issues and PRs should map to short-term or mid-term objectives.
+- The primary goal is that every advancement passes CI and keeps `main` stable.
 
 ---
 
-> Nota: este roadmap está alineado con el estado actual descrito en `README.md`, `CONTRIBUTING.md` y los workflows de GitHub Actions presentes en el repositorio.
+> Note: this roadmap is aligned with the current state described in `README.md`, `CONTRIBUTING.md`, and the GitHub Actions workflows in the repository.
