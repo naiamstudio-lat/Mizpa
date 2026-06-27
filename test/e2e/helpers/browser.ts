@@ -10,9 +10,11 @@ export interface TestContext {
 }
 
 export async function setupBrowser(): Promise<TestContext> {
+  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser';
+
   const browser = await puppeteer.launch({
     headless: HEADLESS ? 'new' : false,
-    executablePath: '/home/codespace/.cache/puppeteer/chrome/linux-120.0.6099.109/chrome-linux64/chrome',
+    executablePath,
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
