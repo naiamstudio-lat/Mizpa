@@ -1,6 +1,7 @@
 import puppeteer, { type Browser, type Page } from 'puppeteer';
+import { getBaseUrl } from './config';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+const BASE_URL = getBaseUrl();
 const HEADLESS = process.env.HEADLESS !== 'false';
 
 export interface TestContext {
@@ -46,7 +47,4 @@ export async function screenshot(ctx: TestContext, name: string) {
   return path;
 }
 
-export const TEST_USER = {
-  email: 'test@mizpa.dev',
-  password: 'Test123456',
-};
+export { getTestUser as getTestUserConfig } from './config';

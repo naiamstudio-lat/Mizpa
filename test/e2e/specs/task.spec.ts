@@ -1,6 +1,9 @@
 import type { TestSuite } from '../helpers/runner';
 import { LoginPage, PlaygroundPage } from '../pages';
-import { TEST_USER } from '../helpers/browser';
+import { getTestUserConfig } from '../helpers/browser';
+import { getBaseUrl } from '../helpers/config';
+
+const TEST_USER = getTestUserConfig();
 
 export const taskSuite: TestSuite = {
   name: 'Task Creation Flow',
@@ -73,7 +76,7 @@ export const taskSuite: TestSuite = {
         await freshPage.setViewport({ width: 1280, height: 720 });
 
         // Navigate to playground directly (no auth)
-        await freshPage.goto('http://localhost:5173/playground?skill=replica', { waitUntil: 'networkidle0' });
+        await freshPage.goto(`${getBaseUrl()}/playground?skill=replica`, { waitUntil: 'networkidle0' });
 
         // Wait for page to load
         await new Promise(r => setTimeout(r, 2000));

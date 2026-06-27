@@ -1,6 +1,8 @@
 import type { TestSuite } from '../helpers/runner';
 import { LoginPage, PlaygroundPage } from '../pages';
-import { TEST_USER } from '../helpers/browser';
+import { getTestUserConfig } from '../helpers/browser';
+
+const TEST_USER = getTestUserConfig();
 
 export const playgroundSuite: TestSuite = {
   name: 'Playground Skill Selection',

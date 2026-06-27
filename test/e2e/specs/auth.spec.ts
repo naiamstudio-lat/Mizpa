@@ -1,6 +1,9 @@
 import type { TestSuite } from '../helpers/runner';
 import { LoginPage, DashboardPage } from '../pages';
-import { TEST_USER } from '../helpers/browser';
+import { getTestUserConfig } from '../helpers/browser';
+import { getBaseUrl } from '../helpers/config';
+
+const TEST_USER = getTestUserConfig();
 
 export const authSuite: TestSuite = {
   name: 'Authentication Flow',
@@ -63,7 +66,7 @@ export const authSuite: TestSuite = {
         });
 
         // Navigate to dashboard - should redirect to login
-        await ctx.page.goto('http://localhost:5173/dashboard', { waitUntil: 'networkidle0' });
+        await ctx.page.goto(`${getBaseUrl()}/dashboard`, { waitUntil: 'networkidle0' });
 
         // Check URL is login (redirect may have already happened)
         const url = ctx.page.url();

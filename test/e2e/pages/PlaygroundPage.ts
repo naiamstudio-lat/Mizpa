@@ -1,12 +1,14 @@
 import type { Page } from 'puppeteer';
+import { getBaseUrl } from '../helpers/config';
 
 export class PlaygroundPage {
   constructor(private page: Page) {}
 
   async goto(skill?: string) {
+    const baseUrl = getBaseUrl();
     const url = skill
-      ? `http://localhost:5173/playground?skill=${skill}`
-      : 'http://localhost:5173/playground';
+      ? `${baseUrl}/playground?skill=${skill}`
+      : `${baseUrl}/playground`;
     await this.page.goto(url, { waitUntil: 'networkidle0' });
   }
 
