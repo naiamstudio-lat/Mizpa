@@ -10,6 +10,12 @@ export function DashboardPage() {
     navigate('/');
   };
 
+  const cards = [
+    { skill: 'audit', icon: '🔍', title: 'Auditoría', desc: 'Analizá cualquier sitio web en segundos' },
+    { skill: 'replica', icon: '⚡', title: 'Réplica', desc: 'Generá una versión optimizada en React' },
+    { skill: 'generate', icon: '📊', title: 'Generar', desc: 'Combiná auditoría + réplica + deploy' },
+  ];
+
   return (
     <div className="min-h-screen bg-navy">
       {/* Dashboard nav */}
@@ -42,21 +48,17 @@ export function DashboardPage() {
         <p className="text-slate mb-8">Bienvenido a Mizpa. Acá vas a poder auditar y mejorar tus sitios web.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-navy-mid border border-white/[0.08] rounded-xl p-6 hover:border-mint/20 transition-colors">
-            <div className="text-2xl mb-3">🔍</div>
-            <h3 className="text-lg font-semibold text-cream mb-1">Auditoría</h3>
-            <p className="text-sm text-slate">Analizá cualquier sitio web en segundos</p>
-          </div>
-          <div className="bg-navy-mid border border-white/[0.08] rounded-xl p-6 hover:border-mint/20 transition-colors">
-            <div className="text-2xl mb-3">⚡</div>
-            <h3 className="text-lg font-semibold text-cream mb-1">Réplica</h3>
-            <p className="text-sm text-slate">Generá una versión optimizada en React</p>
-          </div>
-          <div className="bg-navy-mid border border-white/[0.08] rounded-xl p-6 hover:border-mint/20 transition-colors">
-            <div className="text-2xl mb-3">📊</div>
-            <h3 className="text-lg font-semibold text-cream mb-1">Reportes</h3>
-            <p className="text-sm text-slate">Exportá informes detallados para clientes</p>
-          </div>
+          {cards.map((card) => (
+            <button
+              key={card.skill}
+              onClick={() => navigate(`/playground?skill=${card.skill}`)}
+              className="bg-navy-mid border border-white/[0.08] rounded-xl p-6 hover:border-mint/20 transition-colors text-left cursor-pointer"
+            >
+              <div className="text-2xl mb-3">{card.icon}</div>
+              <h3 className="text-lg font-semibold text-cream mb-1">{card.title}</h3>
+              <p className="text-sm text-slate">{card.desc}</p>
+            </button>
+          ))}
         </div>
       </div>
     </div>

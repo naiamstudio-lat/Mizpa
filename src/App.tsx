@@ -11,7 +11,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/playground" element={<PlaygroundPage />} />
+        <Route
+          path="/playground"
+          element={
+            <ProtectedRoute>
+              <PlaygroundPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/dashboard"
           element={

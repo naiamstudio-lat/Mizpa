@@ -1,11 +1,21 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { SkillSelector } from './SkillSelector';
 import { ChatInterface } from './ChatInterface';
-import type { Skill } from './skills';
+import { SKILLS, type Skill } from './skills';
 
 export function PlaygroundPage() {
+  const [searchParams] = useSearchParams();
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
+
+  // Pre-select skill from query params
+  useEffect(() => {
+    const skillId = searchParams.get('skill');
+    if (skillId) {
+      const skill = SKILLS.find(s => s.id === skillId);
+      if (skill) setSelectedSkill(skill);
+    }
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-navy flex flex-col">
