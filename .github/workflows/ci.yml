@@ -27,7 +27,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -41,5 +41,23 @@ jobs:
       - name: Run TypeScript build
         run: npm run build
 
+      - name: Start preview server
+        run: |
+          npm run preview -- --host 0.0.0.0 --port 5173 > /tmp/preview.log 2>&1 &
+          echo $! > /tmp/preview.pid
+          for i in $(seq 1 30); do
+            if curl -sSf http://127.0.0.1:5173 >/dev/null; then
+              echo "server ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/preview.log
+          exit 1
+
       - name: Run E2E suite
-        run: npm run test:e2e
+        run: PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser npm run test:e2e
+
+      - name: Stop preview server
+        if: always()
+        run: kill "$(cat /tmp/preview.pid)" || true
