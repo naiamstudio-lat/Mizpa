@@ -78,8 +78,10 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
     // If user is authenticated, use real API
     if (user) {
       try {
+        console.log('Creating task for skill:', skill.id, 'url:', input.trim());
         // Create task via Edge Function
         const { taskId, vmId } = await createTask(skill.id, input.trim());
+        console.log('Task created:', taskId, 'vmId:', vmId);
 
         // Add status message
         const statusMessage: Message = {

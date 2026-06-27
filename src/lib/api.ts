@@ -42,6 +42,8 @@ export async function createTask(
 ): Promise<CreateTaskResponse> {
   const { data: { session } } = await supabase.auth.getSession();
 
+  console.log('Session exists:', !!session, 'token length:', session?.access_token?.length || 0);
+
   if (!session) {
     throw new Error('Not authenticated');
   }
@@ -56,8 +58,11 @@ export async function createTask(
     body: JSON.stringify({ skill, url }),
   });
 
+  console.log('Response status:', response.status);
+
   if (!response.ok) {
     const error = await response.json();
+    console.log('Error response:', error);
     throw new Error(error.error || 'Failed to create task');
   }
 

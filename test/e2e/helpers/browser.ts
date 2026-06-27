@@ -1,6 +1,7 @@
 import puppeteer, { type Browser, type Page } from 'puppeteer';
+import { getBaseUrl } from './config';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173';
+const BASE_URL = getBaseUrl();
 const HEADLESS = process.env.HEADLESS !== 'false';
 
 export interface TestContext {
@@ -9,9 +10,9 @@ export interface TestContext {
 }
 
 export async function setupBrowser(): Promise<TestContext> {
-  const browser = await puppeteer.launch({
+  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+  const launchOptions: Record<string, unknown> = {
     headless: HEADLESS ? 'new' : false,
-    executablePath: '/home/codespace/.cache/puppeteer/chrome/linux-120.0.6099.109/chrome-linux64/chrome',
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -20,7 +21,18 @@ export async function setupBrowser(): Promise<TestContext> {
       '--disable-translate',
       '--disable-extensions',
     ],
-  });
+  };
+
+  if (executablePath) {
+    try {
+      const exists = await import('fs/promises').then(({ access }) => access(executablePath));
+      launchOptions.executablePath = executablePath;
+    } catch {
+      console.warn(`PUPPETEER_EXECUTABLE_PATH=${executablePath} is not accessible; falling back to bundled browser.`);
+    }
+  }
+
+  const browser = await puppeteer.launch(launchOptions);
 
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 720 });
@@ -46,7 +58,4 @@ export async function screenshot(ctx: TestContext, name: string) {
   return path;
 }
 
-export const TEST_USER = {
-  email: 'test@mizpa.dev',
-  password: 'Test123456',
-};
+export { getTestUser as getTestUserConfig } from './config';

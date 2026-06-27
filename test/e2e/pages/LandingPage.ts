@@ -1,10 +1,11 @@
 import type { Page } from 'puppeteer';
+import { getBaseUrl } from '../helpers/config';
 
 export class LandingPage {
   constructor(private page: Page) {}
 
   async goto() {
-    await this.page.goto('http://localhost:5173/', { waitUntil: 'networkidle0' });
+    await this.page.goto(`${getBaseUrl()}/`, { waitUntil: 'networkidle0' });
   }
 
   async getTitle(): Promise<string> {

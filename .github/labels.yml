@@ -1,0 +1,22 @@
+labels:
+  - name: automerge
+    color: 0e8a16
+    description: "Automatically merge PR into main when CI passes and requirements met"
+  - name: bug
+    color: d73a4a
+    description: "Something isn't working"
+  - name: enhancement
+    color: a2eeef
+    description: "New feature or request"
+  - name: documentation
+    color: 0075ca
+    description: "Improvements or additions to documentation"
+  - name: needs-review
+    color: f9d0c4
+    description: "Requires a review from maintainers"
+  - name: in-progress
+    color: c2e0c6
+    description: "Work in progress"
+  - name: ci-passed
+    color: 5319e7
+    description: "CI checks passed"

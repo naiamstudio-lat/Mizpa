@@ -1,10 +1,11 @@
 import type { Page } from 'puppeteer';
+import { getBaseUrl } from '../helpers/config';
 
 export class LoginPage {
   constructor(private page: Page) {}
 
   async goto() {
-    await this.page.goto('http://localhost:5173/login', { waitUntil: 'networkidle0' });
+    await this.page.goto(`${getBaseUrl()}/login`, { waitUntil: 'networkidle0' });
   }
 
   async fillEmail(email: string) {
