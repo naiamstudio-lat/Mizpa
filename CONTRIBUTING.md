@@ -13,15 +13,18 @@
 ## Pull request process
 
 - Open a PR against `develop` for regular work.
-- If the PR is ready to be merged directly into `main`, add the label `automerge` to request automatic merge after CI passes.
+- If a change is ready to land directly in `main`, target `main` and add the label `automerge`.
+- Do not push directly to `main`; all changes to `main` must go through a PR.
 - PRs must pass the GitHub Actions `CI` workflow before they will be considered for auto-merge.
 - At least one approval is required before merging to `main`.
+- Use the GitHub PR template to document the scope, tests, and labels.
 
 ## How auto-merge works
 
 - When the `CI` workflow completes successfully for a PR, the repository runs the `Auto-merge on CI success` workflow.
-- The workflow will try to merge PRs whose base is `main` and that have the `automerge` label applied.
-- If you want your PR to be auto-merged, make sure to target `main` and add the `automerge` label.
+- The workflow only merges PRs targeting `main` that also have the `automerge` label.
+- If your PR targets `develop`, do not add `automerge`.
+- If your PR targets `main`, add `automerge` only when it is ready to merge after review and CI passes.
 
 ## Keeping work visible
 
