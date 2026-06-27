@@ -43,4 +43,4 @@ Supabase secrets (set via `npx supabase secrets set`):
 
 ## License
 
-MIT
+Proprietary software by [Naiam Studio](https://naiamstudio.com). Exclusive use for Mizpa.
