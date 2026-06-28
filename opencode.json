@@ -1,0 +1,4 @@
+{
+  "info": "See AGENTS.md for agent instructions and integration details.",
+  "config_files": ["AGENTS.md", "opencode.json", ".opencode/"]
+}

@@ -1,0 +1,4 @@
+{
+  "commands_dir": ".claude/commands/",
+  "note": "See CLAUDE.md for agent instructions and examples. Do not store secrets in repo files."
+}

@@ -1,0 +1,3 @@
+# Codex CLI optional configuration. See AGENTS.md for guidance.
+[codex]
+config_file = "AGENTS.md"
