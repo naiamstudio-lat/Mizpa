@@ -1,0 +1,8 @@
+agent: OpenClaw
+files_read:
+  - AGENTS.md
+  - openclaw.yaml
+  - .openclaw/
+stores:
+  - .openclaw/
+notes: "Repository-level agent guidance available in AGENTS.md"
