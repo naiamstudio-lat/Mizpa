@@ -36,4 +36,8 @@
 - The project runs `CI` for PRs and pushes to `main` and `develop`.
 - Deploys to Cloudflare Pages are only performed via the `Deploy to Cloudflare Pages` workflow, which targets `release/**` branches or can be triggered manually.
 
+## Agent integrations
+
+- Repository-level guidance for automated agents lives in `AGENTS.md` at the repository root. Agents and automation tools should prefer reading `AGENTS.md` (and the files it references) instead of adding duplicate instructions in other files. This helps keep guidance consistent and centrally maintained.
+
 Thanks for contributing!
