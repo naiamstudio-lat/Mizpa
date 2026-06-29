@@ -4,6 +4,7 @@ import { authSuite } from './specs/auth.spec';
 import { dashboardSuite } from './specs/dashboard.spec';
 import { playgroundSuite } from './specs/playground.spec';
 import { taskSuite } from './specs/task.spec';
+import { vmManagementSuite } from './specs/vm-management.spec';
 
 async function main() {
   console.log('🧪 Mizpa E2E Tests');
@@ -16,6 +17,7 @@ async function main() {
     await runSuite(dashboardSuite, ctx);
     await runSuite(playgroundSuite, ctx);
     await runSuite(taskSuite, ctx);
+    await runSuite(vmManagementSuite, ctx);
   } finally {
     await teardownBrowser(ctx);
   }

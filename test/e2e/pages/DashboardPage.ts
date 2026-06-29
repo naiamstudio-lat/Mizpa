@@ -80,4 +80,36 @@ export class DashboardPage {
       return document.querySelector('h1') !== null;
     });
   }
+
+  async hasCleanupButton(): Promise<boolean> {
+    return this.page.evaluate(() => {
+      const buttons = document.querySelectorAll('button');
+      for (const btn of buttons) {
+        if (btn.textContent?.includes('Limpiar VMs inactivas')) return true;
+      }
+      return false;
+    });
+  }
+
+  async clickCleanup(): Promise<void> {
+    await this.page.evaluate(() => {
+      const buttons = document.querySelectorAll('button');
+      for (const btn of buttons) {
+        if (btn.textContent?.includes('Limpiar VMs inactivas')) {
+          btn.click();
+          return;
+        }
+      }
+      throw new Error('Cleanup button not found');
+    });
+  }
+
+  async getCleanupMessage(): Promise<string | null> {
+    // Wait a bit for the result message to appear
+    await new Promise(r => setTimeout(r, 2000));
+    return this.page.evaluate(() => {
+      const msgEl = document.querySelector('.bg-navy-mid.border-mint');
+      return msgEl ? msgEl.textContent?.trim() || null : null;
+    });
+  }
 }
