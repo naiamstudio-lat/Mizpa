@@ -98,6 +98,38 @@ export async function getTaskResults(taskId: string): Promise<TaskResult[]> {
 }
 
 /**
+ * Cleanup idle freestyle VMs
+ */
+export async function cleanupVms(force: boolean = false): Promise<{
+  status: string;
+  mode: string;
+  totalVms: number;
+  deleted: number;
+  skipped: number;
+  message: string;
+}> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not authenticated');
+
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/cleanup-vms`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ force }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to cleanup VMs');
+  }
+
+  return response.json();
+}
+
+/**
  * Poll task status until completion
  */
 export async function pollTaskStatus(

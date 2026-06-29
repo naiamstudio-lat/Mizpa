@@ -1,13 +1,30 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { cleanupVms } from '../../lib/api';
 
 export function DashboardPage() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [cleanupMsg, setCleanupMsg] = useState<string | null>(null);
+  const [cleaning, setCleaning] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const handleCleanup = async () => {
+    setCleaning(true);
+    setCleanupMsg(null);
+    try {
+      const result = await cleanupVms(false);
+      setCleanupMsg(result.message);
+    } catch (err) {
+      setCleanupMsg(err instanceof Error ? err.message : 'Error al limpiar VMs');
+    } finally {
+      setCleaning(false);
+    }
   };
 
   const cards = [
@@ -47,7 +64,7 @@ export function DashboardPage() {
         <h1 className="font-display text-3xl font-bold text-cream mb-2">Dashboard</h1>
         <p className="text-slate mb-8">Bienvenido a Mizpa. Acá vas a poder auditar y mejorar tus sitios web.</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
           {cards.map((card) => (
             <button
               key={card.skill}
@@ -59,6 +76,28 @@ export function DashboardPage() {
               <p className="text-sm text-slate">{card.desc}</p>
             </button>
           ))}
+        </div>
+
+        {/* Admin section */}
+        <div className="border-t border-white/[0.06] pt-8 mt-8">
+          <h2 className="font-display text-lg font-semibold text-cream mb-3">Administración</h2>
+          <p className="text-sm text-slate mb-4">
+            Gestioná los recursos de infraestructura activos.
+          </p>
+
+          {cleanupMsg && (
+            <div className="bg-navy-mid border border-mint/20 rounded-xl px-5 py-3 mb-4 text-sm text-cream">
+              {cleanupMsg}
+            </div>
+          )}
+
+          <button
+            onClick={handleCleanup}
+            disabled={cleaning}
+            className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-5 py-3 text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {cleaning ? 'Limpiando...' : 'Limpiar VMs inactivas'}
+          </button>
         </div>
       </div>
     </div>
