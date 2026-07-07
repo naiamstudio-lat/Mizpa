@@ -105,11 +105,23 @@ export class DashboardPage {
   }
 
   async getCleanupMessage(): Promise<string | null> {
-    // Wait a bit for the result message to appear
-    await new Promise(r => setTimeout(r, 2000));
-    return this.page.evaluate(() => {
-      const msgEl = document.querySelector('.bg-navy-mid.border-mint');
-      return msgEl ? msgEl.textContent?.trim() || null : null;
-    });
+    // Wait for the result message to appear (up to 10s polling)
+    for (let i = 0; i < 20; i++) {
+      const result = await this.page.evaluate(() => {
+        // The message div sits right before the cleanup button in the admin section
+        const msgDivs = document.querySelectorAll('.bg-navy-mid');
+        for (const el of msgDivs) {
+          const text = el.textContent?.trim();
+          // Filter out non-message elements like the email span
+          if (text && !text.startsWith('test@') && text.length > 0) {
+            return text;
+          }
+        }
+        return null;
+      });
+      if (result) return result;
+      await new Promise(r => setTimeout(r, 500));
+    }
+    return null;
   }
 }

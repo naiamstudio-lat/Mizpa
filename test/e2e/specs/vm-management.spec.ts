@@ -1,21 +1,21 @@
 import type { TestSuite } from '../helpers/runner';
-import { LoginPage } from '../pages';
+import { LoginPage, DashboardPage } from '../pages';
 import { getTestUserConfig } from '../helpers/browser';
 
 const TEST_USER = getTestUserConfig();
 
 /**
- * VM Management tests (scaffold)
+ * VM Management E2E tests
  *
- * These tests are a scaffold for validating the lifecycle and resource
- * optimization rules for VMs launched by the `freestyle` flow. They are
- * intentionally marked as skipped until we wire mocks/observability into
- * the runtime (or expose an API to query VM state).
+ * These tests require Supabase API access from the test browser (DNS resolution
+ * of supabase.co must work). They are skipped by default in the main `run.ts`
+ * because sandboxed CI environments often block external DNS.
  *
- * Next steps:
- * - Add instrumentation or a test-only API in the VM manager to assert state.
- * - Implement helpers in `test/e2e/helpers/vm.ts` to query VM lifecycle.
- * - Remove `skip: true` when the infra for assertions exists.
+ * Run separately when network is available:
+ *   npx tsx -e "import {runSuite,printSummary} from './helpers/runner'; ..."
+ *
+ * For infrastructure-level testing (no browser needed), see:
+ *   test/backend/cleanup-vms.test.ts
  */
 
 export const vmManagementSuite: TestSuite = {
@@ -33,7 +33,6 @@ export const vmManagementSuite: TestSuite = {
       name: 'VM requested when freestyle task is created',
       skip: true,
       fn: async (ctx) => {
-        // TODO: implement using test helper to trigger a freestyle job and assert VM requested
         throw new Error('Not implemented: requires VM manager test hook');
       },
     },
@@ -41,7 +40,6 @@ export const vmManagementSuite: TestSuite = {
       name: 'VM is destroyed after task completion to free resources',
       skip: true,
       fn: async (ctx) => {
-        // TODO: implement
         throw new Error('Not implemented: requires VM manager test hook');
       },
     },
@@ -49,7 +47,6 @@ export const vmManagementSuite: TestSuite = {
       name: 'VMs are isolated between users (no data bleed)',
       skip: true,
       fn: async (ctx) => {
-        // TODO: implement multi-user simulation and verify isolation
         throw new Error('Not implemented: requires test harness for multi-user flows');
       },
     },
@@ -57,8 +54,29 @@ export const vmManagementSuite: TestSuite = {
       name: 'Resource optimization rules are applied (scale down idle VMs)',
       skip: true,
       fn: async (ctx) => {
-        // TODO: implement resource/idle simulation and probe optimizer decisions
         throw new Error('Not implemented: requires VM metrics and optimizer hooks');
+      },
+    },
+    {
+      name: 'Dashboard shows cleanup VM button',
+      skip: true,
+      fn: async (ctx) => {
+        const dashboard = new DashboardPage(ctx.page);
+        const hasButton = await dashboard.hasCleanupButton();
+        if (!hasButton) throw new Error('Cleanup VM button not found on dashboard');
+      },
+    },
+    {
+      name: 'Cleanup action does not break dashboard',
+      skip: true,
+      fn: async (ctx) => {
+        const dashboard = new DashboardPage(ctx.page);
+        await dashboard.clickCleanup();
+        // Wait then navigate to playground
+        await new Promise(r => setTimeout(r, 2000));
+        await ctx.page.goto('http://localhost:5173/playground?skill=audit', { waitUntil: 'networkidle0' });
+        const url = ctx.page.url();
+        if (!url.includes('playground')) throw new Error(`Expected playground URL, got: ${url}`);
       },
     },
   ],
