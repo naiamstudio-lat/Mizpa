@@ -1,30 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChatMessage, type Message } from './ChatMessage';
 import { createTask, pollTaskStatus, getTaskResults } from '../../lib/api';
-import { useAuth } from '../../hooks/useAuth';
 import type { Skill } from './skills';
 
 interface ChatInterfaceProps {
   skill: Skill | null;
 }
 
-const MOCK_RESPONSES: Record<string, string[]> = {
-  replica: [
-    '🔍 Analizando la estructura del sitio...\n\n✅ HTML parseado correctamente\n✅ Assets identificados (CSS, JS, imágenes)\n✅ Estructura de navegación mapeada\n\n⏳ Generando componentes React...\n\n🏗️ **Réplica en progreso:**\n- Navbar → `Navbar.tsx`\n- Hero → `Hero.tsx`\n- Features → `Features.tsx`\n- Footer → `Footer.tsx`\n\n✅ Réplica generada. 4 componentes, 12 archivos totales.\n📁 Salida: `output/replica/`',
-    '🏗️ **Clonando sitio web**\n\nPaso 1/3: Descargando contenido HTML...\nPaso 2/3: Extrayendo design tokens (colores, tipografía, espaciado)...\nPaso 3/3: Generando arquitectura React + Tailwind...\n\n✅ **Réplica completada**\n- 6 componentes React generados\n- Estilos Tailwind extraídos del sitio original\n- Responsive design preserve\n- Listo para `npm run dev`',
-  ],
-  audit: [
-    '🔍 **Auditoría SEO + GEO**\n\n📊 **Puntuación general: 42/100**\n\n🔴 **Críticos (3):**\n- Meta title ausente en 4 páginas\n- Imágenes sin alt text (12 de 18)\n- Velocidad de carga: 4.2s (objetivo: <2s)\n\n🟡 **Advertencias (5):**\n- Heading hierarchy rota (H1 → H3)\n- Schema markup incompleto\n- URLs con parámetros de tracking indexables\n- Sitemap.xml desactualizado (última actualización: 8 meses)\n- Meta description duplicada en 3 páginas\n\n🟢 **Pasados (4):**\n- SSL activo\n- Robots.txt configurado\n- canonical tags presentes\n- Mobile-friendly test aprobado\n\n💡 **GEO (Generative Engine Optimization):**\n- Estructura semántica: ⚠️ Mejorable\n- Contenido para citación por IA: ❌ No optimizado\n- Schema FAQ: ❌ Ausente\n- Featured snippets potential: ⚠️ Bajo',
-    '🔍 **Análisis SEO completo**\n\n**Títulos y Meta:**\n- Title length: 28 chars (recomendado: 50-60)\n- Meta description: 0 de 8 páginas tienen description\n\n**Contenido:**\n- H1 tags: 3 duplicados, 2 ausentes\n- Thin content: 2 páginas con <300 palabras\n- Keywords principales: "servicios", "empresa", "contacto"\n\n**Técnico:**\n- Core Web Vitals: LCP 4.2s ❌ | FID 180ms ⚠️ | CLS 0.02 ✅\n- Broken links: 3 encontrados\n- Redirects: 2 cadenas de redirect\n\n**GEO (AI Optimization):**\n- Current AI visibility: Bajo\n- Recommended: Agregar schema FAQ, mejorar estructura semántica, crear sección "Preguntas frecuentes" con contenido rico para citación por ChatGPT/Perplexity.',
-  ],
-  generate: [
-    '⚡ **Generador de Frontend Optimizado**\n\nFase 1/2: Auditoría del sitio actual...\n- SEO score: 42/100\n- Velocidad: 4.2s\n- Estructura: Mejorable\n\nFase 2/2: Generando réplica optimizada...\n\n✅ **Frontend generado:**\n\n📁 `output/optimized/`\n├── src/\n│   ├── components/\n│   │   ├── Navbar.tsx (optimizado)\n│   │   ├── Hero.tsx (mejorado)\n│   │   ├── Features.tsx\n│   │   ├── Testimonials.tsx\n│   │   └── Footer.tsx\n│   ├── styles/globals.css\n│   └── App.tsx\n├── public/\n├── package.json\n└── vite.config.ts\n\n🎯 **Mejoras aplicadas:**\n- Meta tags completos (title, description, OG tags)\n- Schema JSON-LD (Organization, FAQPage)\n- Imágenes optimizadas (WebP, lazy loading)\n- Core Web Vitals: LCP <2s, FID <100ms\n- SEO score proyectado: 85/100\n\n💡 **Siguiente paso:** Ejecutá `npm run dev` para previsualizar.',
-  ],
-};
+const URL_REGEX = /^https?:\/\/.+\..+/i;
 
-function getMockResponse(skillId: string): string {
-  const responses = MOCK_RESPONSES[skillId] || MOCK_RESPONSES['replica'];
-  return responses[Math.floor(Math.random() * responses.length)];
+function getStatusLabel(status: string): string {
+  switch (status) {
+    case 'queued': return '⏳ En cola — esperando VM libre';
+    case 'pending': return '⏳ Pendiente — iniciando agente...';
+    case 'running': return '🔄 Procesando...';
+    default: return '';
+  }
 }
 
 export function ChatInterface({ skill }: ChatInterfaceProps) {
@@ -32,7 +23,6 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -45,29 +35,40 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
   // Reset messages when skill changes
   useEffect(() => {
     if (skill) {
-      const welcomeMessage = user
-        ? `Hola! Soy Mizpa Agent. Seleccionaste: **${skill.name}**\n\n${skill.description}\n\nPegá una URL y arranco el análisis.`
-        : `Hola! Soy Mizpa Agent. Seleccionaste: **${skill.name}**\n\n${skill.description}\n\n⚠️ Modo demo — sin autenticar. Pegá una URL para ver una respuesta simulada.\n\nPara usar los agentes reales, [iniciá sesión](/login).`;
-
       setMessages([
         {
           id: 'welcome',
           role: 'assistant',
-          content: welcomeMessage,
+          content: `Hola! Soy Mizpa Agent. Seleccionaste: **${skill.name}**\n\n${skill.description}\n\nPegá una URL y arranco el análisis.`,
           timestamp: new Date(),
           skillId: skill.id,
         },
       ]);
     }
-  }, [skill, user]);
+  }, [skill]);
 
   const handleSend = async () => {
     if (!input.trim() || !skill) return;
 
+    const raw = input.trim();
+
+    // URL validation
+    if (!URL_REGEX.test(raw)) {
+      const errorMsg: Message = {
+        id: `error-${Date.now()}`,
+        role: 'assistant',
+        content: '❌ **URL inválida**\n\nIngresá una URL completa con protocolo (ej. `https://ejemplo.com`).',
+        timestamp: new Date(),
+        skillId: skill.id,
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input.trim(),
+      content: raw,
       timestamp: new Date(),
     };
 
@@ -75,90 +76,82 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
     setInput('');
     setIsTyping(true);
 
-    // If user is authenticated, use real API
-    if (user) {
-      try {
-        console.log('Creating task for skill:', skill.id, 'url:', input.trim());
-        // Create task via Edge Function
-        const { taskId, vmId } = await createTask(skill.id, input.trim());
-        console.log('Task created:', taskId, 'vmId:', vmId);
+    try {
+      console.log('Creating task for skill:', skill.id, 'url:', raw);
+      const { taskId, vmId, status: initialStatus, message } = await createTask(skill.id, raw);
+      console.log('Task created:', taskId, 'status:', initialStatus);
 
-        // Add status message
-        const statusMessage: Message = {
-          id: `status-${Date.now()}`,
+      // Status message: adapt to initial state
+      const isQueued = initialStatus === 'queued' || !vmId;
+      const statusContent = isQueued
+        ? `⏳ **En cola**\n\nNo hay VMs disponibles. La tarea se procesará cuando se libere una.\n\n${message || ''}`
+        : `⏳ **Tarea creada**\n\nSkill: **${skill.name}**\nURL: \`${raw}\`\n\nIniciando agente...`;
+
+      const statusMsgId = `status-${Date.now()}`;
+      const statusMessage: Message = {
+        id: statusMsgId,
+        role: 'assistant',
+        content: statusContent,
+        timestamp: new Date(),
+        skillId: skill.id,
+      };
+      setMessages((prev) => [...prev, statusMessage]);
+
+      // Poll — update status message on each change
+      const finalStatus = await pollTaskStatus(taskId, (current) => {
+        if (current.status === 'queued' || current.status === 'running' || current.status === 'pending') {
+          const label = getStatusLabel(current.status);
+          if (label) {
+            setMessages((prev) => {
+              const updated = [...prev];
+              const idx = updated.findIndex((m) => m.id === statusMsgId);
+              if (idx !== -1) {
+                updated[idx] = { ...updated[idx], content: `${label}\n\nURL: \`${raw}\`` };
+              }
+              return updated;
+            });
+          }
+        }
+      }, 2000, 150); // 150 attempts = 5 minutes max
+
+      if (finalStatus.status === 'completed') {
+        const results = await getTaskResults(taskId);
+
+        // Replace status message with result
+        const resultMessage: Message = {
+          id: `result-${Date.now()}`,
           role: 'assistant',
-          content: `⏳ **Tarea creada**\n\n- Task ID: \`${taskId.slice(0, 8)}\`\n- VM: \`${vmId}\`\n- Skill: ${skill.name}\n\nIniciando agente...`,
+          content: results.length > 0
+            ? results.map(r => typeof r.content === 'string' ? r.content : JSON.stringify(r.content, null, 2)).join('\n\n')
+            : '✅ Tarea completada.',
           timestamp: new Date(),
           skillId: skill.id,
         };
-        setMessages((prev) => [...prev, statusMessage]);
-
-        // Poll for status (with timeout)
-        try {
-          const finalStatus = await pollTaskStatus(taskId, (status) => {
-            console.log('Task status:', status.status);
-          }, 2000, 30); // 30 attempts = 60 seconds max
-
-          if (finalStatus.status === 'completed') {
-            // Get results
-            const results = await getTaskResults(taskId);
-
-            const resultMessage: Message = {
-              id: `result-${Date.now()}`,
-              role: 'assistant',
-              content: results.length > 0
-                ? results.map(r => typeof r.content === 'string' ? r.content : JSON.stringify(r.content, null, 2)).join('\n\n')
-                : '✅ Tarea completada. (Sin resultados detallados aún)',
-              timestamp: new Date(),
-              skillId: skill.id,
-            };
-            setMessages((prev) => [...prev, resultMessage]);
-          } else {
-            // Failed
-            const errorMessage: Message = {
-              id: `error-${Date.now()}`,
-              role: 'assistant',
-              content: `❌ **Tarea fallida**\n\n${finalStatus.error_message || 'Error desconocido'}`,
-              timestamp: new Date(),
-              skillId: skill.id,
-            };
-            setMessages((prev) => [...prev, errorMessage]);
-          }
-        } catch {
-          // Polling timeout — show mock as fallback
-          const fallbackMessage: Message = {
-            id: `fallback-${Date.now()}`,
-            role: 'assistant',
-            content: `⚠️ Timeout esperando resultados de la VM. Mostrando respuesta simulada:\n\n${getMockResponse(skill.id)}`,
-            timestamp: new Date(),
-            skillId: skill.id,
-          };
-          setMessages((prev) => [...prev, fallbackMessage]);
-        }
-      } catch (error) {
-        // API error — show mock as fallback
-        console.error('API error:', error);
+        setMessages((prev) => [...prev, resultMessage]);
+      } else if (finalStatus.status === 'failed') {
         const errorMessage: Message = {
-          id: `api-error-${Date.now()}`,
+          id: `error-${Date.now()}`,
           role: 'assistant',
-          content: `⚠️ Error conectando con el backend: ${error instanceof Error ? error.message : 'Unknown error'}\n\nMostrando respuesta simulada:\n\n${getMockResponse(skill.id)}`,
+          content: `❌ **Tarea fallida**\n\n${finalStatus.error_message || 'Error desconocido'}`,
           timestamp: new Date(),
           skillId: skill.id,
         };
         setMessages((prev) => [...prev, errorMessage]);
       }
-    } else {
-      // Mock mode for unauthenticated users
-      await new Promise((r) => setTimeout(r, 1500 + Math.random() * 1000));
+    } catch (error) {
+      console.error('Error:', error);
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
+      const timedOut = error instanceof Error && error.message === 'Task polling timeout';
+      const errorMessage: Message = {
+        id: `error-${Date.now()}`,
         role: 'assistant',
-        content: `📋 **Demo Mode** — respuesta simulada\n\n${getMockResponse(skill.id)}`,
+        content: timedOut
+          ? `⚠️ **La tarea está tardando más de lo esperado**\n\nPodés revisar el estado en el dashboard o intentar de nuevo más tarde.\n\nSi el problema persiste, contactá al administrador.`
+          : `❌ **Error**\n\n${error instanceof Error ? error.message : 'Error desconocido'}\n\nIntentá de nuevo más tarde.`,
         timestamp: new Date(),
         skillId: skill.id,
       };
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     }
 
     setIsTyping(false);

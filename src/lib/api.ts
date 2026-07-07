@@ -9,7 +9,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export interface CreateTaskResponse {
   taskId: string;
-  vmId: string;
+  vmId?: string;
   status: string;
   message: string;
 }
@@ -18,7 +18,7 @@ export interface TaskStatus {
   id: string;
   skill: string;
   url: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status: 'pending' | 'queued' | 'running' | 'completed' | 'failed';
   vm_id: string | null;
   error_message: string | null;
   created_at: string;
