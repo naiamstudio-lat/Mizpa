@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { cleanupVms } from '../../lib/api';
+import { SKILLS } from '../playground/skills';
 
 export function DashboardPage() {
   const { user, signOut } = useAuth();
@@ -27,11 +28,12 @@ export function DashboardPage() {
     }
   };
 
-  const cards = [
-    { skill: 'audit', icon: '🔍', title: 'Auditoría', desc: 'Analizá cualquier sitio web en segundos' },
-    { skill: 'replica', icon: '⚡', title: 'Réplica', desc: 'Generá una versión optimizada en React' },
-    { skill: 'generate', icon: '📊', title: 'Generar', desc: 'Combiná auditoría + réplica + deploy' },
-  ];
+  const cards = SKILLS.map(s => ({
+    skill: s.id,
+    icon: s.icon,
+    title: s.name,
+    desc: s.description,
+  }));
 
   return (
     <div className="min-h-screen bg-navy">
