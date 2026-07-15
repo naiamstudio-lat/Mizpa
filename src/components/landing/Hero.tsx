@@ -12,7 +12,7 @@ export function Hero() {
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
         <img
           className="w-full h-full object-cover object-right opacity-60 md:opacity-80 mix-blend-screen md:mix-blend-normal hero-parallax-img"
-          src="https://lh3.googleusercontent.com/aida/AP1WRLviGQbl6JkUEZz6WL-UCeZVt7yQJsW7qcfd6airLtFV9xs81Qfe_JyQKV3xxnSfgug1J4RGnwTqinCUjVB2USWX1HXkAHa_6ZJbJegUad9Rrik_etx1Q9Z7QrgP0lY5ce3k7ME-l3cp3u1pwrXj2_PKt5_Aq3NdkoG3CJpo0YVfy6-PgQZG52AHVoj_YEPi2u4_xmv_7jJTh_NTtAGzfQNlMTOLjZxqEAdYXLnBlXrNcSYG9eQeicmZp50q"
+          src="https://lh3.googleusercontent.com/aida/AP1WRLviGQbl6JkUEZz6WL-UCeZVt7yQJsW7qcfd6airLtFV9xs81Qfe_JyQKV3xxnSfgug1J4RGnwTqinCUjVB2USWX1HXkAHa_6ZJbJegUad9Rrik_etx1Q9Z7QrgP0lY5ce3k7ME-l3cp3u1pwrXj2_PKt5_Aq3NdkoG3CJpo0YVfy6-PgQZG52AHVoj_YEPi2u4_xmv_7jJTh_NTtAGzfQNlMTOLjZxqEAdYXLnBlXrNcSYG9eQeicmZp50q=s0"
           alt=""
           style={{ objectPosition: 'right center' }}
         />
