@@ -80,4 +80,48 @@ export class DashboardPage {
       return document.querySelector('h1') !== null;
     });
   }
+
+  async hasCleanupButton(): Promise<boolean> {
+    return this.page.evaluate(() => {
+      const buttons = document.querySelectorAll('button');
+      for (const btn of buttons) {
+        if (btn.textContent?.includes('Limpiar VMs inactivas')) return true;
+      }
+      return false;
+    });
+  }
+
+  async clickCleanup(): Promise<void> {
+    await this.page.evaluate(() => {
+      const buttons = document.querySelectorAll('button');
+      for (const btn of buttons) {
+        if (btn.textContent?.includes('Limpiar VMs inactivas')) {
+          btn.click();
+          return;
+        }
+      }
+      throw new Error('Cleanup button not found');
+    });
+  }
+
+  async getCleanupMessage(): Promise<string | null> {
+    // Wait for the result message to appear (up to 10s polling)
+    for (let i = 0; i < 20; i++) {
+      const result = await this.page.evaluate(() => {
+        // The message div sits right before the cleanup button in the admin section
+        const msgDivs = document.querySelectorAll('.bg-navy-mid');
+        for (const el of msgDivs) {
+          const text = el.textContent?.trim();
+          // Filter out non-message elements like the email span
+          if (text && !text.startsWith('test@') && text.length > 0) {
+            return text;
+          }
+        }
+        return null;
+      });
+      if (result) return result;
+      await new Promise(r => setTimeout(r, 500));
+    }
+    return null;
+  }
 }

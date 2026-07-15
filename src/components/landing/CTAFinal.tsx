@@ -4,15 +4,54 @@ export function CTAFinal() {
   const { t } = useTranslation();
 
   return (
-    <div className="mx-auto max-w-[1100px] px-10 pb-24">
-      <div className="bg-gradient-to-br from-emerald/[0.12] to-mint/[0.05] border border-mint/20 rounded-3xl py-[72px] px-12 text-center">
-        <h2 className="font-display text-[clamp(28px,4vw,48px)] font-extrabold tracking-tight mb-4 whitespace-pre-line">{t('ctaFinal.title')}</h2>
-        <p className="text-[17px] text-slate mb-9">{t('ctaFinal.subtitle')}</p>
-        <div className="flex gap-3 justify-center flex-wrap">
-          <a href="/login" className="bg-mint text-navy px-9 py-4 rounded-xl text-base font-semibold no-underline transition-opacity hover:opacity-90">{t('ctaFinal.primary')}</a>
-          <a href="#precios" className="bg-transparent border border-white/20 text-cream px-9 py-4 rounded-xl text-base font-medium no-underline transition-colors hover:border-white/40">{t('ctaFinal.secondary')}</a>
+    <>
+      {/* Mobile CTA form */}
+      <section className="py-section-gap flex flex-col items-center justify-center text-center px-margin-mobile md:hidden">
+        <div>
+          <span className="font-label-mono text-label-mono text-primary mb-6 block tracking-widest">
+            {t('cta.badge')}
+          </span>
+          <h2 className="font-display-lg text-display-lg-mobile md:text-headline-lg text-on-surface mb-12">
+            {t('cta.title')}
+          </h2>
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <input
+              className="bg-black border border-white/10 px-6 py-4 w-full md:w-96 font-label-mono text-label-mono focus:border-primary focus:ring-0 focus:outline-none transition-all placeholder:text-white/20"
+              placeholder={t('cta.placeholder')}
+              type="email"
+            />
+            <button className="w-full md:w-auto bg-primary text-on-primary px-12 py-4 font-label-mono text-label-mono uppercase tracking-[0.2em] hover:scale-105 transition-all bloom-primary">
+              {t('cta.button')}
+            </button>
+          </div>
+          <p className="mt-8 font-label-mono text-[10px] text-white/20 uppercase tracking-widest">
+            {t('cta.terms')}
+          </p>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* Desktop neural link section */}
+      <section className="py-section-gap px-margin-desktop border-t border-white/5 hidden md:block">
+        <div className="grid grid-cols-12 gap-gutter items-center">
+          <div className="col-span-12 md:col-span-6">
+            <h3 className="font-headline-lg text-headline-lg text-on-surface mb-6 italic">
+              {t('cta.desktopTitle')}
+            </h3>
+            <p className="text-tertiary max-w-[400px] leading-relaxed">
+              {t('cta.desktopDescription')}
+            </p>
+          </div>
+          <div className="col-span-12 md:col-span-6 flex justify-end">
+            <div className="relative w-full max-w-[300px] h-[300px] bg-surface-container-low rounded-full border border-primary/20 flex items-center justify-center group cursor-pointer">
+              <div className="absolute inset-0 bg-primary/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="relative font-label-mono text-label-mono text-primary text-center whitespace-pre-line">
+                {t('cta.neuralLink')}
+              </span>
+              <div className="absolute w-full h-full border border-dashed border-primary/40 rounded-full animate-[spin_20s_linear_infinite]" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

@@ -65,7 +65,7 @@ export function PlaygroundPage() {
 
         {/* Footer hint */}
         <p className="text-[11px] text-slate/50 text-center mt-4">
-         (Mockup — las respuestas son simuladas. Los agentes reales se conectarán en la fase de implementación.)
+          Las tareas se ejecutan en servidores remotos. Los resultados pueden tardar unos minutos.
         </p>
       </div>
     </div>

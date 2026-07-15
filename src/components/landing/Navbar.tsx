@@ -1,37 +1,103 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function Navbar() {
   const { t } = useTranslation();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-10 py-[18px] bg-navy/85 backdrop-blur-[12px] border-b border-white/5">
-      <a href="#" className="flex items-center gap-2.5 no-underline">
-        <div className="w-9 h-9 bg-navy-mid rounded-lg flex items-center justify-center border border-mint/30">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="8" r="5.5" stroke="#6EE7B7" stroke-width="1.2" />
-            <path d="M7 8l2 2 4-4" stroke="#6EE7B7" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M6 15l4-2.5 4 2.5" stroke="#94A3B8" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
-            <line x1="10" y1="12.5" x2="10" y2="17" stroke="#94A3B8" stroke-width="1" stroke-linecap="round" />
-          </svg>
+    <>
+      <header className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-xl">
+        <nav className="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-grid-unit w-full max-w-container-max mx-auto h-20">
+          <div className="flex items-center gap-4">
+            <span className="font-display-lg text-headline-sm tracking-tighter text-on-surface uppercase font-extrabold">
+              Mizpa
+            </span>
+            <span className="hidden md:inline font-label-mono text-label-mono text-primary opacity-60">
+              {t('nav.badge')}
+            </span>
+          </div>
+
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#capabilities" className="font-body-md text-body-md text-primary font-bold hover:text-primary transition-colors duration-300">
+              {t('nav.capabilities')}
+            </a>
+            <a href="#process" className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-300">
+              {t('nav.process')}
+            </a>
+            <a href="#" className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-300">
+              {t('nav.infrastructure')}
+            </a>
+            <a href="#" className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-300">
+              {t('nav.security')}
+            </a>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <button className="hidden lg:block font-label-mono text-label-mono text-tertiary hover:text-on-surface transition-colors">
+              {t('nav.signin')}
+            </button>
+            <button className="bg-primary text-on-primary px-6 py-2 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95">
+              {t('nav.cta')}
+            </button>
+            <button
+              className="md:hidden text-primary p-2"
+              onClick={() => setDrawerOpen(true)}
+              aria-label={t('nav.menu')}
+            >
+              <span className="material-symbols-outlined">menu</span>
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      {/* Mobile drawer */}
+      <aside
+        className={`h-full w-80 fixed right-0 top-0 z-[60] bg-surface-container-lowest/95 backdrop-blur-2xl border-l border-white/10 transition-all duration-300 ease-in-out flex flex-col px-margin-mobile gap-4 ${
+          drawerOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="flex justify-between items-center mb-8 pt-8">
+          <span className="font-headline-sm text-xl font-bold text-primary">SYSTEM_MENU</span>
+          <button onClick={() => setDrawerOpen(false)}>
+            <span className="material-symbols-outlined text-on-surface">close</span>
+          </button>
         </div>
-        <span className="font-display text-xl font-bold text-cream">
-          Miz<span className="text-mint">pa</span>
-        </span>
-      </a>
-      <div className="flex gap-8 items-center">
-        <a href="#como-funciona" className="text-slate text-sm no-underline transition-colors hover:text-cream">
-          {t('nav.howItWorks')}
-        </a>
-        <a href="#precios" className="text-slate text-sm no-underline transition-colors hover:text-cream">
-          {t('nav.pricing')}
-        </a>
-        <a href="#faq" className="text-slate text-sm no-underline transition-colors hover:text-cream">
-          {t('nav.faq')}
-        </a>
-        <a href="/login" className="bg-mint text-navy px-5 py-2 rounded-lg text-sm font-semibold no-underline transition-opacity hover:opacity-90">
-          {t('nav.cta')}
-        </a>
-      </div>
-    </nav>
+        <div className="flex flex-col gap-2">
+          <a
+            href="#capabilities"
+            className="flex items-center gap-4 p-4 font-label-mono text-label-mono text-primary border-r-2 border-primary bg-primary/5"
+            onClick={() => setDrawerOpen(false)}
+          >
+            <span className="material-symbols-outlined">layers</span>
+            {t('nav.capabilities')}
+          </a>
+          <a
+            href="#process"
+            className="flex items-center gap-4 p-4 font-label-mono text-label-mono text-on-surface-variant hover:bg-white/5"
+            onClick={() => setDrawerOpen(false)}
+          >
+            <span className="material-symbols-outlined">schema</span>
+            {t('nav.process')}
+          </a>
+          <a
+            href="#"
+            className="flex items-center gap-4 p-4 font-label-mono text-label-mono text-on-surface-variant hover:bg-white/5"
+            onClick={() => setDrawerOpen(false)}
+          >
+            <span className="material-symbols-outlined">dns</span>
+            {t('nav.infrastructure')}
+          </a>
+          <a
+            href="#"
+            className="flex items-center gap-4 p-4 font-label-mono text-label-mono text-on-surface-variant hover:bg-white/5"
+            onClick={() => setDrawerOpen(false)}
+          >
+            <span className="material-symbols-outlined">security</span>
+            {t('nav.security')}
+          </a>
+        </div>
+      </aside>
+    </>
   );
 }

@@ -9,7 +9,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export interface CreateTaskResponse {
   taskId: string;
-  vmId: string;
+  vmId?: string;
   status: string;
   message: string;
 }
@@ -18,7 +18,7 @@ export interface TaskStatus {
   id: string;
   skill: string;
   url: string;
-  status: 'pending' | 'running' | 'completed' | 'failed';
+  status: 'pending' | 'queued' | 'running' | 'completed' | 'failed';
   vm_id: string | null;
   error_message: string | null;
   created_at: string;
@@ -95,6 +95,38 @@ export async function getTaskResults(taskId: string): Promise<TaskResult[]> {
 
   if (error) throw error;
   return data || [];
+}
+
+/**
+ * Cleanup idle freestyle VMs
+ */
+export async function cleanupVms(force: boolean = false): Promise<{
+  status: string;
+  mode: string;
+  totalVms: number;
+  deleted: number;
+  skipped: number;
+  message: string;
+}> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not authenticated');
+
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/cleanup-vms`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+    },
+    body: JSON.stringify({ force }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to cleanup VMs');
+  }
+
+  return response.json();
 }
 
 /**
