@@ -1,206 +1,129 @@
 {
   "nav": {
-    "howItWorks": "Cómo funciona",
-    "pricing": "Precios",
-    "faq": "FAQ",
-    "cta": "Auditar mi web gratis"
+    "audit": "AUDIT",
+    "replica": "RÉPLICA",
+    "index": "INDEX",
+    "deploy": "Comenzar Auditoría",
+    "signin": "Sign in",
+    "capabilities": "Capabilities",
+    "process": "Process",
+    "infrastructure": "Infrastructure",
+    "security": "Security"
   },
   "hero": {
-    "badge": "Nuevo · SEO para la era de la IA",
-    "titlePart1": "Tu web",
-    "titleStrikethrough": "invisible",
-    "titlePart2": "ahora",
-    "titleAccent": "rankea primero.",
-    "subtitle": "Mizpa audita tu sitio, detecta qué le impide aparecer en Google y en las IAs, y genera una versión optimizada lista para rankear.",
-    "inputPlaceholder": "tudominio.com",
-    "button": "Auditar gratis →",
-    "micro": "Sin tarjeta de crédito · Resultado en 60 segundos · Gratis para siempre"
+    "badge": "[ MIZPA 2026 ]",
+    "badgeDesktop": "Autonomous AI agents for distributed SEO",
+    "title": "Audita tu web y genera una réplica optimizada para buscadores y agentes IAs",
+    "description": "Construimos el futuro del posicionamiento con precisión algorítmica y estética etérea.",
+    "placeholder": "https://tu-sitio-web.com",
+    "button": "Comenzar Auditoría",
+    "buttonDesktop": "PROBAR AHORA",
+    "stats1Value": "3500+",
+    "stats1Label": "Agentes Activos",
+    "stats2Value": "99.7%",
+    "stats2Label": "Distributed Uptime",
+    "stats3Value": "<50ms",
+    "stats3Label": "Latency",
+    "scroll": "desplaza"
   },
-  "score": {
-    "speed": "Velocidad de carga",
-    "structure": "Estructura de contenido",
-    "metadata": "Metadatos y schema",
-    "aiVisibility": "Visibilidad en IAs",
-    "backlinks": "Backlinks y autoridad",
-    "totalLabel": "Tu score SEO actual",
-    "unlock": "Ver informe completo →"
-  },
-  "logos": {
-    "label": "Usado por agencias y pymes en toda Latinoamérica"
-  },
-  "howItWorks": {
-    "label": "Cómo funciona",
-    "title": "De web invisible a primera posición en 3 pasos",
-    "subtitle": "No necesitás contratar un equipo técnico. Mizpa hace el trabajo pesado por vos.",
-    "steps": [
-      {
-        "num": "PASO 01",
-        "title": "Auditoría profunda",
-        "description": "Nuestros agentes de IA analizan más de 200 factores técnicos, de contenido y de autoridad en tu web en menos de un minuto."
-      },
-      {
-        "num": "PASO 02",
-        "title": "Informe de optimización",
-        "description": "Recibís un reporte detallado con cada problema encontrado, su impacto en el ranking y las acciones exactas para corregirlo."
-      },
-      {
-        "num": "PASO 03",
-        "title": "Réplica web optimizada",
-        "description": "Mizpa genera automáticamente una versión de tu web completamente optimizada para Google, ChatGPT y Perplexity."
-      }
+  "capabilities": {
+    "label": "01 / OBTÉN AUDITORÍA PROFUNDA",
+    "title": "Análisis de 360 grados sobre tu Web",
+    "description": "Analizamos cada fragmento de código, metadata y copywriting para asegurar que tu presencia digital sea perfectamente legible para los algoritmos de nueva generación.",
+    "items": [
+      "Análisis de Grafo Semántico",
+      "Optimización para LLMs",
+      "Tu web ultra-rápida"
     ]
   },
   "features": {
-    "label": "Funcionalidades",
-    "title": "Todo lo que necesita tu agencia",
+    "label": "[ CAPABILITIES_LOG ]",
+    "title": "Algoritmos de Próxima Generación",
     "items": [
       {
-        "icon": "🤖",
-        "title": "Agentes IA autónomos",
-        "description": "No es una herramienta que te dice qué hacer. Son agentes que <em>lo hacen</em>. Analizan, priorizan y generan la web optimizada sin intervención manual.",
-        "note": "Disponible en el plan Pro como API y como app."
+        "number": "01",
+        "title": "Análisis de 360 grados",
+        "description": "Auditoría técnica profunda mediante agentes autónomos que escanean cada nodo de tu arquitectura digital.",
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCciwyIEZ3IRhwTSUmHWuMymsy55tFsKQSdcuV7MBG15oz1IZahLe-51esXHnKZqcVPTSXmvxGB4QKemhIgFulQyiN1afHy_JHy-3J3QGQrVSzDrgWu5PL1uv4_quqpE5qGcVkqSqXRzL__GV6hM3ajmMwjCvb6PG8VtvfKPsecBAxj5SsRjOasT3yLJNgjfBMjqALCQFSVeuA9FFf1Cx1TaWOdX88kn22IzOKQuZGzEljCLQth47cjgaQGaKvJjxB5tJbhgG4fz3s8"
       },
       {
-        "icon": "📊",
-        "title": "Reportes white-label",
-        "description": "Generá informes con el logo y los colores de tu agencia para entregar a tus clientes como si fueran tuyos."
+        "number": "02",
+        "title": "Réplica Instantánea",
+        "description": "Creamos un 'gemelo digital' optimizado específicamente para ser procesado por LLMs y motores de búsqueda modernos.",
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuD24g7McrtnY58J9p_R8WWKBd2p0R0br2OssSGMA53wDAItLHXVhuCwrUnczhEYvYXvFj9iPo8-hmUNvl8rhk5pSfByOOEuuyKzhi6yh8x-ufvy79YQ51oer7I64omKT1i4ncMCrs7sfvQZimWYKPbNTm_ihfUvBnMLDjWIuk6AJXnR18mWAjjUqhBcDdBTGxVwTwhz3QcgIrl1sYdFCBxaA_f2oCGDeBqg8olV5hDCF4YYUvnJG72Wi1lM8pFxVqdRItpMZsCW04LE"
       },
       {
-        "icon": "🌐",
-        "title": "Optimización para IA",
-        "description": "La réplica generada está estructurada para ser citada por ChatGPT, Perplexity y Google SGE. El SEO del futuro, hoy."
-      },
-      {
-        "icon": "📈",
-        "title": "Tracking de posiciones",
-        "description": "Monitoreá el antes y después de cada optimización. Mostrá a tus clientes el progreso en tiempo real."
-      },
-      {
-        "icon": "🔗",
-        "title": "API y integraciones",
-        "description": "Integrá Mizpa en tu stack de herramientas. Compatible con Zapier, Make y cualquier sistema vía API REST."
+        "number": "03",
+        "title": "Infraestructura Edge",
+        "description": "Sincronización global en milisegundos. Tu contenido siempre disponible en el borde de la red para una carga instantánea.",
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDPYI96BiTwQbg6upfXkTNGGc8k73LP7M3-I6sEOzr-bcVnLqsCWAiohKGVV3-lH8DkXJAllSwlkj-iLYdVrGjTpndF3tAA6KUYt8bfbaeiRsLyS4mAPbBji79R2NJhWGFpjrSjj_kYUPX_tRNnTsd9-4_UnU-IxjCtqqfTadbVlbpI0i8Dv2i8rk4dT1CyueLIJAJL2S45N9GFVcLrPsdku74XwE0YzSqnoE8M8I1FCCm8mWoGb9UE_34lLiG8UEdkAcAnYEcr43mO"
       }
     ]
   },
-  "testimonials": {
-    "label": "Lo que dicen",
-    "title": "Agencias que ya rankean diferente",
-    "items": [
+  "process": {
+    "label": "02 / RÉPLICA INSTANTÁNEA",
+    "title": "Un gemelo digital optimizado para IAs.",
+    "description": "No solo auditamos; construimos una capa de datos paralela. Tu web sigue siendo para humanos, Mizpa genera una versión ultra-ligera diseñada para ser consumida por motores de búsqueda e inteligencias artificiales.",
+    "steps": [
       {
-        "quote": "Pasamos de entregar reportes en Excel a entregar reportes profesionales con réplica optimizada en el mismo día. Nuestros clientes no pueden creer la diferencia.",
-        "name": "Martina Crespo",
-        "role": "Directora, AgenciaPlus · Buenos Aires",
-        "initials": "MC"
+        "number": "01",
+        "title": "Extracción",
+        "description": "Convertimos tu frontend complejo en esquemas de datos puros y estructurados."
       },
       {
-        "quote": "En 3 semanas un cliente pasó de la página 4 a la posición 6 de la página 1. Con la réplica optimizada que genera Mizpa, el trabajo técnico tardó menos de una hora.",
-        "name": "Roberto Leal",
-        "role": "SEO Lead, Digital Boost · Medellín",
-        "initials": "RL"
+        "number": "02",
+        "title": "Refinería",
+        "description": "Eliminamos el ruido visual y el JS innecesario para priorizar la transferencia de conocimiento."
       },
       {
-        "quote": "Lo que más me sorprendió fue la optimización para IAs. Ahora mi cliente aparece en las respuestas de ChatGPT cuando preguntan sobre su rubro. Eso no tiene precio.",
-        "name": "Valentina Paz",
-        "role": "Fundadora, Pyme Digital · Santiago",
-        "initials": "VP"
+        "number": "03",
+        "title": "Sincronización",
+        "description": "Tu réplica se actualiza en milisegundos cada vez que detectamos un cambio en tu sitio principal."
       }
     ]
+  },
+  "quote": {
+    "text": "El futuro del SEO no es ser encontrado, es ser comprendido.",
+    "author": "Mizpa — posicionando como la nueva generación"
   },
   "pricing": {
-    "label": "Precios",
-    "title": "Empezá gratis, escalá cuando crezcas",
-    "subtitle": "Sin contratos. Sin sorpresas. Cancelá cuando quieras.",
-    "plans": [
-      {
-        "name": "Starter",
-        "price": "$49",
-        "period": "/mes",
-        "description": "Para pymes que quieren rankear mejor",
-        "features": [
-          "5 auditorías por mes",
-          "1 réplica web optimizada",
-          "Informe PDF completo",
-          "Tracking de 10 keywords",
-          "Soporte por email"
-        ],
-        "cta": "Empezar gratis 14 días",
-        "featured": false
-      },
-      {
-        "name": "Agency",
-        "price": "$149",
-        "period": "/mes",
-        "description": "Para agencias con múltiples clientes",
-        "badge": "Más elegido por agencias",
-        "features": [
-          "30 auditorías por mes",
-          "10 réplicas web optimizadas",
-          "Reportes white-label",
-          "Tracking de 100 keywords",
-          "Soporte prioritario",
-          "Multi-usuario (hasta 5)"
-        ],
-        "cta": "Empezar con Agency →",
-        "featured": true
-      },
-      {
-        "name": "Pro",
-        "price": "$349",
-        "period": "/mes",
-        "description": "Para equipos con demanda alta y API",
-        "features": [
-          "Auditorías ilimitadas",
-          "Réplicas ilimitadas",
-          "Agentes autónomos",
-          "Acceso a API REST",
-          "Dashboard de clientes",
-          "Soporte dedicado"
-        ],
-        "cta": "Hablar con ventas",
-        "featured": false
-      }
-    ]
+    "label": "SCALE YOUR VISION",
+    "title": "Mizpa Pro",
+    "price": "19",
+    "period": "USD/mes",
+    "features": [
+      "Full Technical Audit (Unlimited)",
+      "AI Replica Engine Access",
+      "Global Edge Deployment",
+      "24/7 Algorithmic Monitoring"
+    ],
+    "cta": "COMENZAR PLAN PRO"
   },
-  "faq": {
-    "label": "Preguntas frecuentes",
-    "title": "Todo lo que querés saber",
-    "items": [
-      {
-        "question": "¿Qué es exactamente la \"réplica web optimizada\"?",
-        "answer": "Es una versión completa de tu web, con el mismo contenido, pero reestructurada técnica y semánticamente para que los buscadores y las IAs la entiendan mejor. Incluye mejoras en metadatos, schema markup, velocidad, estructura de encabezados y contenido semántico. La recibís como archivos listos para subir a tu servidor."
-      },
-      {
-        "question": "¿Es seguro para mi web actual? ¿Rompe algo?",
-        "answer": "Absolutamente seguro. La réplica es una versión separada — tu web original no se toca para nada. Podés comparar las dos versiones antes de decidir si implementar los cambios. También podés elegir implementar sólo las mejoras que quieras."
-      },
-      {
-        "question": "¿En cuánto tiempo veo resultados en Google?",
-        "answer": "Los cambios técnicos generalmente son rastreados por Google en 2 a 4 semanas. Los primeros movimientos en posiciones suelen verse entre la semana 3 y la semana 8, dependiendo de la competencia del rubro. Los casos de éxito más rápidos que documentamos lograron mejoras en posiciones en 18–21 días."
-      },
-      {
-        "question": "¿Funciona para cualquier tipo de web?",
-        "answer": "Sí. Mizpa funciona con WordPress, Wix, Squarespace, Shopify, webs en HTML estático, y cualquier CMS. Los agentes adaptan las recomendaciones a la tecnología que usés."
-      },
-      {
-        "question": "¿Qué pasa si no estoy conforme?",
-        "answer": "Tenés 30 días de garantía total. Si no ves valor en la herramienta, te devolvemos el dinero sin preguntas. Además, podés cancelar tu suscripción en cualquier momento desde el panel, sin llamadas ni trámites."
-      },
-      {
-        "question": "¿La herramienta tiene app móvil?",
-        "answer": "Sí. Mizpa está disponible como app web (funciona en cualquier navegador móvil) y estamos lanzando la app nativa para iOS y Android próximamente. Los planes Agency y Pro incluyen acceso anticipado."
-      }
-    ]
-  },
-  "ctaFinal": {
-    "title": "¿Tu competidor ya está en la posición 1?\nEs hora de actuar.",
-    "subtitle": "Empezá tu auditoría gratuita ahora. Sin tarjeta de crédito, sin límite de tiempo para el análisis inicial.",
-    "primary": "Auditar mi web gratis →",
-    "secondary": "Ver planes y precios"
+  "cta": {
+    "badge": "[ ¿LISTO PARA POSICIONAR? ]",
+    "title": "Acércale hoy el futuro a tu Web.",
+    "placeholder": "https://tu-sitio.com",
+    "button": "Generar gemelo web",
+    "terms": "Consulta nuestros términos y condiciones",
+    "desktopTitle": "Ready to transcend the grid?",
+    "desktopDescription": "Join the vanguard of digital positioning and redefine how machines perceive your brand.",
+    "neuralLink": "CONNECT\nNEURAL LINK"
   },
   "footer": {
-    "copyright": "© 2025 Mizpa. Todos los derechos reservados.",
-    "privacy": "Privacidad",
-    "terms": "Términos",
-    "contact": "Contacto"
+    "brand": "Mizpa Next Gen",
+    "tagline": "Technical SEO architecture for the age of distributed intelligence.",
+    "copyright": "© 2026 Mizpa. Todos los derechos reservados.",
+    "studio": "Producto de Naiam Studio",
+    "audit": "AUDIT",
+    "replica": "RÉPLICA",
+    "index": "INDEX",
+    "legal": "LEGAL",
+    "resources": "RESOURCES",
+    "apiDocs": "API Docs",
+    "systemStatus": "System Status",
+    "whitepaper": "Whitepaper",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "nodeStatus": "NODE_01_ACTIVE"
   }
 }

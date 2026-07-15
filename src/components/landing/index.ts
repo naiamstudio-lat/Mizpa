@@ -1,11 +1,10 @@
 export { Landing } from './Landing';
 export { Navbar } from './Navbar';
 export { Hero } from './Hero';
-export { Logos } from './Logos';
-export { HowItWorks } from './HowItWorks';
+export { Capabilities } from './Capabilities';
 export { Features } from './Features';
-export { Testimonials } from './Testimonials';
+export { Process } from './Process';
+export { Quote } from './Quote';
 export { Pricing } from './Pricing';
-export { FAQ } from './FAQ';
 export { CTAFinal } from './CTAFinal';
 export { Footer } from './Footer';

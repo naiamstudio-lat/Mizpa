@@ -1,27 +1,44 @@
+import { useEffect } from 'react';
 import { Navbar } from './Navbar';
 import { Hero } from './Hero';
-import { Logos } from './Logos';
-import { HowItWorks } from './HowItWorks';
+import { Capabilities } from './Capabilities';
 import { Features } from './Features';
-import { Testimonials } from './Testimonials';
+import { Process } from './Process';
+import { Quote } from './Quote';
 import { Pricing } from './Pricing';
-import { FAQ } from './FAQ';
 import { CTAFinal } from './CTAFinal';
 import { Footer } from './Footer';
 
 export function Landing() {
+  useEffect(() => {
+    const handleScroll = () => {
+      const img = document.querySelector('.hero-parallax-img') as HTMLElement;
+      if (img) {
+        img.style.transform = `translateY(${window.pageYOffset * 0.15}px)`;
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <>
-      <Navbar />
-      <Hero />
-      <Logos />
-      <HowItWorks />
-      <Features />
-      <Testimonials />
-      <Pricing />
-      <FAQ />
-      <CTAFinal />
-      <Footer />
+      {/* Grid overlay */}
+      <div className="fixed inset-0 grid-overlay pointer-events-none z-0" />
+
+      <div className="relative z-10">
+        <Navbar />
+        <main className="pt-20">
+          <Hero />
+          <Capabilities />
+          <Features />
+          <Process />
+          <Quote />
+          <Pricing />
+          <CTAFinal />
+        </main>
+        <Footer />
+      </div>
     </>
   );
 }
