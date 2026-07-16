@@ -62,11 +62,11 @@ export function Navbar() {
             <a href="#process" className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-300">
               {t('nav.process')}
             </a>
-            <a href="#" className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-300">
-              {t('nav.infrastructure')}
+            <a href="#features" className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-300">
+              {t('nav.features')}
             </a>
-            <a href="#" className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-300">
-              {t('nav.security')}
+            <a href="#pricing" className="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors duration-300">
+              {t('nav.pricing')}
             </a>
           </div>
 
@@ -130,20 +130,20 @@ export function Navbar() {
             {t('nav.process')}
           </a>
           <a
-            href="#"
+            href="#features"
             className="flex items-center gap-4 p-4 font-label-mono text-label-mono text-on-surface-variant hover:bg-white/5"
             onClick={() => setDrawerOpen(false)}
           >
-            <span className="material-symbols-outlined">dns</span>
-            {t('nav.infrastructure')}
+            <span className="material-symbols-outlined">layers</span>
+            {t('nav.features')}
           </a>
           <a
-            href="#"
+            href="#pricing"
             className="flex items-center gap-4 p-4 font-label-mono text-label-mono text-on-surface-variant hover:bg-white/5"
             onClick={() => setDrawerOpen(false)}
           >
-            <span className="material-symbols-outlined">security</span>
-            {t('nav.security')}
+            <span className="material-symbols-outlined">sell</span>
+            {t('nav.pricing')}
           </a>
         </div>
       </aside>

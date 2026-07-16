@@ -5,7 +5,7 @@ export function Pricing() {
   const features = t('pricing.features', { returnObjects: true }) as string[];
 
   return (
-    <section className="py-section-gap px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto text-center relative overflow-hidden">
+    <section id="pricing" className="py-section-gap px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto text-center relative overflow-hidden">
       {/* Glow background */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
 

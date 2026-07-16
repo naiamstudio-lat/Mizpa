@@ -12,7 +12,7 @@ export function Features() {
   const items = t('features.items', { returnObjects: true }) as FeatureItem[];
 
   return (
-    <section className="py-section-gap px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto">
+    <section id="features" className="py-section-gap px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto">
       <div className="flex flex-col gap-12 mb-24">
         <span className="font-label-mono text-label-mono text-primary">
           {t('features.label')}
