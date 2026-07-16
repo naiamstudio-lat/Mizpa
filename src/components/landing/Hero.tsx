@@ -82,7 +82,7 @@ export function Hero() {
           <div className="flex items-center gap-3">
             <span className="w-8 h-[1px] bg-primary" />
             <span className="font-label-mono text-label-mono tracking-widest text-primary uppercase">
-              {t('hero.badgeDesktop')}
+              {t('hero.badge')}
             </span>
           </div>
 
