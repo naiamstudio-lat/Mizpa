@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChatMessage, type Message } from './ChatMessage';
 import { createTask, pollTaskStatus, getTaskResults } from '../../lib/api';
 import type { Skill } from './skills';
@@ -9,16 +10,8 @@ interface ChatInterfaceProps {
 
 const URL_REGEX = /^https?:\/\/.+\..+/i;
 
-function getStatusLabel(status: string): string {
-  switch (status) {
-    case 'queued': return '⏳ En cola — esperando VM libre';
-    case 'pending': return '⏳ Pendiente — iniciando agente...';
-    case 'running': return '🔄 Procesando...';
-    default: return '';
-  }
-}
-
 export function ChatInterface({ skill }: ChatInterfaceProps) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -39,7 +32,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
         {
           id: 'welcome',
           role: 'assistant',
-          content: `Hi! I'm Mizpa Agent. You selected: **${skill.name}**\n\n${skill.description}\n\nPaste a URL and I'll start the analysis.`,
+          content: t('chat.welcome', { skill: skill.name, description: skill.description }),
           timestamp: new Date(),
           skillId: skill.id,
         },
@@ -57,7 +50,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
       const errorMsg: Message = {
         id: `error-${Date.now()}`,
         role: 'assistant',
-        content: '❌ **URL inválida**\n\nIngresá una URL completa con protocolo (ej. `https://ejemplo.com`).',
+        content: t('chat.invalidUrl'),
         timestamp: new Date(),
         skillId: skill.id,
       };
@@ -84,8 +77,8 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
       // Status message: adapt to initial state
       const isQueued = initialStatus === 'queued' || !vmId;
       const statusContent = isQueued
-        ? `⏳ **En cola**\n\nNo hay VMs disponibles. La tarea se procesará cuando se libere una.\n\n${message || ''}`
-        : `⏳ **Tarea creada**\n\nSkill: **${skill.name}**\nURL: \`${raw}\`\n\nIniciando agente...`;
+        ? t('chat.taskQueued', { message: message || '' })
+        : t('chat.taskCreated', { skill: skill.name, url: raw });
 
       const statusMsgId = `status-${Date.now()}`;
       const statusMessage: Message = {
@@ -100,7 +93,8 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
       // Poll — update status message on each change
       const finalStatus = await pollTaskStatus(taskId, (current) => {
         if (current.status === 'queued' || current.status === 'running' || current.status === 'pending') {
-          const label = getStatusLabel(current.status);
+          const labelKey = `chat.status${current.status.charAt(0).toUpperCase() + current.status.slice(1)}`;
+          const label = t(labelKey);
           if (label) {
             setMessages((prev) => {
               const updated = [...prev];
@@ -123,7 +117,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
           role: 'assistant',
           content: results.length > 0
             ? results.map(r => typeof r.content === 'string' ? r.content : JSON.stringify(r.content, null, 2)).join('\n\n')
-            : '✅ Tarea completada.',
+            : t('chat.taskCompleted'),
           timestamp: new Date(),
           skillId: skill.id,
         };
@@ -132,7 +126,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
         const errorMessage: Message = {
           id: `error-${Date.now()}`,
           role: 'assistant',
-          content: `❌ **Tarea fallida**\n\n${finalStatus.error_message || 'Error desconocido'}`,
+          content: t('chat.taskFailed', { error: finalStatus.error_message || 'Unknown error' }),
           timestamp: new Date(),
           skillId: skill.id,
         };
@@ -146,8 +140,8 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
         id: `error-${Date.now()}`,
         role: 'assistant',
         content: timedOut
-          ? `⚠️ **La tarea está tardando más de lo esperado**\n\nPodés revisar el estado en el dashboard o intentar de nuevo más tarde.\n\nSi el problema persiste, contactá al administrador.`
-          : `❌ **Error**\n\n${error instanceof Error ? error.message : 'Error desconocido'}\n\nIntentá de nuevo más tarde.`,
+          ? t('chat.timeout')
+          : t('chat.error', { message: error instanceof Error ? error.message : 'Unknown error' }),
         timestamp: new Date(),
         skillId: skill.id,
       };
@@ -167,7 +161,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
   if (!skill) {
     return (
       <div className="flex-1 flex items-center justify-center text-tertiary font-label-mono text-label-mono">
-        Select a skill to start
+        {t('chat.selectSkill')}
       </div>
     );
   }
@@ -209,7 +203,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
             disabled={!input.trim() || isTyping}
             className="bg-primary text-on-primary px-5 py-3 font-body-md font-bold rounded-lg transition-all duration-300 hover:glow-primary disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap border-none cursor-pointer"
           >
-            Send
+            {t('chat.send')}
           </button>
         </div>
       </div>

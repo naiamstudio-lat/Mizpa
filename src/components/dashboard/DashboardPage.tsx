@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { cleanupVms } from '../../lib/api';
 import { SKILLS } from '../playground/skills';
 
 export function DashboardPage() {
+  const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [cleanupMsg, setCleanupMsg] = useState<string | null>(null);
@@ -45,7 +47,7 @@ export function DashboardPage() {
               Mizpa
             </span>
             <span className="hidden md:inline font-label-mono text-label-mono text-primary/60 border border-primary/20 px-2 py-0.5">
-              DASHBOARD
+              {t('dashboard.badge')}
             </span>
           </div>
           <div className="flex items-center gap-6">
@@ -56,7 +58,7 @@ export function DashboardPage() {
               onClick={handleSignOut}
               className="font-label-mono text-label-mono text-tertiary hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
             >
-              Sign out
+              {t('nav.signOut')}
             </button>
           </div>
         </nav>
@@ -65,9 +67,9 @@ export function DashboardPage() {
       {/* Dashboard content */}
       <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap">
         <div className="mb-12">
-          <h1 className="font-headline-sm text-headline-sm text-on-surface mb-2">Dashboard</h1>
+          <h1 className="font-headline-sm text-headline-sm text-on-surface mb-2">{t('dashboard.title')}</h1>
           <p className="font-label-mono text-label-mono text-tertiary">
-            Welcome to Mizpa. Here you can audit and improve your websites.
+            {t('dashboard.welcome')}
           </p>
         </div>
 
@@ -87,9 +89,9 @@ export function DashboardPage() {
 
         {/* Admin section */}
         <div className="border-t border-white/5 pt-12">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">Administration</h2>
+          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">{t('dashboard.admin')}</h2>
           <p className="font-label-mono text-label-mono text-tertiary mb-6">
-            Manage active infrastructure resources.
+            {t('dashboard.adminDesc')}
           </p>
 
           {cleanupMsg && (
@@ -103,7 +105,7 @@ export function DashboardPage() {
             disabled={cleaning}
             className="border border-primary/30 text-primary px-6 py-3 font-label-mono text-label-mono uppercase tracking-widest hover:bg-primary/5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer bg-transparent"
           >
-            {cleaning ? 'Cleaning...' : 'Clean inactive VMs'}
+            {cleaning ? t('dashboard.cleaning') : t('dashboard.cleanVms')}
           </button>
         </div>
       </div>

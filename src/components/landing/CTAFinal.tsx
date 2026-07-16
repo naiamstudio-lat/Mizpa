@@ -34,7 +34,7 @@ export function CTAFinal() {
       <section className="py-section-gap px-margin-desktop border-t border-white/5 hidden md:block">
         <div className="grid grid-cols-12 gap-gutter items-center">
           <div className="col-span-12 md:col-span-6">
-            <h3 className="font-headline-lg text-headline-lg text-on-surface mb-6 italic">
+            <h3 className="font-headline-lg text-3xl md:text-headline-lg text-on-surface mb-6 italic">
               {t('cta.desktopTitle')}
             </h3>
             <p className="text-tertiary max-w-[400px] leading-relaxed">

@@ -77,7 +77,7 @@ export function Navbar() {
                 onClick={() => navigate('/dashboard')}
                 className="bg-primary text-on-primary px-6 py-2 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer border-none"
               >
-                Application
+                {t('nav.application')}
               </button>
             ) : (
               <button
@@ -105,7 +105,7 @@ export function Navbar() {
         }`}
       >
         <div className="flex justify-between items-center mb-8 pt-8">
-          <span className="font-headline-sm text-xl font-bold text-primary">SYSTEM_MENU</span>
+          <span className="font-headline-sm text-xl font-bold text-primary">{t('nav.systemMenu')}</span>
           <button onClick={() => setDrawerOpen(false)}>
             <span className="material-symbols-outlined text-on-surface">close</span>
           </button>

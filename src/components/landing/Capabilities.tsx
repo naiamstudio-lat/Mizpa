@@ -13,7 +13,7 @@ export function Capabilities() {
         <span className="font-label-mono text-label-mono text-primary mb-4 block">
           {t('capabilities.label')}
         </span>
-        <h2 className="font-headline-lg text-headline-lg text-on-surface mb-6">
+        <h2 className="font-headline-lg text-3xl md:text-headline-lg text-on-surface mb-6">
           {t('capabilities.title')}
         </h2>
         <p className="text-on-surface-variant max-w-md mb-8 leading-relaxed">

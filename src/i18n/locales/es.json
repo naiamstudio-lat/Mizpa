@@ -1,19 +1,21 @@
 {
   "nav": {
-    "audit": "AUDIT",
-    "replica": "RÉPLICA",
-    "index": "INDEX",
-    "deploy": "Comenzar Auditoría",
-    "signin": "Sign in",
+    "badge": "TECHNICAL SEO",
     "capabilities": "Capabilities",
     "process": "Process",
     "infrastructure": "Infrastructure",
-    "security": "Security"
+    "security": "Security",
+    "signin": "Iniciar sesión",
+    "cta": "Comenzar Auditoría",
+    "menu": "menú",
+    "application": "Aplicación",
+    "systemMenu": "SYSTEM_MENU",
+    "signOut": "Cerrar sesión"
   },
   "hero": {
     "badge": "[ MIZPA 2026 ]",
-    "badgeDesktop": "Autonomous AI agents for distributed SEO",
-    "title": "Audita tu web y genera una réplica optimizada para buscadores y agentes IAs",
+    "badgeDesktop": "Agentes autónomos de IA para SEO distribuido",
+    "title": "Audita tu web y genera una <italic>réplica optimizada</italic> para buscadores y agentes IAs",
     "description": "Construimos el futuro del posicionamiento con precisión algorítmica y estética etérea.",
     "placeholder": "https://tu-sitio-web.com",
     "button": "Comenzar Auditoría",
@@ -21,9 +23,9 @@
     "stats1Value": "3500+",
     "stats1Label": "Agentes Activos",
     "stats2Value": "99.7%",
-    "stats2Label": "Distributed Uptime",
+    "stats2Label": "Uptime Distribuido",
     "stats3Value": "<50ms",
-    "stats3Label": "Latency",
+    "stats3Label": "Latencia",
     "scroll": "desplaza"
   },
   "capabilities": {
@@ -92,10 +94,10 @@
     "price": "19",
     "period": "USD/mes",
     "features": [
-      "Full Technical Audit (Unlimited)",
-      "AI Replica Engine Access",
-      "Global Edge Deployment",
-      "24/7 Algorithmic Monitoring"
+      "Auditoría Técnica Completa (Ilimitada)",
+      "Acceso al Motor de Réplica IA",
+      "Despliegue Global Edge",
+      "Monitoreo Algorítmico 24/7"
     ],
     "cta": "COMENZAR PLAN PRO"
   },
@@ -105,25 +107,75 @@
     "placeholder": "https://tu-sitio.com",
     "button": "Generar gemelo web",
     "terms": "Consulta nuestros términos y condiciones",
-    "desktopTitle": "Ready to transcend the grid?",
-    "desktopDescription": "Join the vanguard of digital positioning and redefine how machines perceive your brand.",
-    "neuralLink": "CONNECT\nNEURAL LINK"
+    "desktopTitle": "¿Listo para trascender la cuadrícula?",
+    "desktopDescription": "Únete a la vanguardia del posicionamiento digital y redefine cómo las máquinas perciben tu marca.",
+    "neuralLink": "CONECTAR\nENLACE NEURAL"
   },
   "footer": {
     "brand": "Mizpa Next Gen",
-    "tagline": "Technical SEO architecture for the age of distributed intelligence.",
+    "tagline": "Arquitectura SEO técnico para la era de la inteligencia distribuida.",
     "copyright": "© 2026 Mizpa. Todos los derechos reservados.",
-    "studio": "Producto de Naiam Studio",
-    "audit": "AUDIT",
-    "replica": "RÉPLICA",
-    "index": "INDEX",
-    "legal": "LEGAL",
-    "resources": "RESOURCES",
-    "apiDocs": "API Docs",
-    "systemStatus": "System Status",
+    "resources": "RECURSOS",
+    "apiDocs": "Docs API",
+    "systemStatus": "Estado del Sistema",
     "whitepaper": "Whitepaper",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "nodeStatus": "NODE_01_ACTIVE"
+    "legal": "LEGAL",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos del Servicio",
+    "nodeStatus": "NODE_01_ACTIVO"
+  },
+  "dashboard": {
+    "badge": "DASHBOARD",
+    "title": "Dashboard",
+    "welcome": "Bienvenido a Mizpa. Aquí podés auditar y mejorar tus sitios web.",
+    "admin": "Administración",
+    "adminDesc": "Gestioná los recursos activos de infraestructura.",
+    "cleanVms": "Limpiar VMs inactivas",
+    "cleaning": "Limpiando..."
+  },
+  "playground": {
+    "badge": "Playground",
+    "title": "Playground",
+    "description": "Elegí un skill y probá las capacidades de tus agentes Mizpa.",
+    "home": "← Inicio",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "selectSkill": "Seleccioná un skill para empezar",
+    "tasksHint": "Las tareas se ejecutan en servidores remotos. Los resultados pueden tardar unos minutos.",
+    "send": "Enviar"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear tu cuenta",
+    "signUpDesc": "Empezá a auditar y mejorar tus sitios web",
+    "signInDesc": "Accedé a tu dashboard de Mizpa",
+    "email": "Email",
+    "password": "Contraseña",
+    "emailPlaceholder": "tu@email.com",
+    "passwordPlaceholder": "••••••••",
+    "processing": "Procesando...",
+    "backToHome": "← Volver al inicio",
+    "loading": "Cargando...",
+    "error": "Error de autenticación",
+    "toggleSignIn": "¿Ya tenés cuenta? Iniciá sesión",
+    "toggleSignUp": "¿No tenés cuenta? Creá una",
+    "checkEmail": "Revisá tu email para confirmar tu cuenta.",
+    "technicalSeo": "TECHNICAL SEO"
+  },
+  "chat": {
+    "agent": "Mizpa Agent",
+    "send": "Enviar",
+    "selectSkill": "Seleccioná un skill para empezar",
+    "statusQueued": "⏳ En cola — esperando VM libre",
+    "statusPending": "⏳ Pendiente — iniciando agente...",
+    "statusRunning": "🔄 Procesando...",
+    "taskCompleted": "✅ Tarea completada.",
+    "error": "❌ **Error**\n\n{{message}}\n\nIntentá de nuevo más tarde.",
+    "timeout": "⚠️ **La tarea está tardando más de lo esperado**\n\nPodés revisar el estado en el dashboard o intentar de nuevo más tarde.\n\nSi el problema persiste, contactá al administrador.",
+    "welcome": "¡Hola! Soy Mizpa Agent. Seleccionaste: **{{skill}}**\n\n{{description}}\n\nPegá una URL y empiezo el análisis.",
+    "invalidUrl": "❌ **URL inválida**\n\nIngresá una URL completa con protocolo (ej. `https://ejemplo.com`).",
+    "taskCreated": "⏳ **Tarea creada**\n\nSkill: **{{skill}}**\nURL: `{{url}}`\n\nIniciando agente...",
+    "taskQueued": "⏳ **En cola**\n\nNo hay VMs disponibles. La tarea se procesará cuando se libere una.\n\n{{message}}",
+    "taskFailed": "❌ **Tarea fallida**\n\n{{error}}"
   }
 }

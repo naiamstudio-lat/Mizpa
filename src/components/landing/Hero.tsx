@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 
 export function Hero() {
   const { t } = useTranslation();
@@ -30,9 +31,10 @@ export function Hero() {
           </div>
 
           <h1 className="font-display-lg text-display-lg-mobile text-on-surface leading-tight mb-8">
-            Audit your website and generate an{' '}
-            <span className="text-primary italic">optimized replica</span>{' '}
-            for search engines and AI agents
+            <Trans
+              i18nKey="hero.title"
+              components={{ italic: <span className="text-primary italic" /> }}
+            />
           </h1>
 
           <div className="flex flex-col gap-6 justify-center items-center w-full max-w-md">
@@ -55,18 +57,18 @@ export function Hero() {
           </div>
 
           {/* Mobile stats */}
-          <div className="flex gap-12 justify-center pt-12 mt-12 border-t border-white/5 w-full max-w-md">
-            <div className="text-center">
-              <div className="font-data-lg text-data-lg text-on-surface">{t('hero.stats1Value')}</div>
-              <div className="font-label-mono text-[10px] text-tertiary uppercase tracking-widest mt-2">{t('hero.stats1Label')}</div>
+          <div className="flex gap-4 sm:gap-8 justify-center pt-12 mt-12 border-t border-white/5 w-full">
+            <div className="text-center min-w-0">
+              <div className="font-label-mono text-xl sm:text-data-lg text-on-surface">{t('hero.stats1Value')}</div>
+              <div className="font-label-mono text-[10px] text-tertiary uppercase tracking-widest mt-2 whitespace-nowrap">{t('hero.stats1Label')}</div>
             </div>
-            <div className="text-center">
-              <div className="font-data-lg text-data-lg text-on-surface">{t('hero.stats2Value')}</div>
-              <div className="font-label-mono text-[10px] text-tertiary uppercase tracking-widest mt-2">{t('hero.stats2Label')}</div>
+            <div className="text-center min-w-0">
+              <div className="font-label-mono text-xl sm:text-data-lg text-on-surface">{t('hero.stats2Value')}</div>
+              <div className="font-label-mono text-[10px] text-tertiary uppercase tracking-widest mt-2 whitespace-nowrap">{t('hero.stats2Label')}</div>
             </div>
-            <div className="text-center">
-              <div className="font-data-lg text-data-lg text-on-surface">{t('hero.stats3Value')}</div>
-              <div className="font-label-mono text-[10px] text-tertiary uppercase tracking-widest mt-2">{t('hero.stats3Label')}</div>
+            <div className="text-center min-w-0">
+              <div className="font-label-mono text-xl sm:text-data-lg text-on-surface">{t('hero.stats3Value')}</div>
+              <div className="font-label-mono text-[10px] text-tertiary uppercase tracking-widest mt-2 whitespace-nowrap">{t('hero.stats3Label')}</div>
             </div>
           </div>
 
@@ -87,9 +89,10 @@ export function Hero() {
           </div>
 
           <h1 className="font-display-lg text-display-lg text-on-surface leading-tight">
-            Audit your website and generate an{' '}
-            <span className="text-primary italic">optimized replica</span>{' '}
-            for search engines and AI agents
+            <Trans
+              i18nKey="hero.title"
+              components={{ italic: <span className="text-primary italic" /> }}
+            />
           </h1>
 
           <p className="font-body-md text-headline-sm text-tertiary max-w-[600px] leading-relaxed">

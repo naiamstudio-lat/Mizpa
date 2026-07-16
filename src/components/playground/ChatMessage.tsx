@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -11,6 +13,7 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ message }: ChatMessageProps) {
+  const { t, i18n } = useTranslation();
   const isUser = message.role === 'user';
 
   return (
@@ -24,12 +27,12 @@ export function ChatMessage({ message }: ChatMessageProps) {
       >
         {!isUser && (
           <div className="flex items-center gap-1.5 mb-2">
-            <span className="font-label-mono text-[10px] uppercase tracking-widest text-primary">Mizpa Agent</span>
+            <span className="font-label-mono text-[10px] uppercase tracking-widest text-primary">{t('chat.agent')}</span>
           </div>
         )}
         <div className="font-body-md text-body-md whitespace-pre-wrap">{message.content}</div>
         <div className={`font-label-mono text-[10px] mt-2 ${isUser ? 'text-on-primary/60' : 'text-tertiary/60'}`}>
-          {message.timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+          {message.timestamp.toLocaleTimeString(i18n.language === 'es' ? 'es-AR' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
     </div>

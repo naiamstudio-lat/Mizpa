@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './useAuth';
 
 interface AuthModalContextValue {
@@ -32,6 +33,7 @@ export function useAuthModal() {
 /* ─── Auth Modal Component ─── */
 
 function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -51,7 +53,7 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
       onClose();
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Authentication error');
+      setError(err.message || t('auth.error'));
     } finally {
       setLoading(false);
     }
@@ -89,8 +91,8 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
         {/* Header */}
         <div className="mb-8 text-center">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">Sign in</h2>
-          <p className="font-label-mono text-label-mono text-tertiary">Access your Mizpa dashboard</p>
+          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">{t('auth.signIn')}</h2>
+          <p className="font-label-mono text-label-mono text-tertiary">{t('auth.signInDesc')}</p>
         </div>
 
         {/* Error */}
@@ -104,19 +106,19 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="font-label-mono text-label-mono text-tertiary mb-2 block">Email</label>
+            <label className="font-label-mono text-label-mono text-tertiary mb-2 block">{t('auth.email')}</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full bg-background border border-white/10 px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-outline-variant"
-              placeholder="you@email.com"
+              placeholder={t('auth.emailPlaceholder')}
             />
           </div>
 
           <div>
-            <label className="font-label-mono text-label-mono text-tertiary mb-2 block">Password</label>
+            <label className="font-label-mono text-label-mono text-tertiary mb-2 block">{t('auth.password')}</label>
             <input
               type="password"
               value={password}
@@ -124,7 +126,7 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
               required
               minLength={6}
               className="w-full bg-background border border-white/10 px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-outline-variant"
-              placeholder="••••••••"
+              placeholder={t('auth.passwordPlaceholder')}
             />
           </div>
 
@@ -133,7 +135,7 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
             disabled={loading}
             className="w-full bg-primary text-on-primary py-3 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Processing...' : 'Sign in'}
+            {loading ? t('auth.processing') : t('auth.signIn')}
           </button>
         </form>
       </div>

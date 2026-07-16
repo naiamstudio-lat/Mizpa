@@ -16,7 +16,7 @@ export function Process() {
         <span className="font-label-mono text-label-mono text-primary mb-4 block">
           {t('process.label')}
         </span>
-        <h2 className="font-headline-lg text-headline-lg text-on-surface mb-6">
+        <h2 className="font-headline-lg text-3xl md:text-headline-lg text-on-surface mb-6">
           {t('process.title')}
         </h2>
         <p className="text-on-surface-variant max-w-2xl leading-relaxed">

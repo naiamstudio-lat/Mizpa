@@ -13,7 +13,7 @@ export function Pricing() {
         <span className="font-label-mono text-label-mono text-primary">
           {t('pricing.label')}
         </span>
-        <h2 className="font-headline-lg text-headline-lg text-on-surface">
+        <h2 className="font-headline-lg text-3xl md:text-headline-lg text-on-surface">
           {t('pricing.title')}
         </h2>
 

@@ -7,12 +7,15 @@
     "security": "Security",
     "signin": "Sign in",
     "cta": "Start Audit",
-    "menu": "menu"
+    "menu": "menu",
+    "application": "Application",
+    "systemMenu": "SYSTEM_MENU",
+    "signOut": "Sign out"
   },
   "hero": {
     "badge": "[ MIZPA 2026 ]",
     "badgeDesktop": "Autonomous AI agents for distributed SEO",
-    "title": "Audit your website and generate an optimized replica for search engines and AI agents",
+    "title": "Audit your website and generate an <italic>optimized replica</italic> for search engines and AI agents",
     "description": "Building the future of positioning with algorithmic precision and ethereal aesthetics.",
     "placeholder": "https://your-website.com",
     "button": "Start Audit",
@@ -120,5 +123,59 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "nodeStatus": "NODE_01_ACTIVE"
+  },
+  "dashboard": {
+    "badge": "DASHBOARD",
+    "title": "Dashboard",
+    "welcome": "Welcome to Mizpa. Here you can audit and improve your websites.",
+    "admin": "Administration",
+    "adminDesc": "Manage active infrastructure resources.",
+    "cleanVms": "Clean inactive VMs",
+    "cleaning": "Cleaning..."
+  },
+  "playground": {
+    "badge": "Playground",
+    "title": "Playground",
+    "description": "Choose a skill and test your Mizpa agents' capabilities.",
+    "home": "← Home",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "selectSkill": "Select a skill to start",
+    "tasksHint": "Tasks run on remote servers. Results may take a few minutes.",
+    "send": "Send"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Create your account",
+    "signUpDesc": "Start auditing and improving your websites",
+    "signInDesc": "Access your Mizpa dashboard",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@email.com",
+    "passwordPlaceholder": "••••••••",
+    "processing": "Processing...",
+    "backToHome": "← Back to home",
+    "loading": "Loading...",
+    "error": "Authentication error",
+    "toggleSignIn": "Already have an account? Sign in",
+    "toggleSignUp": "Don't have an account? Create one",
+    "checkEmail": "Check your email to confirm your account.",
+    "technicalSeo": "TECHNICAL SEO"
+  },
+  "chat": {
+    "agent": "Mizpa Agent",
+    "send": "Send",
+    "selectSkill": "Select a skill to start",
+    "statusQueued": "⏳ Queued — waiting for free VM",
+    "statusPending": "⏳ Pending — starting agent...",
+    "statusRunning": "🔄 Processing...",
+    "taskCompleted": "✅ Task completed.",
+    "error": "❌ **Error**\n\n{{message}}\n\nPlease try again later.",
+    "timeout": "⚠️ **The task is taking longer than expected**\n\nYou can check the status on the dashboard or try again later.\n\nIf the problem persists, contact the administrator.",
+    "welcome": "Hi! I'm Mizpa Agent. You selected: **{{skill}}**\n\n{{description}}\n\nPaste a URL and I'll start the analysis.",
+    "invalidUrl": "❌ **Invalid URL**\n\nEnter a full URL with protocol (e.g. `https://example.com`).",
+    "taskCreated": "⏳ **Task created**\n\nSkill: **{{skill}}**\nURL: `{{url}}`\n\nStarting agent...",
+    "taskQueued": "⏳ **Queued**\n\nNo VMs available. The task will process when one becomes available.\n\n{{message}}",
+    "taskFailed": "❌ **Task failed**\n\n{{error}}"
   }
 }

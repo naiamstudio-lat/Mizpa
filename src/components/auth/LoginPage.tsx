@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -21,13 +23,13 @@ export function LoginPage() {
     try {
       if (isSignUp) {
         await signUp(email, password);
-        setMessage('Check your email to confirm your account.');
+        setMessage(t('auth.checkEmail'));
       } else {
         await signIn(email, password);
         navigate('/dashboard');
       }
     } catch (err: any) {
-      setError(err.message || 'Authentication error');
+      setError(err.message || t('auth.error'));
     } finally {
       setLoading(false);
     }
@@ -41,18 +43,18 @@ export function LoginPage() {
           <span className="font-display-lg text-headline-sm tracking-tighter text-on-surface uppercase font-extrabold">
             Mizpa
           </span>
-          <span className="font-label-mono text-label-mono text-primary/60">TECHNICAL SEO</span>
+          <span className="font-label-mono text-label-mono text-primary/60">{t('auth.technicalSeo')}</span>
         </Link>
 
         {/* Card */}
         <div className="bg-surface-container border border-white/5 p-8">
           <h1 className="font-headline-sm text-headline-sm text-on-surface mb-2 text-center">
-            {isSignUp ? 'Create your account' : 'Sign in'}
+            {isSignUp ? t('auth.signUp') : t('auth.signIn')}
           </h1>
           <p className="font-label-mono text-label-mono text-tertiary text-center mb-8">
             {isSignUp
-              ? 'Start auditing and improving your websites'
-              : 'Access your Mizpa dashboard'}
+              ? t('auth.signUpDesc')
+              : t('auth.signInDesc')}
           </p>
 
           {error && (
@@ -71,19 +73,19 @@ export function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="font-label-mono text-label-mono text-tertiary mb-2 block">Email</label>
+              <label className="font-label-mono text-label-mono text-tertiary mb-2 block">{t('auth.email')}</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full bg-background border border-white/10 px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-outline-variant"
-                placeholder="you@email.com"
+                placeholder={t('auth.emailPlaceholder')}
               />
             </div>
 
             <div>
-              <label className="font-label-mono text-label-mono text-tertiary mb-2 block">Password</label>
+              <label className="font-label-mono text-label-mono text-tertiary mb-2 block">{t('auth.password')}</label>
               <input
                 type="password"
                 value={password}
@@ -91,7 +93,7 @@ export function LoginPage() {
                 required
                 minLength={6}
                 className="w-full bg-background border border-white/10 px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-outline-variant"
-                placeholder="••••••••"
+                placeholder={t('auth.passwordPlaceholder')}
               />
             </div>
 
@@ -100,7 +102,7 @@ export function LoginPage() {
               disabled={loading}
               className="w-full bg-primary text-on-primary py-3 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Processing...' : isSignUp ? 'Create account' : 'Sign in'}
+              {loading ? t('auth.processing') : isSignUp ? t('auth.signUp') : t('auth.signIn')}
             </button>
           </form>
 
@@ -110,8 +112,8 @@ export function LoginPage() {
               className="font-label-mono text-label-mono text-tertiary hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
             >
               {isSignUp
-                ? 'Already have an account? Sign in'
-                : "Don't have an account? Create one"}
+                ? t('auth.toggleSignIn')
+                : t('auth.toggleSignUp')}
             </button>
           </div>
         </div>
@@ -122,7 +124,7 @@ export function LoginPage() {
             to="/"
             className="font-label-mono text-label-mono text-tertiary hover:text-primary transition-colors no-underline"
           >
-            ← Back to home
+            {t('auth.backToHome')}
           </Link>
         </div>
       </div>

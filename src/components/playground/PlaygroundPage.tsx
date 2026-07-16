@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useAuthModal } from '../../hooks/useAuthModal';
 import { SkillSelector } from './SkillSelector';
@@ -7,6 +8,7 @@ import { ChatInterface } from './ChatInterface';
 import { SKILLS, type Skill } from './skills';
 
 export function PlaygroundPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const { user, signOut } = useAuth();
@@ -33,7 +35,7 @@ export function PlaygroundPage() {
               </span>
             </Link>
             <span className="font-label-mono text-label-mono text-primary/60 border border-primary/20 px-2 py-0.5">
-              Playground
+              {t('playground.badge')}
             </span>
           </div>
 
@@ -47,7 +49,7 @@ export function PlaygroundPage() {
                   onClick={() => signOut()}
                   className="font-label-mono text-label-mono text-tertiary hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
                 >
-                  Sign out
+                  {t('playground.signOut')}
                 </button>
               </>
             ) : (
@@ -55,14 +57,14 @@ export function PlaygroundPage() {
                 onClick={openAuth}
                 className="bg-primary text-on-primary px-6 py-2 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 cursor-pointer border-none"
               >
-                Sign in
+                {t('playground.signIn')}
               </button>
             )}
             <Link
               to="/"
               className="font-label-mono text-label-mono text-tertiary hover:text-primary transition-colors no-underline"
             >
-              ← Home
+              {t('playground.home')}
             </Link>
           </div>
         </nav>
@@ -72,9 +74,9 @@ export function PlaygroundPage() {
       <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-margin-mobile py-section-gap">
         {/* Title */}
         <div className="mb-8">
-          <h1 className="font-headline-sm text-headline-sm text-on-surface mb-2">Playground</h1>
+          <h1 className="font-headline-sm text-headline-sm text-on-surface mb-2">{t('playground.title')}</h1>
           <p className="font-label-mono text-label-mono text-tertiary">
-            Choose a skill and test your Mizpa agents' capabilities.
+            {t('playground.description')}
           </p>
         </div>
 
@@ -88,7 +90,7 @@ export function PlaygroundPage() {
 
         {/* Footer hint */}
         <p className="font-label-mono text-[10px] text-tertiary/50 text-center mt-6">
-          Tasks run on remote servers. Results may take a few minutes.
+          {t('playground.tasksHint')}
         </p>
       </div>
     </div>
