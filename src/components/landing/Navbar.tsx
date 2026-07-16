@@ -4,6 +4,37 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useAuthModal } from '../../hooks/useAuthModal';
 
+function LangToggle({ className }: { className?: string }) {
+  const { i18n } = useTranslation();
+
+  const switchLang = (lang: string) => {
+    i18n.changeLanguage(lang);
+    document.cookie = `mizpa_lang=${lang}; Path=/; Max-Age=2592000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+  };
+
+  return (
+    <span className={`font-label-mono text-label-mono ${className ?? ''}`}>
+      <button
+        onClick={() => switchLang('en')}
+        className={`bg-transparent border-none cursor-pointer transition-colors ${
+          i18n.language === 'en' ? 'text-primary' : 'text-tertiary hover:text-on-surface'
+        }`}
+      >
+        EN
+      </button>
+      <span className="text-tertiary mx-1.5 select-none">|</span>
+      <button
+        onClick={() => switchLang('es')}
+        className={`bg-transparent border-none cursor-pointer transition-colors ${
+          i18n.language === 'es' ? 'text-primary' : 'text-tertiary hover:text-on-surface'
+        }`}
+      >
+        ES
+      </button>
+    </span>
+  );
+}
+
 export function Navbar() {
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -40,6 +71,7 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-6">
+            <LangToggle className="hidden md:inline" />
             {user ? (
               <button
                 onClick={() => navigate('/dashboard')}
@@ -78,6 +110,8 @@ export function Navbar() {
             <span className="material-symbols-outlined text-on-surface">close</span>
           </button>
         </div>
+        <LangToggle className="md:hidden text-center pb-4 border-b border-white/10 mb-2" />
+
         <div className="flex flex-col gap-2">
           <a
             href="#capabilities"
