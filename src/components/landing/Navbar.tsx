@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../hooks/useAuth';
 import { useAuthModal } from '../../hooks/useAuthModal';
 
 export function Navbar() {
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { user } = useAuth();
   const { open: openAuth } = useAuthModal();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -36,18 +40,21 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-6">
-            <button
-              onClick={openAuth}
-              className="hidden lg:block font-label-mono text-label-mono text-tertiary hover:text-on-surface transition-colors cursor-pointer bg-transparent border-none"
-            >
-              {t('nav.signin')}
-            </button>
-            <button
-              onClick={openAuth}
-              className="bg-primary text-on-primary px-6 py-2 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer border-none"
-            >
-              {t('nav.cta')}
-            </button>
+            {user ? (
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="bg-primary text-on-primary px-6 py-2 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer border-none"
+              >
+                Application
+              </button>
+            ) : (
+              <button
+                onClick={openAuth}
+                className="bg-primary text-on-primary px-6 py-2 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer border-none"
+              >
+                {t('nav.cta')}
+              </button>
+            )}
             <button
               className="md:hidden text-primary p-2"
               onClick={() => setDrawerOpen(true)}
