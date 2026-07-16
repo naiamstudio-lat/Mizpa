@@ -75,6 +75,18 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
           <span className="material-symbols-outlined">close</span>
         </button>
 
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(2 12)">
+              <path d="M30 8c-4-8-14-10-18-6s-2 12 4 18c4 4 10 5.5 14 6-4 .5-10 2-14 6-6 6-6 14-4 18s14 2 18-6c2.5-4 4-10 4.5-16 .5 6 2 12 4.5 16 4 8 14 10 18 6s2-12-4-18c-4-4-10-5.5-14-6 4-.5 10-2 14-6 6-6 6-14 4-18s-14-2-18 6c-2.5 4-4 10-4.5 16-.5-6-2-12-4.5-16z" fill="#ffb1c4"/>
+            </g>
+          </svg>
+          <span className="font-display-lg text-headline-sm tracking-tighter text-on-surface uppercase font-extrabold">
+            Mizpa
+          </span>
+        </div>
+
         {/* Header */}
         <div className="mb-8 text-center">
           <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">Sign in</h2>
