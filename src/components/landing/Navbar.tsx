@@ -50,12 +50,12 @@ export function Navbar() {
             <span className="font-display-lg text-headline-sm tracking-tighter text-on-surface uppercase font-extrabold">
               Mizpa
             </span>
-            <span className="hidden md:inline font-label-mono text-label-mono text-primary opacity-60">
+            <span className="hidden lg:inline font-label-mono text-label-mono text-primary opacity-60">
               {t('nav.badge')}
             </span>
           </div>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8">
             <a href="#capabilities" className="font-body-md text-body-md text-primary font-bold hover:text-primary transition-colors duration-300">
               {t('nav.capabilities')}
             </a>
@@ -88,7 +88,7 @@ export function Navbar() {
               </button>
             )}
             <button
-              className="md:hidden text-primary p-2"
+              className="lg:hidden text-primary p-2"
               onClick={() => setDrawerOpen(true)}
               aria-label={t('nav.menu')}
             >
