@@ -71,7 +71,7 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-6">
-            <LangToggle className="hidden md:inline" />
+            <LangToggle />
             {user ? (
               <button
                 onClick={() => navigate('/dashboard')}
@@ -110,8 +110,6 @@ export function Navbar() {
             <span className="material-symbols-outlined text-on-surface">close</span>
           </button>
         </div>
-        <LangToggle className="md:hidden text-center pb-4 border-b border-white/10 mb-2" />
-
         <div className="flex flex-col gap-2">
           <a
             href="#capabilities"
