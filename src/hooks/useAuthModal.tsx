@@ -32,13 +32,11 @@ export function useAuthModal() {
 /* ─── Auth Modal Component ─── */
 
 function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   if (!isOpen) return null;
@@ -46,29 +44,17 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setMessage('');
     setLoading(true);
 
     try {
-      if (mode === 'signup') {
-        await signUp(email, password);
-        setMessage('Check your email to confirm your account.');
-      } else {
-        await signIn(email, password);
-        onClose();
-        navigate('/dashboard');
-      }
+      await signIn(email, password);
+      onClose();
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Authentication error');
     } finally {
       setLoading(false);
     }
-  };
-
-  const switchMode = () => {
-    setMode(mode === 'signin' ? 'signup' : 'signin');
-    setError('');
-    setMessage('');
   };
 
   return (
@@ -91,28 +77,15 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
         {/* Header */}
         <div className="mb-8 text-center">
-          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">
-            {mode === 'signup' ? 'Create your account' : 'Sign in'}
-          </h2>
-          <p className="font-label-mono text-label-mono text-tertiary">
-            {mode === 'signup'
-              ? 'Start auditing and improving your websites'
-              : 'Access your Mizpa dashboard'}
-          </p>
+          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">Sign in</h2>
+          <p className="font-label-mono text-label-mono text-tertiary">Access your Mizpa dashboard</p>
         </div>
 
-        {/* Messages */}
+        {/* Error */}
         {error && (
           <div className="border border-primary/30 bg-primary/5 px-4 py-3 mb-4 flex items-center gap-3">
             <span className="material-symbols-outlined text-primary text-[18px]">error_outline</span>
             <span className="font-body-md text-body-md text-on-surface">{error}</span>
-          </div>
-        )}
-
-        {message && (
-          <div className="border border-primary/30 bg-primary/5 px-4 py-3 mb-4 flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary text-[18px]">check_circle</span>
-            <span className="font-body-md text-body-md text-on-surface">{message}</span>
           </div>
         )}
 
@@ -148,21 +121,9 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
             disabled={loading}
             className="w-full bg-primary text-on-primary py-3 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Processing...' : mode === 'signup' ? 'Create account' : 'Sign in'}
+            {loading ? 'Processing...' : 'Sign in'}
           </button>
         </form>
-
-        {/* Toggle mode */}
-        <div className="mt-6 text-center">
-          <button
-            onClick={switchMode}
-            className="font-label-mono text-label-mono text-tertiary hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
-          >
-            {mode === 'signup'
-              ? 'Already have an account? Sign in'
-              : "Don't have an account? Create one"}
-          </button>
-        </div>
       </div>
     </div>
   );
