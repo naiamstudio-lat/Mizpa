@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuthModal } from '../../hooks/useAuthModal';
 
 export function Navbar() {
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { open: openAuth } = useAuthModal();
 
   return (
     <>
@@ -34,10 +36,16 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-6">
-            <button className="hidden lg:block font-label-mono text-label-mono text-tertiary hover:text-on-surface transition-colors">
+            <button
+              onClick={openAuth}
+              className="hidden lg:block font-label-mono text-label-mono text-tertiary hover:text-on-surface transition-colors cursor-pointer bg-transparent border-none"
+            >
               {t('nav.signin')}
             </button>
-            <button className="bg-primary text-on-primary px-6 py-2 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95">
+            <button
+              onClick={openAuth}
+              className="bg-primary text-on-primary px-6 py-2 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer border-none"
+            >
               {t('nav.cta')}
             </button>
             <button

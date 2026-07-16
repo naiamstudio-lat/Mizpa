@@ -21,81 +21,76 @@ export function LoginPage() {
     try {
       if (isSignUp) {
         await signUp(email, password);
-        setMessage('Revisá tu email para confirmar tu cuenta.');
+        setMessage('Check your email to confirm your account.');
       } else {
         await signIn(email, password);
         navigate('/dashboard');
       }
     } catch (err: any) {
-      setError(err.message || 'Error al autenticar');
+      setError(err.message || 'Authentication error');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-navy flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-margin-mobile">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <Link to="/" className="flex items-center justify-center gap-2.5 mb-8 no-underline">
-          <div className="w-9 h-9 bg-navy-mid rounded-lg flex items-center justify-center border border-mint/30">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <circle cx="10" cy="8" r="5.5" stroke="#6EE7B7" strokeWidth="1.2" />
-              <path d="M7 8l2 2 4-4" stroke="#6EE7B7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M6 15l4-2.5 4 2.5" stroke="#94A3B8" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
-              <line x1="10" y1="12.5" x2="10" y2="17" stroke="#94A3B8" strokeWidth="1" strokeLinecap="round" />
-            </svg>
-          </div>
-          <span className="font-display text-2xl font-bold text-cream">
-            Miz<span className="text-mint">pa</span>
+        <Link to="/" className="flex items-center justify-center gap-3 mb-10 no-underline">
+          <span className="font-display-lg text-headline-sm tracking-tighter text-on-surface uppercase font-extrabold">
+            Mizpa
           </span>
+          <span className="font-label-mono text-label-mono text-primary/60">TECHNICAL SEO</span>
         </Link>
 
         {/* Card */}
-        <div className="bg-navy-mid border border-white/[0.08] rounded-2xl p-8">
-          <h1 className="font-display text-2xl font-bold text-cream mb-2 text-center">
-            {isSignUp ? 'Creá tu cuenta' : 'Ingresá a tu cuenta'}
+        <div className="bg-surface-container border border-white/5 p-8">
+          <h1 className="font-headline-sm text-headline-sm text-on-surface mb-2 text-center">
+            {isSignUp ? 'Create your account' : 'Sign in'}
           </h1>
-          <p className="text-sm text-slate text-center mb-6">
+          <p className="font-label-mono text-label-mono text-tertiary text-center mb-8">
             {isSignUp
-              ? 'Empezá a auditar y mejorar tus sitios web'
-              : 'Accedé al dashboard de Mizpa'}
+              ? 'Start auditing and improving your websites'
+              : 'Access your Mizpa dashboard'}
           </p>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-lg mb-4">
-              {error}
+            <div className="border border-primary/30 bg-primary/5 px-4 py-3 mb-4 flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary text-[18px]">error_outline</span>
+              <span className="font-body-md text-body-md text-on-surface">{error}</span>
             </div>
           )}
 
           {message && (
-            <div className="bg-mint/10 border border-mint/30 text-mint text-sm px-4 py-3 rounded-lg mb-4">
-              {message}
+            <div className="border border-primary/30 bg-primary/5 px-4 py-3 mb-4 flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+              <span className="font-body-md text-body-md text-on-surface">{message}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-slate-light mb-1.5">Email</label>
+              <label className="font-label-mono text-label-mono text-tertiary mb-2 block">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-navy border border-white/10 text-cream px-4 py-3 rounded-lg text-sm font-sans outline-none transition-colors focus:border-mint placeholder:text-slate"
-                placeholder="tu@email.com"
+                className="w-full bg-background border border-white/10 px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-outline-variant"
+                placeholder="you@email.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-light mb-1.5">Password</label>
+              <label className="font-label-mono text-label-mono text-tertiary mb-2 block">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full bg-navy border border-white/10 text-cream px-4 py-3 rounded-lg text-sm font-sans outline-none transition-colors focus:border-mint placeholder:text-slate"
+                className="w-full bg-background border border-white/10 px-4 py-3 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-outline-variant"
                 placeholder="••••••••"
               />
             </div>
@@ -103,28 +98,31 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-mint text-navy py-3 rounded-lg text-sm font-semibold font-sans transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-on-primary py-3 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Procesando...' : isSignUp ? 'Crear cuenta' : 'Ingresar'}
+              {loading ? 'Processing...' : isSignUp ? 'Create account' : 'Sign in'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <button
               onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }}
-              className="text-sm text-slate hover:text-mint transition-colors bg-transparent border-none cursor-pointer"
+              className="font-label-mono text-label-mono text-tertiary hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
             >
               {isSignUp
-                ? '¿Ya tenés cuenta? Ingresá'
-                : '¿No tenés cuenta? Creá una gratis'}
+                ? 'Already have an account? Sign in'
+                : "Don't have an account? Create one"}
             </button>
           </div>
         </div>
 
         {/* Back to home */}
         <div className="mt-6 text-center">
-          <Link to="/" className="text-sm text-slate hover:text-cream transition-colors no-underline">
-            ← Volver al inicio
+          <Link
+            to="/"
+            className="font-label-mono text-label-mono text-tertiary hover:text-primary transition-colors no-underline"
+          >
+            ← Back to home
           </Link>
         </div>
       </div>

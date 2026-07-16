@@ -39,7 +39,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
         {
           id: 'welcome',
           role: 'assistant',
-          content: `Hola! Soy Mizpa Agent. Seleccionaste: **${skill.name}**\n\n${skill.description}\n\nPegá una URL y arranco el análisis.`,
+          content: `Hi! I'm Mizpa Agent. You selected: **${skill.name}**\n\n${skill.description}\n\nPaste a URL and I'll start the analysis.`,
           timestamp: new Date(),
           skillId: skill.id,
         },
@@ -166,8 +166,8 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
 
   if (!skill) {
     return (
-      <div className="flex-1 flex items-center justify-center text-slate text-sm">
-        Seleccioná un skill para arrancar
+      <div className="flex-1 flex items-center justify-center text-tertiary font-label-mono text-label-mono">
+        Select a skill to start
       </div>
     );
   }
@@ -181,11 +181,11 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
         ))}
         {isTyping && (
           <div className="flex justify-start mb-4">
-            <div className="bg-navy-mid border border-white/[0.08] px-4 py-3 rounded-2xl rounded-bl-md">
+            <div className="bg-surface-container border border-white/5 px-4 py-3">
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-mint animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-1.5 h-1.5 rounded-full bg-mint animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-1.5 h-1.5 rounded-full bg-mint animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           </div>
@@ -194,7 +194,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-white/[0.06]">
+        <div className="p-4 border-t border-white/5">
         <div className="flex gap-2.5">
           <input
             type="text"
@@ -202,14 +202,14 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={skill.promptPlaceholder}
-            className="flex-1 bg-navy border border-white/10 text-cream px-4 py-3 rounded-xl text-sm font-sans outline-none transition-colors focus:border-mint placeholder:text-slate"
+            className="flex-1 bg-background border border-white/10 text-on-surface px-4 py-3 font-body-md text-body-md outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary/20 placeholder:text-outline-variant"
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="bg-mint text-navy px-5 py-3 rounded-xl text-sm font-semibold font-sans transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+            className="bg-primary text-on-primary px-5 py-3 font-body-md font-bold rounded-lg transition-all duration-300 hover:glow-primary disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap border-none cursor-pointer"
           >
-            Enviar
+            Send
           </button>
         </div>
       </div>

@@ -6,8 +6,11 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy flex items-center justify-center">
-        <div className="text-mint text-sm">Cargando...</div>
+      <div className="min-h-screen bg-background flex items-center justify-center flex-col gap-4">
+        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+        <span className="font-label-mono text-label-mono text-tertiary uppercase tracking-widest">
+          Loading...
+        </span>
       </div>
     );
   }

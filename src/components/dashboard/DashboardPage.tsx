@@ -22,7 +22,7 @@ export function DashboardPage() {
       const result = await cleanupVms(false);
       setCleanupMsg(result.message);
     } catch (err) {
-      setCleanupMsg(err instanceof Error ? err.message : 'Error al limpiar VMs');
+      setCleanupMsg(err instanceof Error ? err.message : 'Error cleaning VMs');
     } finally {
       setCleaning(false);
     }
@@ -36,69 +36,74 @@ export function DashboardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-background">
       {/* Dashboard nav */}
-      <nav className="border-b border-white/[0.06] px-10 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-navy-mid rounded-lg flex items-center justify-center border border-mint/30">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-              <circle cx="10" cy="8" r="5.5" stroke="#6EE7B7" strokeWidth="1.2" />
-              <path d="M7 8l2 2 4-4" stroke="#6EE7B7" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+      <header className="border-b border-white/5 bg-background/80 backdrop-blur-xl">
+        <nav className="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-grid-unit w-full max-w-container-max mx-auto h-20">
+          <div className="flex items-center gap-4">
+            <span className="font-display-lg text-headline-sm tracking-tighter text-on-surface uppercase font-extrabold">
+              Mizpa
+            </span>
+            <span className="hidden md:inline font-label-mono text-label-mono text-primary/60 border border-primary/20 px-2 py-0.5">
+              DASHBOARD
+            </span>
           </div>
-          <span className="font-display text-lg font-bold text-cream">
-            Miz<span className="text-mint">pa</span>
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-slate">{user?.email}</span>
-          <button
-            onClick={handleSignOut}
-            className="text-sm text-slate hover:text-cream transition-colors bg-transparent border-none cursor-pointer"
-          >
-            Cerrar sesión
-          </button>
-        </div>
-      </nav>
+          <div className="flex items-center gap-6">
+            <span className="hidden md:inline font-label-mono text-label-mono text-tertiary">
+              {user?.email}
+            </span>
+            <button
+              onClick={handleSignOut}
+              className="font-label-mono text-label-mono text-tertiary hover:text-primary transition-colors bg-transparent border-none cursor-pointer"
+            >
+              Sign out
+            </button>
+          </div>
+        </nav>
+      </header>
 
       {/* Dashboard content */}
-      <div className="max-w-[1100px] mx-auto px-10 py-16">
-        <h1 className="font-display text-3xl font-bold text-cream mb-2">Dashboard</h1>
-        <p className="text-slate mb-8">Bienvenido a Mizpa. Acá vas a poder auditar y mejorar tus sitios web.</p>
+      <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap">
+        <div className="mb-12">
+          <h1 className="font-headline-sm text-headline-sm text-on-surface mb-2">Dashboard</h1>
+          <p className="font-label-mono text-label-mono text-tertiary">
+            Welcome to Mizpa. Here you can audit and improve your websites.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-16">
           {cards.map((card) => (
             <button
               key={card.skill}
               onClick={() => navigate(`/playground?skill=${card.skill}`)}
-              className="bg-navy-mid border border-white/[0.08] rounded-xl p-6 hover:border-mint/20 transition-colors text-left cursor-pointer"
+              className="bg-surface-container/20 border border-white/5 p-8 hover:border-primary/30 transition-all duration-300 text-left cursor-pointer group"
             >
-              <div className="text-2xl mb-3">{card.icon}</div>
-              <h3 className="text-lg font-semibold text-cream mb-1">{card.title}</h3>
-              <p className="text-sm text-slate">{card.desc}</p>
+              <span className="text-2xl mb-4 block">{card.icon}</span>
+              <h3 className="font-headline-sm text-headline-sm text-on-surface mb-3">{card.title}</h3>
+              <p className="font-body-md text-body-md text-tertiary leading-relaxed">{card.desc}</p>
             </button>
           ))}
         </div>
 
         {/* Admin section */}
-        <div className="border-t border-white/[0.06] pt-8 mt-8">
-          <h2 className="font-display text-lg font-semibold text-cream mb-3">Administración</h2>
-          <p className="text-sm text-slate mb-4">
-            Gestioná los recursos de infraestructura activos.
+        <div className="border-t border-white/5 pt-12">
+          <h2 className="font-headline-sm text-headline-sm text-on-surface mb-2">Administration</h2>
+          <p className="font-label-mono text-label-mono text-tertiary mb-6">
+            Manage active infrastructure resources.
           </p>
 
           {cleanupMsg && (
-            <div className="bg-navy-mid border border-mint/20 rounded-xl px-5 py-3 mb-4 text-sm text-cream">
-              {cleanupMsg}
+            <div className="bg-surface-container border border-white/5 px-5 py-4 mb-4">
+              <span className="font-label-mono text-label-mono text-on-surface">{cleanupMsg}</span>
             </div>
           )}
 
           <button
             onClick={handleCleanup}
             disabled={cleaning}
-            className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-5 py-3 text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="border border-primary/30 text-primary px-6 py-3 font-label-mono text-label-mono uppercase tracking-widest hover:bg-primary/5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer bg-transparent"
           >
-            {cleaning ? 'Limpiando...' : 'Limpiar VMs inactivas'}
+            {cleaning ? 'Cleaning...' : 'Clean inactive VMs'}
           </button>
         </div>
       </div>

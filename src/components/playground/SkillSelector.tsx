@@ -7,25 +7,25 @@ interface SkillSelectorProps {
 
 const colorMap: Record<string, { border: string; bg: string; hover: string }> = {
   mint: {
-    border: 'border-mint/40',
-    bg: 'bg-mint/10',
-    hover: 'hover:border-mint/60',
+    border: 'border-primary/40',
+    bg: 'bg-primary/5',
+    hover: 'hover:border-primary/40',
   },
   amber: {
-    border: 'border-amber-400/40',
-    bg: 'bg-amber-400/10',
-    hover: 'hover:border-amber-400/60',
+    border: 'border-primary/30',
+    bg: 'bg-primary/5',
+    hover: 'hover:border-primary/30',
   },
   emerald: {
-    border: 'border-emerald/40',
-    bg: 'bg-emerald/10',
-    hover: 'hover:border-emerald/60',
+    border: 'border-primary/20',
+    bg: 'bg-primary/5',
+    hover: 'hover:border-primary/20',
   },
 };
 
 export function SkillSelector({ selectedSkill, onSelect }: SkillSelectorProps) {
   return (
-    <div className="flex gap-3 mb-6">
+    <div className="flex gap-3 mb-8">
       {SKILLS.map((skill) => {
         const isSelected = selectedSkill?.id === skill.id;
         const colors = colorMap[skill.color];
@@ -34,19 +34,19 @@ export function SkillSelector({ selectedSkill, onSelect }: SkillSelectorProps) {
           <button
             key={skill.id}
             onClick={() => onSelect(skill)}
-            className={`flex-1 p-4 rounded-xl border text-left transition-all cursor-pointer ${
+            className={`flex-1 p-5 border text-left transition-all duration-300 cursor-pointer ${
               isSelected
-                ? `${colors.border} ${colors.bg} ring-1 ring-white/10`
-                : `border-white/[0.08] bg-navy-mid ${colors.hover}`
+                ? `${colors.border} ${colors.bg}`
+                : 'border-white/5 bg-surface-container/20 hover:border-white/20'
             }`}
           >
-            <div className="flex items-center gap-2.5 mb-1.5">
+            <div className="flex items-center gap-3 mb-2">
               <span className="text-lg">{skill.icon}</span>
-              <span className={`text-sm font-semibold ${isSelected ? 'text-cream' : 'text-slate-light'}`}>
+              <span className={`font-body-md text-body-md font-bold ${isSelected ? 'text-on-surface' : 'text-tertiary'}`}>
                 {skill.name}
               </span>
             </div>
-            <p className="text-xs text-slate leading-relaxed">{skill.description}</p>
+            <p className="font-label-mono text-label-mono text-tertiary leading-relaxed">{skill.description}</p>
           </button>
         );
       })}
