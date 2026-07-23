@@ -43,7 +43,12 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
   const handleSend = async () => {
     if (!input.trim() || !skill) return;
 
-    const raw = input.trim();
+    let raw = input.trim();
+
+    // Auto-prepend https:// if no protocol
+    if (!/^https?:\/\//i.test(raw)) {
+      raw = `https://${raw}`;
+    }
 
     // URL validation
     if (!URL_REGEX.test(raw)) {
@@ -195,7 +200,7 @@ export function ChatInterface({ skill }: ChatInterfaceProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={skill.promptPlaceholder}
+            placeholder={t('chat.placeholderUrl')}
             className="flex-1 bg-background border border-white/10 text-on-surface px-4 py-3 font-body-md text-body-md outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary/20 placeholder:text-outline-variant"
           />
           <button

@@ -10,13 +10,14 @@ export function Hero() {
       style={{ backgroundColor: '#000000' }}
     >
       {/* Background image */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none z-0 [clip-path:inset(0_4%_0_0)] max-md:scale-[0.85] max-md:[clip-path:none]">
+      <div className="absolute inset-0 w-full h-full pointer-events-none z-0 max-md:scale-[0.9] max-md:[clip-path:none]">
         <img
-          className="w-full h-full object-cover object-right opacity-60 md:opacity-80 mix-blend-screen md:mix-blend-normal hero-parallax-img max-md:[object-position:85%_center]"
-          src="https://lh3.googleusercontent.com/aida/AP1WRLviGQbl6JkUEZz6WL-UCeZVt7yQJsW7qcfd6airLtFV9xs81Qfe_JyQKV3xxnSfgug1J4RGnwTqinCUjVB2USWX1HXkAHa_6ZJbJegUad9Rrik_etx1Q9Z7QrgP0lY5ce3k7ME-l3cp3u1pwrXj2_PKt5_Aq3NdkoG3CJpo0YVfy6-PgQZG52AHVoj_YEPi2u4_xmv_7jJTh_NTtAGzfQNlMTOLjZxqEAdYXLnBlXrNcSYG9eQeicmZp50q=s0"
+          className="w-full h-full object-cover object-right md:object-center opacity-80 md:opacity-90 mix-blend-screen hero-parallax-img max-md:[object-position:75%_center]"
+          src="/MizpaSEO-Background.jpg"
           alt=""
+          style={{ imageRendering: 'high-quality' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent md:hidden" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent md:hidden" />
       </div>
 
       {/* Content */}
