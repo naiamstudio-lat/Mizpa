@@ -15,7 +15,6 @@ export function Hero() {
           className="w-full h-full object-cover object-right md:object-center opacity-80 md:opacity-90 mix-blend-screen hero-parallax-img max-md:[object-position:75%_center]"
           src="/MizpaSEO-Background.jpg"
           alt=""
-          style={{ imageRendering: 'high-quality' }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent md:hidden" />
       </div>
