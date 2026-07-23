@@ -24,3 +24,22 @@ OpenClaw
 
 Guidance for maintainers
 - Keep this file up to date with agent-specific notes so automated agents can read repository-level instructions.
+
+## Project Skills (Mizpa-specific)
+
+Location: `.opencode/skills/`
+
+### mizpa-supabase
+- Trigger: supabase, edge functions, RLS, auth, database, migrations
+- Scope: Supabase patterns, Edge Function conventions, database schema
+- Path: `.opencode/skills/mizpa-supabase/SKILL.md`
+
+### mizpa-freestyle
+- Trigger: freestyle, VM, snapshot, agent, pipeline, cleanup, queue
+- Scope: Freestyle.sh VM management, agent execution, queue system
+- Path: `.opencode/skills/mizpa-freestyle/SKILL.md`
+
+### mizpa-cicd
+- Trigger: conventional commits, commit, push, PR, deploy, CI/CD, git
+- Scope: Commit conventions, branch strategy, deployment pipeline
+- Path: `.opencode/skills/mizpa-cicd/SKILL.md`
