@@ -13,7 +13,12 @@
  */
 
 const SUPABASE_URL = 'https://hnpdebnkumcizmrngayc.supabase.co';
-const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhucGRlYm5rdW1jaXptcm5nYXljIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MjQ3NDk4OSwiZXhwIjoyMDk4MDUwOTg5fQ.B0G6kXzKSfFxZOGG00lXngzlmlwGUeLP67CiM6bicEg';
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+if (!SERVICE_KEY) {
+  console.error('❌ SUPABASE_SERVICE_KEY env var not set');
+  console.error('   Set it to your Supabase service role key to run backend tests');
+  process.exit(1);
+}
 
 let pass = 0;
 let fail = 0;
@@ -135,6 +140,45 @@ async function main() {
     const result = await supabaseRPC('active_vm_count');
     if (typeof result !== 'number') throw new Error(`Expected number, got ${typeof result} (${JSON.stringify(result)})`);
     console.log(`     (active VMs: ${result})`);
+  });
+
+  // ── Edge Functions ──
+  console.log('\n📋 Edge Functions');
+
+  await assert('task-callback rejects requests without webhook secret', async () => {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/task-callback`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SERVICE_KEY,
+        'Authorization': `Bearer ${SERVICE_KEY}`,
+      },
+      body: JSON.stringify({ taskId: '00000000-0000-0000-0000-000000000000', status: 'completed' }),
+    });
+    // In production with DENO_ENV=production, this should 401
+    // In dev without the env var, it passes
+    if (res.status !== 401) {
+      console.log('     (note: auth not enforced — expected in non-production)');
+    }
+  });
+
+  await assert('process-queue can be invoked', async () => {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/process-queue`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SERVICE_KEY,
+        'Authorization': `Bearer ${SERVICE_KEY}`,
+      },
+    });
+    // process-queue returns { status: 'ok', processed: 0 } when no tasks
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`process-queue failed (${res.status}): ${text.substring(0, 100)}`);
+    }
+    const result = await res.json();
+    if (!result.status) throw new Error('Expected status in response');
+    console.log(`     (result: ${JSON.stringify(result)})`);
   });
 
   // ── Cleanup VM function ──

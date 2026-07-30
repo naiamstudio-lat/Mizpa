@@ -104,6 +104,7 @@ export function DashboardPage() {
             onClick={handleCleanup}
             disabled={cleaning}
             className="border border-primary/30 text-primary px-6 py-3 font-label-mono text-label-mono uppercase tracking-widest hover:bg-primary/5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer bg-transparent"
+            data-testid="cleanup-vms-button"
           >
             {cleaning ? t('dashboard.cleaning') : t('dashboard.cleanVms')}
           </button>
