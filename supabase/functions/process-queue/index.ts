@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { createVm, execVm } from "../_shared/vm-client.ts"
 
 const FREESTYLE_API = 'https://api.freestyle.sh'
 const CORS = {
@@ -13,35 +14,6 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 const FREESTYLE_KEY = Deno.env.get('FREESTYLE_API_KEY')
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-
-function freestyleHeaders() {
-  if (!FREESTYLE_KEY) throw new Error('FREESTYLE_API_KEY not set')
-  return { 'Authorization': `Bearer ${FREESTYLE_KEY}`, 'Content-Type': 'application/json' }
-}
-
-async function createVm(snapshotId: string): Promise<{ vmId: string }> {
-  const res = await fetch(`${FREESTYLE_API}/v1/vms`, {
-    method: 'POST',
-    headers: freestyleHeaders(),
-    body: JSON.stringify({ snapshotId, idleTimeoutSeconds: 300 }),
-  })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(`VM create failed: ${res.status} ${JSON.stringify(err)}`)
-  }
-  const data = await res.json()
-  return { vmId: data.vmId || data.id }
-}
-
-async function execVm(vmId: string, cmd: string) {
-  const res = await fetch(`${FREESTYLE_API}/v1/vms/${vmId}/exec-await`, {
-    method: 'POST',
-    headers: freestyleHeaders(),
-    body: JSON.stringify({ command: cmd }),
-  })
-  if (!res.ok) throw new Error(`Exec failed: ${res.status}`)
-  return res.json()
-}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
@@ -98,7 +70,7 @@ serve(async (req) => {
 
       let vmId: string
       try {
-        const result = await createVm(FREESTYLE_SNAPSHOT_ID)
+        const result = await createVm({ snapshotId: FREESTYLE_SNAPSHOT_ID, idleTimeoutSeconds: 300 })
         vmId = result.vmId
         console.log(`VM created for queued task: ${vmId}`)
       } catch (vmError) {

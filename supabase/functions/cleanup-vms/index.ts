@@ -1,11 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-
-const FREESTYLE_API = 'https://api.freestyle.sh'
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+import { listVms, deleteVm } from "../_shared/vm-client.ts"
 
 interface FreestyleVm {
   id: string
@@ -15,26 +10,9 @@ interface FreestyleVm {
   cpuTimeSeconds: number
 }
 
-function headers(): Record<string, string> {
-  const key = Deno.env.get('FREESTYLE_API_KEY')
-  if (!key) throw new Error('FREESTYLE_API_KEY not set')
-  return { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' }
-}
-
-async function listVms(): Promise<FreestyleVm[]> {
-  const res = await fetch(`${FREESTYLE_API}/v1/vms`, { headers: headers() })
-  if (!res.ok) throw new Error(`List VMs failed: ${res.status}`)
-  const data = await res.json()
-  return data.vms || []
-}
-
-async function deleteVm(vmId: string): Promise<boolean> {
-  try {
-    const res = await fetch(`${FREESTYLE_API}/v1/vms/${vmId}`, { method: 'DELETE', headers: headers() })
-    return res.ok
-  } catch {
-    return false
-  }
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
 serve(async (req) => {
@@ -62,7 +40,7 @@ serve(async (req) => {
     )
 
     // 1. Fetch all VMs from freestyle
-    const allVms = await listVms()
+    const { vms: allVms = [] } = await listVms() as { vms: FreestyleVm[] }
     const totalCount = allVms.length
 
     // 2. Parse request body for options
@@ -101,11 +79,11 @@ serve(async (req) => {
         skipped.push(vm.id)
         continue
       }
-      const ok = await deleteVm(vm.id)
-      if (ok) {
+      try {
+        await deleteVm(vm.id)
         deleted.push(vm.id)
-      } else {
-        errors.push({ id: vm.id, error: 'Delete failed' })
+      } catch (delErr) {
+        errors.push({ id: vm.id, error: delErr instanceof Error ? delErr.message : 'Delete failed' })
       }
     }
 
@@ -119,10 +97,11 @@ serve(async (req) => {
     }
 
     if (force && deleted.length > 0) {
-      // Mark any running/pending tasks as failed
+      // Mark any running/pending tasks as failed (NOT completed/failed ones)
       await admin
         .from('tasks')
         .update({ status: 'failed', error_message: 'VM cleaned up by force', updated_at: new Date().toISOString() })
+        .in('status', ['running', 'pending'])
         .not('vm_id', 'is', null)
     }
 
