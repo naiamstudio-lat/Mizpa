@@ -1,0 +1,39 @@
+{
+  "name": "mizpa",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test:e2e": "tsx test/e2e/run.ts",
+    "test:e2e:headed": "HEADLESS=false tsx test/e2e/run.ts",
+    "test:chat": "npx playwright test --config playwright.config.ts",
+    "test:chat:headed": "HEADLESS=false npx playwright test --config playwright.config.ts",
+    "test:chat:trace": "npx playwright test --config playwright.config.ts --trace=on"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "freestyle": "^0.1.63",
+    "i18next": "^25.2.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-i18next": "^15.6.1",
+    "react-router-dom": "^7.18.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
+    "autoprefixer": "^10.4.21",
+    "playwright": "^1.62.1",
+    "postcss": "^8.5.6",
+    "puppeteer": "^25.2.1",
+    "tailwindcss": "^3.4.19",
+    "tsx": "^4.22.4",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "nav": {
+    "badge": "TECHNICAL SEO",
+    "capabilities": "Capabilities",
+    "process": "Process",
+    "features": "Features",
+    "pricing": "Pricing",
+    "signin": "Sign in",
+    "cta": "Start Audit",
+    "menu": "menu",
+    "application": "Application",
+    "systemMenu": "SYSTEM_MENU",
+    "signOut": "Sign out"
+  },
+  "hero": {
+    "badge": "[ MIZPA 2026 ]",
+    "badgeDesktop": "Autonomous AI agents for distributed SEO",
+    "title": "AUDIT. OPTIMIZE. REPLICATE. POSITION.",
+    "description": "Mizpa is the all-in-one tool that audits, optimizes, and replicates your web into a version optimized for search engines and AI.",
+    "placeholder": "https://your-website.com",
+    "button": "Start Audit",
+    "buttonDesktop": "TRY NOW",
+    "stats1Value": "3500+",
+    "stats1Label": "Active Agents",
+    "stats2Value": "99.7%",
+    "stats2Label": "Distributed Uptime",
+    "stats3Value": "<50ms",
+    "stats3Label": "Latency",
+    "scroll": "scroll"
+  },
+  "capabilities": {
+    "label": "01 / DEEP AUDIT",
+    "title": "360-degree analysis of your Website",
+    "description": "We analyze every piece of code, metadata, and copywriting to ensure your digital presence is perfectly readable for next-generation algorithms.",
+    "items": [
+      "Semantic Graph Analysis",
+      "LLM Optimization",
+      "Blazing-fast website"
+    ]
+  },
+  "features": {
+    "label": "[ CAPABILITIES_LOG ]",
+    "title": "Next-Generation Algorithms",
+    "items": [
+      {
+        "number": "01",
+        "title": "360 Analysis",
+        "description": "Deep technical audit through autonomous agents that scan every node of your digital architecture.",
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCciwyIEZ3IRhwTSUmHWuMymsy55tFsKQSdcuV7MBG15oz1IZahLe-51esXHnKZqcVPTSXmvxGB4QKemhIgFulQyiN1afHy_JHy-3J3QGQrVSzDrgWu5PL1uv4_quqpE5qGcVkqSqXRzL__GV6hM3ajmMwjCvb6PG8VtvfKPsecBAxj5SsRjOasT3yLJNgjfBMjqALCQFSVeuA9FFf1Cx1TaWOdX88kn22IzOKQuZGzEljCLQth47cjgaQGaKvJjxB5tJbhgG4fz3s8"
+      },
+      {
+        "number": "02",
+        "title": "Instant Replica",
+        "description": "We create a 'digital twin' optimized specifically for processing by LLMs and modern search engines.",
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuD24g7McrtnY58J9p_R8WWKBd2p0R0br2OssSGMA53wDAItLHXVhuCwrUnczhEYvYXvFj9iPo8-hmUNvl8rhk5pSfByOOEuuyKzhi6yh8x-ufvy79YQ51oer7I64omKT1i4ncMCrs7sfvQZimWYKPbNTm_ihfUvBnMLDjWIuk6AJXnR18mWAjjUqhBcDdBTGxVwTwhz3QcgIrl1sYdFCBxaA_f2oCGDeBqg8olV5hDCF4YYUvnJG72Wi1lM8pFxVqdRItpMZsCW04LE"
+      },
+      {
+        "number": "03",
+        "title": "Edge Infrastructure",
+        "description": "Global synchronization in milliseconds. Your content always available at the network edge for instant loading.",
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDPYI96BiTwQbg6upfXkTNGGc8k73LP7M3-I6sEOzr-bcVnLqsCWAiohKGVV3-lH8DkXJAllSwlkj-iLYdVrGjTpndF3tAA6KUYt8bfbaeiRsLyS4mAPbBji79R2NJhWGFpjrSjj_kYUPX_tRNnTsd9-4_UnU-IxjCtqqfTadbVlbpI0i8Dv2i8rk4dT1CyueLIJAJL2S45N9GFVcLrPsdku74XwE0YzSqnoE8M8I1FCCm8mWoGb9UE_34lLiG8UEdkAcAnYEcr43mO"
+      }
+    ]
+  },
+  "process": {
+    "label": "02 / INSTANT REPLICA",
+    "title": "A digital twin optimized for AI.",
+    "description": "We don't just audit; we build a parallel data layer. Your website stays human-facing, Mizpa generates an ultra-light version designed to be consumed by search engines and artificial intelligences.",
+    "steps": [
+      {
+        "number": "01",
+        "title": "Extraction",
+        "description": "We convert your complex frontend into pure, structured data schemas."
+      },
+      {
+        "number": "02",
+        "title": "Refinery",
+        "description": "We strip visual noise and unnecessary JS to prioritize knowledge transfer."
+      },
+      {
+        "number": "03",
+        "title": "Sync",
+        "description": "Your replica updates in milliseconds every time we detect a change on your main site."
+      }
+    ]
+  },
+  "quote": {
+    "text": "The future of SEO isn't about being found — it's about being understood.",
+    "author": "— Mizpa — positioning as the new generation"
+  },
+  "pricing": {
+    "label": "SCALE YOUR VISION",
+    "title": "Mizpa Pro",
+    "price": "19",
+    "period": "USD/mo",
+    "features": [
+      "Full Technical Audit (Unlimited)",
+      "AI Replica Engine Access",
+      "Global Edge Deployment",
+      "24/7 Algorithmic Monitoring"
+    ],
+    "cta": "START PRO PLAN"
+  },
+  "cta": {
+    "badge": "[ READY TO RANK? ]",
+    "title": "Bring the future to your website today.",
+    "placeholder": "https://your-website.com",
+    "button": "Generate web twin",
+    "terms": "Check our terms and conditions",
+    "desktopTitle": "Ready to transcend the grid?",
+    "desktopDescription": "Join the vanguard of digital positioning and redefine how machines perceive your brand.",
+    "neuralLink": "CONNECT\nNEURAL LINK"
+  },
+  "footer": {
+    "brand": "Mizpa",
+    "tagline": "Technical SEO architecture for the age of distributed intelligence.",
+    "copyright": "© 2026 Mizpa. All rights reserved.",
+    "resources": "RESOURCES",
+    "apiDocs": "API Docs",
+    "systemStatus": "System Status",
+    "whitepaper": "Whitepaper",
+    "legal": "LEGAL",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "nodeStatus": "NODE_01_ACTIVE"
+  },
+  "dashboard": {
+    "badge": "DASHBOARD",
+    "title": "Dashboard",
+    "welcome": "Welcome to Mizpa. Here you can audit and improve your websites.",
+    "admin": "Administration",
+    "adminDesc": "Manage active infrastructure resources.",
+    "cleanVms": "Clean inactive VMs",
+    "cleaning": "Cleaning..."
+  },
+  "playground": {
+    "badge": "Playground",
+    "title": "Playground",
+    "description": "Choose a skill and test your Mizpa agents' capabilities.",
+    "home": "← Home",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "selectSkill": "Select a skill to start",
+    "tasksHint": "Tasks run on remote servers. Results may take a few minutes.",
+    "send": "Send"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Create your account",
+    "signUpDesc": "Start auditing and improving your websites",
+    "signInDesc": "Access your Mizpa dashboard",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@email.com",
+    "passwordPlaceholder": "••••••••",
+    "processing": "Processing...",
+    "backToHome": "← Back to home",
+    "loading": "Loading...",
+    "error": "Authentication error",
+    "toggleSignIn": "Already have an account? Sign in",
+    "toggleSignUp": "Don't have an account? Create one",
+    "checkEmail": "Check your email to confirm your account.",
+    "technicalSeo": "TECHNICAL SEO"
+  },
+  "chat": {
+    "agent": "Mizpa Agent",
+    "send": "Send",
+    "selectSkill": "Select a skill to start",
+    "statusQueued": "⏳ Queued — waiting for free VM",
+    "statusPending": "⏳ Pending — starting agent...",
+    "statusRunning": "🔄 Processing...",
+    "taskCompleted": "✅ Task completed.",
+    "error": "❌ **Error**\n\n{{message}}\n\nPlease try again later.",
+    "timeout": "⚠️ **The task is taking longer than expected**\n\nYou can check the status on the dashboard or try again later.\n\nIf the problem persists, contact the administrator.",
+    "welcome": "Hi! I'm Mizpa Agent. You selected: **{{skill}}**\n\n{{description}}\n\nPaste a URL and I'll start the analysis.",
+    "invalidUrl": "❌ **Invalid URL**\n\nEnter a full URL with protocol (e.g. `https://example.com`).",
+    "taskCreated": "⏳ **Task created**\n\nSkill: **{{skill}}**\nURL: `{{url}}`\n\nStarting agent...",
+    "taskQueued": "⏳ **Queued**\n\nNo VMs available. The task will process when one becomes available.\n\n{{message}}",
+    "taskFailed": "❌ **Task failed**\n\n{{error}}"
+  },
+  "lab": {
+    "welcome": "Welcome to the Lab! I can help you create freestyle.sh VMs, run commands, and deploy apps. What would you like to build today?",
+    "vmConnected": "Connected to VM {vmId} at {url}. Ready for commands.",
+    "vmCreated": "Created new VM {vmId}. Starting dev server...\n\nYour VM is live at: {url}\n\nYou can now send commands to build and deploy your app. Try commands like:\n- npm init\n- npm install react\n- npm start\n- git clone https://github.com/your-repo/app\n- npx create-react-app my-app\n\nThe VM will start a development server on port 5000.",
+    "vmCreateError": "Failed to create VM: {error}",
+    "thinking": "Thinking...",
+    "commandError": "Command failed: {error}",
+    "previewInfo": "App should now be running!\n\nYour preview is available at: {url}\n\nYou can view it in the Live Preview panel or open it in your browser.",
+    "agentTyping": "Agent is thinking...",
+    "placeholderCommand": "Enter a command (e.g., npm start, git clone, etc.)...",
+    "placeholderNoVM": "Create a VM first...",
+    "vmRequired": "Create a VM first to send commands",
+    "sendCommand": "Send",
+    "chatDescription": "Enhanced agent chat with VM interaction",
+    "previewDescription": "Live preview of your deployed app",
+    "projectsDescription": "Manage your VMs and deployed projects",
+    "skillsTitle": "Skills Mode",
+    "skillsDescription": "Choose a skill and test your Mizpa agents' capabilities."
+  }
+}

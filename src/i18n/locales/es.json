@@ -1,0 +1,181 @@
+{
+  "nav": {
+    "badge": "SEO TÉCNICO",
+    "capabilities": "Capacidades",
+    "process": "Proceso",
+    "features": "Características",
+    "pricing": "Precios",
+    "signin": "Iniciar sesión",
+    "cta": "Comenzar Auditoría",
+    "menu": "menú",
+    "application": "Aplicación",
+    "systemMenu": "SYSTEM_MENU",
+    "signOut": "Cerrar sesión"
+  },
+  "hero": {
+    "badge": "[ MIZPA 2026 ]",
+    "badgeDesktop": "Agentes autónomos de IA para SEO distribuido",
+    "title": "AUDITA. OPTIMIZA. REPLICA. POSICIONA.",
+    "description": "Mizpa es la herramienta todo en uno que audita, optimiza y replica tu web por una versión optimizada para buscadores e IA.",
+    "placeholder": "https://tu-sitio-web.com",
+    "button": "Comenzar Auditoría",
+    "buttonDesktop": "PROBAR AHORA",
+    "stats1Value": "3500+",
+    "stats1Label": "Agentes Activos",
+    "stats2Value": "99.7%",
+    "stats2Label": "Uptime Distribuido",
+    "stats3Value": "<50ms",
+    "stats3Label": "Latencia",
+    "scroll": "desplaza"
+  },
+  "capabilities": {
+    "label": "01 / OBTÉN AUDITORÍA PROFUNDA",
+    "title": "Análisis de 360 grados sobre tu Web",
+    "description": "Analizamos cada fragmento de código, metadata y copywriting para asegurar que tu presencia digital sea perfectamente legible para los algoritmos de nueva generación.",
+    "items": [
+      "Análisis de Grafo Semántico",
+      "Optimización para LLMs",
+      "Tu web ultra-rápida"
+    ]
+  },
+  "features": {
+    "label": "[ CAPABILITIES_LOG ]",
+    "title": "Algoritmos de Próxima Generación",
+    "items": [
+      {
+        "number": "01",
+        "title": "Análisis de 360 grados",
+        "description": "Auditoría técnica profunda mediante agentes autónomos que escanean cada nodo de tu arquitectura digital.",
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuCciwyIEZ3IRhwTSUmHWuMymsy55tFsKQSdcuV7MBG15oz1IZahLe-51esXHnKZqcVPTSXmvxGB4QKemhIgFulQyiN1afHy_JHy-3J3QGQrVSzDrgWu5PL1uv4_quqpE5qGcVkqSqXRzL__GV6hM3ajmMwjCvb6PG8VtvfKPsecBAxj5SsRjOasT3yLJNgjfBMjqALCQFSVeuA9FFf1Cx1TaWOdX88kn22IzOKQuZGzEljCLQth47cjgaQGaKvJjxB5tJbhgG4fz3s8"
+      },
+      {
+        "number": "02",
+        "title": "Réplica Instantánea",
+        "description": "Creamos un 'gemelo digital' optimizado específicamente para ser procesado por LLMs y motores de búsqueda modernos.",
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuD24g7McrtnY58J9p_R8WWKBd2p0R0br2OssSGMA53wDAItLHXVhuCwrUnczhEYvYXvFj9iPo8-hmUNvl8rhk5pSfByOOEuuyKzhi6yh8x-ufvy79YQ51oer7I64omKT1i4ncMCrs7sfvQZimWYKPbNTm_ihfUvBnMLDjWIuk6AJXnR18mWAjjUqhBcDdBTGxVwTwhz3QcgIrl1sYdFCBxaA_f2oCGDeBqg8olV5hDCF4YYUvnJG72Wi1lM8pFxVqdRItpMZsCW04LE"
+      },
+      {
+        "number": "03",
+        "title": "Infraestructura Edge",
+        "description": "Sincronización global en milisegundos. Tu contenido siempre disponible en el borde de la red para una carga instantánea.",
+        "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuDPYI96BiTwQbg6upfXkTNGGc8k73LP7M3-I6sEOzr-bcVnLqsCWAiohKGVV3-lH8DkXJAllSwlkj-iLYdVrGjTpndF3tAA6KUYt8bfbaeiRsLyS4mAPbBji79R2NJhWGFpjrSjj_kYUPX_tRNnTsd9-4_UnU-IxjCtqqfTadbVlbpI0i8Dv2i8rk4dT1CyueLIJAJL2S45N9GFVcLrPsdku74XwE0YzSqnoE8M8I1FCCm8mWoGb9UE_34lLiG8UEdkAcAnYEcr43mO"
+      }
+    ]
+  },
+  "process": {
+    "label": "02 / RÉPLICA INSTANTÁNEA",
+    "title": "Un gemelo digital optimizado para IAs.",
+    "description": "No solo auditamos; construimos una capa de datos paralela. Tu web sigue siendo para humanos, Mizpa genera una versión ultra-ligera diseñada para ser consumida por motores de búsqueda e inteligencias artificiales.",
+    "steps": [
+      {
+        "number": "01",
+        "title": "Extracción",
+        "description": "Convertimos tu frontend complejo en esquemas de datos puros y estructurados."
+      },
+      {
+        "number": "02",
+        "title": "Refinería",
+        "description": "Eliminamos el ruido visual y el JS innecesario para priorizar la transferencia de conocimiento."
+      },
+      {
+        "number": "03",
+        "title": "Sincronización",
+        "description": "Tu réplica se actualiza en milisegundos cada vez que detectamos un cambio en tu sitio principal."
+      }
+    ]
+  },
+  "quote": {
+    "text": "El futuro del SEO no es ser encontrado, es ser comprendido.",
+    "author": "Mizpa — posicionando como la nueva generación"
+  },
+  "pricing": {
+    "label": "SCALE YOUR VISION",
+    "title": "Mizpa Pro",
+    "price": "19",
+    "period": "USD/mes",
+    "features": [
+      "Auditoría Técnica Completa (Ilimitada)",
+      "Acceso al Motor de Réplica IA",
+      "Despliegue Global Edge",
+      "Monitoreo Algorítmico 24/7"
+    ],
+    "cta": "COMENZAR PLAN PRO"
+  },
+  "cta": {
+    "badge": "[ ¿LISTO PARA POSICIONAR? ]",
+    "title": "Acércale hoy el futuro a tu Web.",
+    "placeholder": "https://tu-sitio.com",
+    "button": "Generar gemelo web",
+    "terms": "Consulta nuestros términos y condiciones",
+    "desktopTitle": "¿Listo para trascender la cuadrícula?",
+    "desktopDescription": "Únete a la vanguardia del posicionamiento digital y redefine cómo las máquinas perciben tu marca.",
+    "neuralLink": "CONECTAR\nENLACE NEURAL"
+  },
+  "footer": {
+    "brand": "Mizpa Next Gen",
+    "tagline": "Arquitectura SEO técnico para la era de la inteligencia distribuida.",
+    "copyright": "© 2026 Mizpa. Todos los derechos reservados.",
+    "resources": "RECURSOS",
+    "apiDocs": "Docs API",
+    "systemStatus": "Estado del Sistema",
+    "whitepaper": "Whitepaper",
+    "legal": "LEGAL",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos del Servicio",
+    "nodeStatus": "NODE_01_ACTIVO"
+  },
+  "dashboard": {
+    "badge": "DASHBOARD",
+    "title": "Dashboard",
+    "welcome": "Bienvenido a Mizpa. Aquí podés auditar y mejorar tus sitios web.",
+    "admin": "Administración",
+    "adminDesc": "Gestioná los recursos activos de infraestructura.",
+    "cleanVms": "Limpiar VMs inactivas",
+    "cleaning": "Limpiando..."
+  },
+  "playground": {
+    "badge": "Playground",
+    "title": "Playground",
+    "description": "Elegí un skill y probá las capacidades de tus agentes Mizpa.",
+    "home": "← Inicio",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "selectSkill": "Seleccioná un skill para empezar",
+    "tasksHint": "Las tareas se ejecutan en servidores remotos. Los resultados pueden tardar unos minutos.",
+    "send": "Enviar"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear tu cuenta",
+    "signUpDesc": "Empezá a auditar y mejorar tus sitios web",
+    "signInDesc": "Accedé a tu dashboard de Mizpa",
+    "email": "Email",
+    "password": "Contraseña",
+    "emailPlaceholder": "tu@email.com",
+    "passwordPlaceholder": "••••••••",
+    "processing": "Procesando...",
+    "backToHome": "← Volver al inicio",
+    "loading": "Cargando...",
+    "error": "Error de autenticación",
+    "toggleSignIn": "¿Ya tenés cuenta? Iniciá sesión",
+    "toggleSignUp": "¿No tenés cuenta? Creá una",
+    "checkEmail": "Revisá tu email para confirmar tu cuenta.",
+    "technicalSeo": "TECHNICAL SEO"
+  },
+  "chat": {
+    "agent": "Mizpa Agent",
+    "send": "Enviar",
+    "selectSkill": "Seleccioná un skill para empezar",
+    "statusQueued": "⏳ En cola — esperando VM libre",
+    "statusPending": "⏳ Pendiente — iniciando agente...",
+    "statusRunning": "🔄 Procesando...",
+    "taskCompleted": "✅ Tarea completada.",
+    "error": "❌ **Error**\n\n{{message}}\n\nIntentá de nuevo más tarde.",
+    "timeout": "⚠️ **La tarea está tardando más de lo esperado**\n\nPodés revisar el estado en el dashboard o intentar de nuevo más tarde.\n\nSi el problema persiste, contactá al administrador.",
+    "welcome": "¡Hola! Soy Mizpa Agent. Seleccionaste: **{{skill}}**\n\n{{description}}\n\nPegá una URL y empiezo el análisis.",
+    "invalidUrl": "❌ **URL inválida**\n\nIngresá una URL completa con protocolo (ej. `https://ejemplo.com`).",
+    "taskCreated": "⏳ **Tarea creada**\n\nSkill: **{{skill}}**\nURL: `{{url}}`\n\nIniciando agente...",
+    "taskQueued": "⏳ **En cola**\n\nNo hay VMs disponibles. La tarea se procesará cuando se libere una.\n\n{{message}}",
+    "taskFailed": "❌ **Tarea fallida**\n\n{{error}}"
+  }
+}
