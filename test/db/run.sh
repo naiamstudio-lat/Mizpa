@@ -57,4 +57,12 @@ bash "$here/quota_concurrency.sh" \
   22222222-2222-2222-2222-222222222222 \
   'public.fx_consume_quota'
 
+# --- 4. fx_settle_quota ------------------------------------------------------
+# The reservation/settlement pair U4a added. A debit cannot go through
+# fx_consume_quota (it raises on a non-positive cost), so the reconciliation is
+# its own function and needs its own assertions — the clamps in particular, which
+# only exist to stop the table's CHECK constraints from raising mid-flight.
+echo "==> test/db/quota_settlement.test.sql"
+psql_db -q -f - <"$here/quota_settlement.test.sql"
+
 echo "==> U2 db tests OK"
