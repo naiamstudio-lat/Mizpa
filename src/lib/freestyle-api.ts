@@ -74,7 +74,7 @@ export async function createLabVM(
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${session.access_token}`,
-      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+      'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
     body: JSON.stringify(options || {}),
   });
@@ -106,7 +106,7 @@ export async function listLabVMs(): Promise<LabVM[]> {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${session.access_token}`,
-      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+      'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
   });
 
@@ -129,7 +129,7 @@ export async function getVMStatus(vmId: string): Promise<VMStatus> {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${session.access_token}`,
-      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+      'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
   });
 
@@ -152,7 +152,7 @@ export async function deleteLabVM(vmId: string): Promise<{ success: boolean; mes
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${session.access_token}`,
-      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+      'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
   });
 
@@ -182,7 +182,7 @@ export async function execVMCommand(
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${session.access_token}`,
-      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+      'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
     body: JSON.stringify({ command, timeout: options?.timeout || 300000 }), // 5 minutes default
   });
@@ -206,7 +206,7 @@ export async function getVMTasks(vmId: string): Promise<LabTask[]> {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${session.access_token}`,
-      'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+      'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
     },
   });
 
