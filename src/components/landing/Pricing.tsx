@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next';
+import { useAuthModal } from '../../hooks/useAuthModal';
 
 export function Pricing() {
   const { t } = useTranslation();
+  const { open: openAuth } = useAuthModal();
   const features = t('pricing.features', { returnObjects: true }) as string[];
 
   return (
@@ -37,7 +39,7 @@ export function Pricing() {
           ))}
         </div>
 
-        <button className="bg-primary text-on-primary px-12 py-5 font-display-lg text-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300">
+        <button onClick={openAuth} className="bg-primary text-on-primary px-12 py-5 font-display-lg text-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300">
           {t('pricing.cta')}
         </button>
       </div>

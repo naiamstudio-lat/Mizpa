@@ -124,26 +124,6 @@
     "terms": "Términos del Servicio",
     "nodeStatus": "NODE_01_ACTIVO"
   },
-  "dashboard": {
-    "badge": "DASHBOARD",
-    "title": "Dashboard",
-    "welcome": "Bienvenido a Mizpa. Aquí podés auditar y mejorar tus sitios web.",
-    "admin": "Administración",
-    "adminDesc": "Gestioná los recursos activos de infraestructura.",
-    "cleanVms": "Limpiar VMs inactivas",
-    "cleaning": "Limpiando..."
-  },
-  "playground": {
-    "badge": "Playground",
-    "title": "Playground",
-    "description": "Elegí un skill y probá las capacidades de tus agentes Mizpa.",
-    "home": "← Inicio",
-    "signIn": "Iniciar sesión",
-    "signOut": "Cerrar sesión",
-    "selectSkill": "Seleccioná un skill para empezar",
-    "tasksHint": "Las tareas se ejecutan en servidores remotos. Los resultados pueden tardar unos minutos.",
-    "send": "Enviar"
-  },
   "auth": {
     "signIn": "Iniciar sesión",
     "signUp": "Crear tu cuenta",
@@ -162,20 +142,59 @@
     "checkEmail": "Revisá tu email para confirmar tu cuenta.",
     "technicalSeo": "TECHNICAL SEO"
   },
-  "chat": {
-    "agent": "Mizpa Agent",
-    "send": "Enviar",
-    "selectSkill": "Seleccioná un skill para empezar",
-    "statusQueued": "⏳ En cola — esperando VM libre",
-    "statusPending": "⏳ Pendiente — iniciando agente...",
-    "statusRunning": "🔄 Procesando...",
-    "taskCompleted": "✅ Tarea completada.",
-    "error": "❌ **Error**\n\n{{message}}\n\nIntentá de nuevo más tarde.",
-    "timeout": "⚠️ **La tarea está tardando más de lo esperado**\n\nPodés revisar el estado en el dashboard o intentar de nuevo más tarde.\n\nSi el problema persiste, contactá al administrador.",
-    "welcome": "¡Hola! Soy Mizpa Agent. Seleccionaste: **{{skill}}**\n\n{{description}}\n\nPegá una URL y empiezo el análisis.",
-    "invalidUrl": "❌ **URL inválida**\n\nIngresá una URL completa con protocolo (ej. `https://ejemplo.com`).",
-    "taskCreated": "⏳ **Tarea creada**\n\nSkill: **{{skill}}**\nURL: `{{url}}`\n\nIniciando agente...",
-    "taskQueued": "⏳ **En cola**\n\nNo hay VMs disponibles. La tarea se procesará cuando se libere una.\n\n{{message}}",
-    "taskFailed": "❌ **Tarea fallida**\n\n{{error}}"
+  "onboarding": {
+    "title": "Bienvenido a Mizpa",
+    "description": "Todo lo que hace tu sitio, en un solo lugar.",
+    "body": "Poné un nombre a tu sitio y el chat y la vista previa empiezan a trabajar sobre él al instante.",
+    "primary": "Empezar",
+    "dismiss": "Cerrar",
+    "reopen": "Ver onboarding"
+  },
+  "surfaces": {
+    "sites": {
+      "title": "Sitios",
+      "welcome": "Todos los sitios que construiste.",
+      "loading": "Cargando sitios...",
+      "empty": "Todavía no hay sitios. Poné un nombre arriba para empezar.",
+      "loadError": "No se pudieron cargar tus sitios.",
+      "siteName": "Nombre del sitio",
+      "siteNamePlaceholder": "mi-sitio",
+      "create": "Crear sitio",
+      "creating": "Creando...",
+      "createError": "No se pudo crear el sitio.",
+      "deleteTitle": "Eliminar sitio",
+      "deleteConfirm": "¿Eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
+      "deleteError": "No se pudo eliminar el sitio.",
+      "status": {
+        "pending": "Pendiente",
+        "building": "Construyendo",
+        "deployed": "Desplegado",
+        "failed": "Falló"
+      }
+    },
+    "chat": {
+      "title": "Chat",
+      "site": "Sitio",
+      "noSiteSelected": "Sin sitio",
+      "pickSiteHint": "Elegí un sitio de la lista para empezar una conversación.",
+      "notConnected": "El agente no está conectado en esta build.",
+      "notConnectedHint": "El runtime fx en el navegador todavía no está habilitado, así que no hay con qué hablar ni se puede enviar un mensaje.",
+      "placeholder": "Describí qué querés construir...",
+      "historyEmpty": "Todavía no hay mensajes.",
+      "footer": "Los mensajes corren en tu navegador. No se envía nada a una VM en el servidor."
+    },
+    "preview": {
+      "title": "Vista previa",
+      "staticNotice": "Vista previa estática",
+      "frameTitle": "Vista previa del sitio generado",
+      "noSite": "Ningún sitio seleccionado",
+      "noSiteHint": "Elegí un sitio de la lista para verlo.",
+      "noEntrypoint": "Todavía no hay nada que previsualizar",
+      "noEntrypointHint": "El agente todavía no escribió un index.html para este sitio."
+    },
+    "workspace": {
+      "hideHistory": "Ocultar lista de sitios",
+      "showHistory": "Mostrar lista de sitios"
+    }
   }
 }

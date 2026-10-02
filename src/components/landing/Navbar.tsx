@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useAuthModal } from '../../hooks/useAuthModal';
+import { APP_ROOT } from '../../app/workspace';
 
 function LangToggle({ className }: { className?: string }) {
   const { i18n } = useTranslation();
@@ -74,7 +75,7 @@ export function Navbar() {
             <LangToggle />
             {user ? (
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(APP_ROOT)}
                 className="bg-primary text-on-primary px-6 py-2 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer border-none"
               >
                 {t('nav.application')}

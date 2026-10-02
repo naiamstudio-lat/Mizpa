@@ -124,26 +124,6 @@
     "terms": "Terms of Service",
     "nodeStatus": "NODE_01_ACTIVE"
   },
-  "dashboard": {
-    "badge": "DASHBOARD",
-    "title": "Dashboard",
-    "welcome": "Welcome to Mizpa. Here you can audit and improve your websites.",
-    "admin": "Administration",
-    "adminDesc": "Manage active infrastructure resources.",
-    "cleanVms": "Clean inactive VMs",
-    "cleaning": "Cleaning..."
-  },
-  "playground": {
-    "badge": "Playground",
-    "title": "Playground",
-    "description": "Choose a skill and test your Mizpa agents' capabilities.",
-    "home": "← Home",
-    "signIn": "Sign in",
-    "signOut": "Sign out",
-    "selectSkill": "Select a skill to start",
-    "tasksHint": "Tasks run on remote servers. Results may take a few minutes.",
-    "send": "Send"
-  },
   "auth": {
     "signIn": "Sign in",
     "signUp": "Create your account",
@@ -162,39 +142,59 @@
     "checkEmail": "Check your email to confirm your account.",
     "technicalSeo": "TECHNICAL SEO"
   },
-  "chat": {
-    "agent": "Mizpa Agent",
-    "send": "Send",
-    "selectSkill": "Select a skill to start",
-    "statusQueued": "⏳ Queued — waiting for free VM",
-    "statusPending": "⏳ Pending — starting agent...",
-    "statusRunning": "🔄 Processing...",
-    "taskCompleted": "✅ Task completed.",
-    "error": "❌ **Error**\n\n{{message}}\n\nPlease try again later.",
-    "timeout": "⚠️ **The task is taking longer than expected**\n\nYou can check the status on the dashboard or try again later.\n\nIf the problem persists, contact the administrator.",
-    "welcome": "Hi! I'm Mizpa Agent. You selected: **{{skill}}**\n\n{{description}}\n\nPaste a URL and I'll start the analysis.",
-    "invalidUrl": "❌ **Invalid URL**\n\nEnter a full URL with protocol (e.g. `https://example.com`).",
-    "taskCreated": "⏳ **Task created**\n\nSkill: **{{skill}}**\nURL: `{{url}}`\n\nStarting agent...",
-    "taskQueued": "⏳ **Queued**\n\nNo VMs available. The task will process when one becomes available.\n\n{{message}}",
-    "taskFailed": "❌ **Task failed**\n\n{{error}}"
+  "onboarding": {
+    "title": "Welcome to Mizpa",
+    "description": "Everything your site needs, in one place.",
+    "body": "Name your site and the chat and the preview start working on it right away.",
+    "primary": "Get started",
+    "dismiss": "Close",
+    "reopen": "Show onboarding"
   },
-  "lab": {
-    "welcome": "Welcome to the Lab! I can help you create freestyle.sh VMs, run commands, and deploy apps. What would you like to build today?",
-    "vmConnected": "Connected to VM {vmId} at {url}. Ready for commands.",
-    "vmCreated": "Created new VM {vmId}. Starting dev server...\n\nYour VM is live at: {url}\n\nYou can now send commands to build and deploy your app. Try commands like:\n- npm init\n- npm install react\n- npm start\n- git clone https://github.com/your-repo/app\n- npx create-react-app my-app\n\nThe VM will start a development server on port 5000.",
-    "vmCreateError": "Failed to create VM: {error}",
-    "thinking": "Thinking...",
-    "commandError": "Command failed: {error}",
-    "previewInfo": "App should now be running!\n\nYour preview is available at: {url}\n\nYou can view it in the Live Preview panel or open it in your browser.",
-    "agentTyping": "Agent is thinking...",
-    "placeholderCommand": "Enter a command (e.g., npm start, git clone, etc.)...",
-    "placeholderNoVM": "Create a VM first...",
-    "vmRequired": "Create a VM first to send commands",
-    "sendCommand": "Send",
-    "chatDescription": "Enhanced agent chat with VM interaction",
-    "previewDescription": "Live preview of your deployed app",
-    "projectsDescription": "Manage your VMs and deployed projects",
-    "skillsTitle": "Skills Mode",
-    "skillsDescription": "Choose a skill and test your Mizpa agents' capabilities."
+  "surfaces": {
+    "sites": {
+      "title": "Sites",
+      "welcome": "Every site you have built.",
+      "loading": "Loading sites...",
+      "empty": "No sites yet. Name one above to get started.",
+      "loadError": "Could not load your sites.",
+      "siteName": "Site name",
+      "siteNamePlaceholder": "my-site",
+      "create": "Create site",
+      "creating": "Creating...",
+      "createError": "Could not create the site.",
+      "deleteTitle": "Delete site",
+      "deleteConfirm": "Delete \"{{name}}\"? This cannot be undone.",
+      "deleteError": "Could not delete the site.",
+      "status": {
+        "pending": "Pending",
+        "building": "Building",
+        "deployed": "Deployed",
+        "failed": "Failed"
+      }
+    },
+    "chat": {
+      "title": "Chat",
+      "site": "Site",
+      "noSiteSelected": "No site",
+      "pickSiteHint": "Pick a site from the site list to start a conversation.",
+      "notConnected": "The agent is not connected in this build.",
+      "notConnectedHint": "The in-browser fx runtime is not enabled yet, so there is nothing to talk to and no message can be sent.",
+      "placeholder": "Describe what you want to build...",
+      "historyEmpty": "No messages yet.",
+      "footer": "Messages run in your browser. Nothing is sent to a server VM."
+    },
+    "preview": {
+      "title": "Preview",
+      "staticNotice": "Static preview",
+      "frameTitle": "Generated site preview",
+      "noSite": "No site selected",
+      "noSiteHint": "Pick a site from the site list to preview it.",
+      "noEntrypoint": "Nothing to preview yet",
+      "noEntrypointHint": "The agent has not written an index.html for this site."
+    },
+    "workspace": {
+      "hideHistory": "Hide site list",
+      "showHistory": "Show site list"
+    }
   }
 }

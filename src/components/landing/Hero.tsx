@@ -1,8 +1,24 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trans } from 'react-i18next';
+import { useAuthModal } from '../../hooks/useAuthModal';
+import { PENDING_URL_KEY } from '../../app/workspace';
 
 export function Hero() {
   const { t } = useTranslation();
+  const { open: openAuth } = useAuthModal();
+  const [url, setUrl] = useState('');
+
+  // The site URL is carried into the app rather than discarded: the workspace
+  // takes it out of storage once, prefills the create-site form with it, and
+  // clears it, so what the visitor typed is what gets worked on. The key is
+  // shared with `takePendingUrl` on purpose — two literals for one contract is
+  // how a handoff quietly stops connecting.
+  const start = () => {
+    const target = url.trim();
+    if (target) sessionStorage.setItem(PENDING_URL_KEY, target);
+    openAuth();
+  };
 
   return (
     <section
@@ -37,7 +53,10 @@ export function Hero() {
           </h1>
 
           <div className="flex flex-col gap-6 justify-center items-center w-full max-w-md">
-            <button className="bg-white text-black px-10 py-4 font-label-mono text-label-mono uppercase tracking-widest hover:scale-105 transition-all bloom-primary w-full">
+            <button
+              onClick={start}
+              className="bg-white text-black px-10 py-4 font-label-mono text-label-mono uppercase tracking-widest hover:scale-105 transition-all bloom-primary w-full"
+            >
               {t('hero.button')}
             </button>
             <div className="relative w-full group">
@@ -48,6 +67,9 @@ export function Hero() {
                 className="w-full bg-white/5 border border-white/10 font-label-mono text-white px-12 py-4 focus:border-primary focus:ring-0 focus:outline-none placeholder:text-white/20 transition-all"
                 placeholder={t('hero.placeholder')}
                 type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') start(); }}
               />
               <div className="absolute inset-y-0 right-4 flex items-center">
                 <span className="text-white/20 font-label-mono text-[10px]">[0x001]</span>
@@ -107,9 +129,15 @@ export function Hero() {
                 className="w-full bg-surface-container-low border border-white/10 px-12 py-5 font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all rounded-lg placeholder:text-outline-variant"
                 placeholder={t('hero.placeholder')}
                 type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') start(); }}
               />
             </div>
-            <button className="bg-on-surface text-background px-10 py-5 font-display-lg text-body-md font-bold rounded-lg hover:glow-neon-pink transition-all duration-300 transform hover:-translate-y-1">
+            <button
+              onClick={start}
+              className="bg-on-surface text-background px-10 py-5 font-display-lg text-body-md font-bold rounded-lg hover:glow-neon-pink transition-all duration-300 transform hover:-translate-y-1"
+            >
               {t('hero.buttonDesktop')}
             </button>
           </div>

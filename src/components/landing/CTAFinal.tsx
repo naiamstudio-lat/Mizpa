@@ -1,7 +1,18 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuthModal } from '../../hooks/useAuthModal';
 
 export function CTAFinal() {
   const { t } = useTranslation();
+  const { open: openAuth } = useAuthModal();
+  const [url, setUrl] = useState('');
+
+  // Same entry point as the hero, so the closing CTA is not a dead input.
+  const start = () => {
+    const target = url.trim();
+    if (target) sessionStorage.setItem('mizpa.pendingUrl', target);
+    openAuth();
+  };
 
   return (
     <>
@@ -19,8 +30,14 @@ export function CTAFinal() {
               className="bg-black border border-white/10 px-6 py-4 w-full md:w-96 font-label-mono text-label-mono focus:border-primary focus:ring-0 focus:outline-none transition-all placeholder:text-white/20"
               placeholder={t('cta.placeholder')}
               type="email"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') start(); }}
             />
-            <button className="w-full md:w-auto bg-primary text-on-primary px-12 py-4 font-label-mono text-label-mono uppercase tracking-[0.2em] hover:scale-105 transition-all bloom-primary">
+            <button
+              onClick={start}
+              className="w-full md:w-auto bg-primary text-on-primary px-12 py-4 font-label-mono text-label-mono uppercase tracking-[0.2em] hover:scale-105 transition-all bloom-primary"
+            >
               {t('cta.button')}
             </button>
           </div>

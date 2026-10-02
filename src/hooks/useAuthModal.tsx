@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback, type ReactNode } from
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './useAuth';
+import { APP_ROOT } from '../app/workspace';
 
 interface AuthModalContextValue {
   open: () => void;
@@ -51,7 +52,7 @@ function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
     try {
       await signIn(email, password);
       onClose();
-      navigate('/dashboard');
+      navigate(APP_ROOT);
     } catch (err: any) {
       setError(err.message || t('auth.error'));
     } finally {

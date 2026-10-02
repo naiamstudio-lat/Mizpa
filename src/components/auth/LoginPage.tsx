@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
+import { APP_ROOT } from '../../app/workspace';
 
 export function LoginPage() {
   const { t } = useTranslation();
@@ -26,7 +27,7 @@ export function LoginPage() {
         setMessage(t('auth.checkEmail'));
       } else {
         await signIn(email, password);
-        navigate('/dashboard');
+        navigate(APP_ROOT);
       }
     } catch (err: any) {
       setError(err.message || t('auth.error'));
