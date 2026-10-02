@@ -10,9 +10,10 @@
  *
  * Contract:
  *   GET  /                      the bootstrap document (see below)
- *   {GET,POST} /?path=/v{n}/ai/language-model
+ *   {GET,POST} /?path=/v{n}/ai/language-model[&model=<catalog id>]
  *   200/4xx/5xx  the upstream's own status and body, plus x-fx-* headers
- *   400 { error, code: 'missing_path' | 'invalid_body' }   the call is malformed
+ *   400 { error, code: 'missing_path' | 'invalid_body' | 'unknown_model' }
+ *                                                the call is malformed
  *   401 { error, code: 'unauthenticated' }    no usable user JWT
  *   403 { error, code: 'path_not_allowed' }   off the allow-list, upstream untouched
  *   403 { error, code: 'quota_exhausted' }    no budget, upstream untouched
@@ -21,8 +22,9 @@
  *   502 { error, code: 'upstream_error' } | 504 'upstream_timeout'
  *
  *   GET /
- *   200 { model, provider, gateway: { baseUrl, protocolVersion, modelHeader },
- *         quota: { used, limit, remaining }, unitsCharged }
+ *   200 { model, provider, gateway: { baseUrl, protocolVersion, modelHeader,
+ *         modelQueryParam }, quota: { used, limit, remaining }, unitsCharged,
+ *         models: [ ...catalog ] }
  *   401 as above   403 as above   500 as above
  *
  * Four invariants, and the order of the code is what enforces them:
@@ -31,14 +33,22 @@
  *      session cookie — can reach the gateway.
  *   2. The **model belongs to this function**. `ai-language-model-id` is the only
  *      channel it travels on, and `reconcileRequestBody` deletes the model's
- *      `model` key from the body so the two cannot compete. The tab is not left
- *      believing it chose: every response carries `x-fx-model`/`x-fx-provider`,
- *      and `GET /` states it before the first call.
+ *      `model` key from the body so the two cannot compete. The tab may *name* a
+ *      model on `?model=`, but only from the catalogue in `models.ts`, which is
+ *      server policy — anything else is a 400 before a unit is charged. The tab is
+ *      not left believing it chose freely: every response carries
+ *      `x-fx-model`/`x-fx-provider`, and `GET /` states the default and publishes
+ *      the catalogue before the first call.
  *   3. A reservation is charged *before* the upstream is contacted, which is what
- *      makes the 403 honest: on a denial nothing has left the isolate.
+ *      makes the 403 honest: on a denial nothing has left the isolate. The
+ *      reservation is one minute of the resolved model's tier rate, taken from
+ *      our own table — never from the upstream, and never a default.
  *   4. The reservation is reconciled against the model's reported token usage
  *      afterwards. A crash in between leaves the reservation as the cost —
  *      bounded, and bounded in the direction that cannot leak spend.
+ *   5. A stream that goes quiet is closed. `UPSTREAM_TIMEOUT_MS` bounds the whole
+ *      request; `STREAM_IDLE_TIMEOUT_MS` bounds the silence inside it, because an
+ *      aggregator will eventually drop a terminal event.
  *
  * Auth: the caller's JWT is verified against GoTrue, and the user id it yields
  * is the *only* source of `p_user_id`. That matters more here than anywhere
@@ -51,6 +61,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { UnknownModelError, resolveDefaultModel } from './models.ts'
 import {
   BOOTSTRAP_COST_UNITS,
   DEFAULT_DAILY_UNITS,
@@ -63,12 +74,13 @@ import {
   buildGatewayResponse,
   buildUpstreamRequest,
   createUsageScanner,
+  guardStreamIdle,
   planSettlement,
-  providerOf,
   quotaDenied,
   reconcileRequestBody,
   reserveUnitsFor,
   resolveGatewayBaseUrl,
+  selectModel,
 } from './proxy.ts'
 
 const corsHeaders = {
@@ -186,14 +198,17 @@ async function settle(userId: string, reserved: number, usage: TokenUsage | null
 
 /** Read a copy of the relayed stream looking for the usage block. Drains to the
  *  end regardless of what the tab does with its own branch, which is what makes
- *  a client disconnect cheaper rather than more expensive. */
+ *  a client disconnect cheaper rather than more expensive.
+ *
+ *  Takes a reader rather than a stream so the caller can share it with the idle
+ *  watchdog: when the watchdog force-closes, this read has to be cancelled too,
+ *  and a stream handed over here would already be locked. */
 async function readUsage(
-  stream: ReadableStream<Uint8Array>,
+  reader: ReadableStreamDefaultReader<Uint8Array>,
   scanner: ReturnType<typeof createUsageScanner>,
 ): Promise<TokenUsage | null> {
   const decoder = new TextDecoder()
   let found: TokenUsage | null = null
-  const reader = stream.getReader()
   try {
     for (;;) {
       const { done, value } = await reader.read()
@@ -246,13 +261,14 @@ async function bootstrap(req: Request): Promise<Response> {
     }, 403)
   }
 
-  const model = env('AI_GATEWAY_MODEL_ID')
+  const model = resolveDefaultModel().id
   const payload = buildBootstrapPayload({
     model,
     gatewayBaseUrl: selfUrl(req),
     used,
     limit: DEFAULT_DAILY_UNITS,
     unitsCharged: BOOTSTRAP_COST_UNITS,
+    apiKey: env('AI_GATEWAY_API_KEY'),
   })
   console.log(`[fx-gateway] bootstrap for ${userId}: ${payload.model} via ${payload.provider} (used ${used})`)
   return json(payload)
@@ -273,16 +289,24 @@ serve(async (req) => {
 
     // Validate before spending anything: a refused call costs no quota.
     const upstreamPath = assertProxyPath(method, path)
+    // Resolve the model next, and still before any money moves. An id that is not
+    // in the catalogue must cost nothing — not even a 1-unit read — because a
+    // caller could otherwise probe the catalogue for free and, worse, a valid
+    // request for a retired model would be charged a reservation against a call
+    // the gateway is going to refuse. `selectModel` throws `UnknownModelError`
+    // (400) for a caller's id and a 500 for a bad `AI_GATEWAY_MODEL_ID`, so the
+    // two mistakes are not reported as the same fault.
+    const selection = selectModel(url.searchParams.get('model'), env('AI_GATEWAY_MODEL_ID'))
     // Read the body before charging too, so a truncated request cannot be
     // billed for an answer it never gets to ask for. Reconciling it here is also
     // what lets the server's model be the only one the gateway can see.
     const raw = method === 'GET' ? null : await req.text()
     const reconciled = raw === null
       ? null
-      : reconcileRequestBody(raw, env('AI_GATEWAY_MODEL_ID'))
+      : reconcileRequestBody(raw, selection.descriptor.id)
 
     const userId = await authenticate(req)
-    const reserved = reserveUnitsFor(method)
+    const reserved = reserveUnitsFor(method, selection.descriptor)
     const used = await charge(userId, reserved)
 
     if (quotaDenied(used)) {
@@ -300,7 +324,7 @@ serve(async (req) => {
       path: upstreamPath,
       body: reconciled?.body ?? null,
       apiKey: env('AI_GATEWAY_API_KEY'),
-      modelId: reconciled?.model ?? env('AI_GATEWAY_MODEL_ID'),
+      modelId: selection.descriptor.id,
     })
 
     let upstream: Response
@@ -328,8 +352,11 @@ serve(async (req) => {
     // header is written before the upstream finishes, and the settled number
     // lands in the ledger. A tab that needs the exact figure re-reads `GET /`.
     const headers = buildBrowserHeaders(buildGatewayResponse(upstream).headers, {
-      model: target.headers['ai-language-model-id'] ?? '',
-      provider: providerOf(target.headers['ai-language-model-id'] ?? ''),
+      // Both come from the descriptor, never from the request: `provider` is
+      // display-only and is kept honest by a module-load assertion in `models.ts`
+      // that it equals the id prefix.
+      model: selection.descriptor.id,
+      provider: selection.descriptor.provider,
       gatewayBaseUrl: selfUrl(req),
       units: reserved,
       remaining: Math.max(0, DEFAULT_DAILY_UNITS - used),
@@ -346,17 +373,44 @@ serve(async (req) => {
     // copy even if the tab disconnects, so a client hang-up does not turn into a
     // lost settlement.
     const [toTab, toUs] = upstream.body.tee()
+    const usReader = toUs.getReader()
     const contentType = upstream.headers.get('content-type') ?? ''
     const scanner = createUsageScanner(contentType.includes('text/event-stream') ? 'sse' : 'json')
-    void readUsage(toUs, scanner)
+
+    // The tab's branch is the one that can hang, so that is the one guarded. The
+    // one non-obvious part is `onIdle`: cancelling ONE branch of a `tee()` does
+    // not cancel the source, so without this the upstream would keep streaming
+    // into a branch nobody reads — the provider keeps billing and `readUsage`
+    // never resolves. Cancelling both branches is what actually stops the spend.
+    // The interval itself is cleared inside the guard on every exit path.
+    const guard = guardStreamIdle(toTab, {
+      onIdle: () => {
+        console.warn(
+          `[fx-gateway] ${selection.descriptor.id} stalled: no chunk for the idle window; closing the stream`,
+        )
+        void usReader.cancel(new Error('idle')).catch(() => {})
+      },
+    })
+
+    void readUsage(usReader, scanner)
       .then((usage) => settle(userId, reserved, usage))
       .catch((err) => {
         console.error(`[fx-gateway] usage read failed; holding ${reserved}: ${String(err)}`)
       })
 
-    console.log(`[fx-gateway] ${method} ${upstreamPath} -> ${upstream.status} (reserved ${reserved} of ${used})`)
-    return new Response(toTab, { status: upstream.status, headers: { ...corsHeaders, ...headers } })
+    console.log(
+      `[fx-gateway] ${method} ${upstreamPath} -> ${upstream.status} ${selection.descriptor.id} ` +
+        `(${selection.descriptor.tier}, reserved ${reserved} of ${used})`,
+    )
+    return new Response(guard.stream, { status: upstream.status, headers: { ...corsHeaders, ...headers } })
   } catch (err) {
+    // `UnknownModelError` is a 400 by construction: the caller named a model this
+    // product does not offer. It is mapped here rather than inside `proxy.ts` so
+    // the catalogue module stays free of HTTP concerns.
+    if (err instanceof UnknownModelError) {
+      console.log(`[fx-gateway] refused: ${err.code} — ${err.message}`)
+      return json({ error: err.message, code: err.code }, err.status)
+    }
     if (err instanceof ProxyError) {
       console.log(`[fx-gateway] refused: ${err.code} — ${err.message}`)
       return json({ error: err.message, code: err.code }, err.status)

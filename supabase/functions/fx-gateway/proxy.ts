@@ -15,11 +15,21 @@
  *      That is the anti-leak control: there is no code path that copies a value
  *      out of the incoming request, so the tab's placeholder key, its session
  *      cookie and its own idea of the model cannot travel upstream.
- *   2. The **model is owned by this function**. The tab does not choose it; it
- *      is told which one ran. See "who owns the model" below.
+ *   2. The **model is server policy**. The body can never choose it — see
+ *      `reconcileRequestBody` — and a caller-supplied `?model=` is accepted only
+ *      if it names a model in the catalogue this function publishes. See "who
+ *      owns the model" below and `models.ts`.
  *   3. The cost is the model's **token usage**, so the charge before the call
  *      can only be a reservation. See "the reservation and the settlement".
  */
+
+import {
+  DEFAULT_MODEL_ID,
+  ModelDescriptor,
+  TIER_RESERVATION_RATES,
+  listCatalog,
+  resolveModel,
+} from './models.ts'
 
 export const GATEWAY_ORIGIN = 'https://ai-gateway.vercel.sh'
 
@@ -28,6 +38,179 @@ export const GATEWAY_ORIGIN = 'https://ai-gateway.vercel.sh'
  *  protect it. The browser is waiting on this, so the budget is the user's
  *  patience, not a network hygiene number. */
 export const UPSTREAM_TIMEOUT_MS = 30_000
+
+/**
+ * How long a relayed stream may go without a chunk before it is force-closed.
+ *
+ * Deliberately **separate from `UPSTREAM_TIMEOUT_MS`**, and that separation is
+ * the entire point. The absolute deadline bounds the request; this bounds the
+ * *silence*. They fail differently: a model that streams tokens for 29 s and then
+ * stops mid-sentence has satisfied the absolute deadline and would otherwise hold
+ * the tab open until the isolate dies — with the reservation still charged and
+ * nothing settled. The gateway is an aggregator, so some upstream model will
+ * eventually fail to emit a terminal event; AnythingLLM found this only after
+ * shipping an aggregator, and this is their mechanism read rather than
+ * rediscovered.
+ *
+ * 15 s is longer than any normal gap between chunks and shorter than a user will
+ * wait, so a genuinely stalled generation is closed while the tab still thinks
+ * the request is alive.
+ */
+export const STREAM_IDLE_TIMEOUT_MS = 15_000
+
+/**
+ * The clock and timers the watchdog runs on, injected rather than reached for.
+ *
+ * This exists so the behaviour is observable without spending real seconds: a
+ * caller can supply a fake `now` and a fake interval and drive an idle timeout to
+ * completion deterministically. Without it, proving the watchdog fires means
+ * either a 15 s test or trusting a code read.
+ */
+export interface WatchdogClock {
+  setInterval(fn: () => void, ms: number): unknown
+  clearInterval(handle: unknown): void
+  now(): number
+}
+
+/** The real clock. Indirection only — no behaviour lives here. */
+export const SYSTEM_CLOCK: WatchdogClock = {
+  setInterval: (fn, ms) => setInterval(fn, ms),
+  clearInterval: (handle) => clearInterval(handle as number),
+  now: () => Date.now(),
+}
+
+export interface IdleGuardOptions {
+  idleMs?: number
+  /** How often the silence is measured. Defaults to half of `idleMs`, so there is
+   *  always at least one check before the deadline can be reached. */
+  pollMs?: number
+  clock?: WatchdogClock
+  /** Called once, when the guard trips. For logging — never for control flow. */
+  onIdle?: () => void
+}
+
+export interface IdleGuard {
+  /** The stream to hand the tab, in place of the raw upstream body. */
+  readonly stream: ReadableStream<Uint8Array>
+  /** Did the guard force-close? True only after it did. A force-close ends the
+   *  stream *without* a terminal `finish` part, which the v4 protocol defines as
+   *  truncation — so the tab can tell this apart from a completed generation. */
+  readonly tripped: boolean
+  /**
+   * Disarm and drop the upstream. Idempotent, and safe to call from any path.
+   *
+   * The interval is cleared on *every* exit — normal end, upstream error, client
+   * disconnect, trip, or this call — because a leaked interval holds a Deno
+   * isolate open. An isolate kept alive by a stray `setInterval` bills wall-clock
+   * time for a request that already finished.
+   */
+  stop(): void
+}
+
+/**
+ * Wrap a relayed stream so silence ends it.
+ *
+ * The mechanism is a `setInterval` comparing the clock against the time of the
+ * last chunk, force-closing once the gap exceeds the threshold. Arming happens in
+ * `start`, which runs when the stream is constructed — so the deadline counts from
+ * the moment the response exists, not from the first byte, and a body that never
+ * emits anything at all is caught too.
+ */
+export function guardStreamIdle(
+  source: ReadableStream<Uint8Array>,
+  options: IdleGuardOptions = {},
+): IdleGuard {
+  const idleMs = options.idleMs ?? STREAM_IDLE_TIMEOUT_MS
+  const pollMs = Math.max(1, options.pollMs ?? Math.floor(idleMs / 2))
+  const clock = options.clock ?? SYSTEM_CLOCK
+  const reader = source.getReader()
+
+  let handle: unknown = null
+  let lastChunkAt = clock.now()
+  let tripped = false
+
+  const disarm = (): void => {
+    if (handle === null) return
+    clock.clearInterval(handle)
+    handle = null
+  }
+
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      lastChunkAt = clock.now()
+      handle = clock.setInterval(() => {
+        if (clock.now() - lastChunkAt < idleMs) return
+        if (tripped) return
+        tripped = true
+        disarm()
+        options.onIdle?.()
+        // Two closes, and both matter. Cancelling the upstream stops the provider
+        // billing for tokens nobody will read, and — because cancelling one branch
+        // of a `tee()` leaves the source alive — it is also what lets `readUsage`
+        // return, which is what settles the reservation. Closing the tab's branch
+        // is what actually ends the request.
+        //
+        // `close()` and **not** `error()`, which is the opposite of the obvious
+        // choice and was measured rather than assumed. Verified against a real
+        // `supabase/edge-runtime` with a function that returns one chunk and then
+        // either closes, errors or stalls: `close()` ends the client's read in
+        // 0.53 s, while `error()` and a stall are indistinguishable to the client
+        // and both hang until the client gives up. An errored response body is
+        // swallowed by the runtime, so force-closing with `error()` would have
+        // looked correct in a unit test and in the logs — the interval really did
+        // clear — while leaving the tab hanging, which is the whole failure this
+        // watchdog exists to prevent.
+        //
+        // Closing is also not ambiguous on the wire. The v4 streaming protocol
+        // terminates with a `finish` part carrying `usage`; a stream that ends
+        // without one is truncated *by definition*, which is precisely what
+        // happened here. And the money consequence is already correct either way:
+        // no `finish` means no usage, so `extractUsage` returns null and the
+        // reservation stands — the ledger never records a partial generation as a
+        // complete one.
+        void reader.cancel(new Error('idle')).catch(() => {})
+        try {
+          controller.close()
+        } catch {
+          // Already closed or errored upstream. Nothing left to end.
+        }
+      }, pollMs)
+    },
+    async pull(controller) {
+      if (tripped) return
+      try {
+        const { done, value } = await reader.read()
+        if (done) {
+          disarm()
+          controller.close()
+          return
+        }
+        lastChunkAt = clock.now()
+        controller.enqueue(value)
+      } catch (err) {
+        disarm()
+        controller.error(err)
+      }
+    },
+    cancel(reason) {
+      // The tab hung up. Disarm before cancelling the upstream, or the interval
+      // outlives the request it was watching.
+      disarm()
+      return reader.cancel(reason)
+    },
+  })
+
+  return {
+    stream,
+    get tripped() {
+      return tripped
+    },
+    stop() {
+      disarm()
+      void reader.cancel(new Error('stopped')).catch(() => {})
+    },
+  }
+}
 
 /**
  * What one proxied call reserves before the upstream is contacted, and what the
@@ -50,11 +233,17 @@ export const UPSTREAM_TIMEOUT_MS = 30_000
  */
 export const UNITS_PER_TOKEN = 1
 
-/** Pre-flight hold for a generation. 200k tokens covers a full fx agent turn —
- *  the whole VFS is re-sent as prompt on every call, so a large project is a
- *  six-figure prompt — while a runaway loop still exhausts the day's budget well
- *  inside one 30 s deadline. */
-export const RESERVATION_UNITS = 200_000
+/**
+ * The standard tier's reservation rate, re-exported so this file keeps exactly one
+ * named cost constant for the common case.
+ *
+ * The *owner* of that number moved to `models.ts` with the tier table it belongs
+ * to, because a tier's rate is a property of the tier and duplicating it here
+ * would be two sources of truth for money. What changed is not the size — 200k is
+ * still what a standard call holds — it is that the rate is now chosen per model
+ * rather than applied to every call.
+ */
+export const RESERVATION_UNITS = TIER_RESERVATION_RATES.standard
 
 /** A model catalogue is not a generation. U4 charged it the same flat unit, so
  *  a listing could be the call that locked a user out; one token keeps it behind
@@ -73,12 +262,76 @@ export const BOOTSTRAP_COST_UNITS = 1
  *  model has exactly one owner — this file. */
 export const DEFAULT_DAILY_UNITS = 20_000_000
 
-/** What a request reserves, given only its method. An unrecognised method is
- *  charged as a generation: the allow-list has already refused anything else, so
- *  reaching here with an odd method is a bug, and failing toward spending is the
- *  safe direction for a bug in a money path. */
-export function reserveUnitsFor(method: string): number {
-  return method === 'GET' ? MODELS_LIST_COST_UNITS : RESERVATION_UNITS
+/**
+ * What a request reserves.
+ *
+ * A `GET` is a catalogue listing rather than a generation, so it keeps its flat
+ * token. Everything else reserves **one minute of the resolved model's own tier
+ * rate** — see `TIER_RESERVATION_RATES` in `models.ts`. The descriptor is a
+ * required argument and not an optional one on purpose: an optional descriptor
+ * would have to degrade to *some* rate when absent, and that default is precisely
+ * the silent mis-bill this refactor exists to remove. The type makes it
+ * impossible to forget, and `ModelDescriptor` cannot be built without a rate —
+ * `assertDescriptor` refuses a catalogue row that lacks one.
+ *
+ * An unrecognised method is charged as a generation: the allow-list has already
+ * refused anything else, so reaching here with an odd method is a bug, and failing
+ * toward spending is the safe direction for a bug in a money path.
+ */
+export function reserveUnitsFor(method: string, descriptor: ModelDescriptor): number {
+  return method === 'GET' ? MODELS_LIST_COST_UNITS : descriptor.quotaRateTokensPerMin
+}
+
+// --- which model runs --------------------------------------------------------
+//
+// Ownership nuance, and it is a real change rather than a detail: previously the
+// tab chose nothing and the server always ran `AI_GATEWAY_MODEL_ID`. Now the tab
+// may *name* a model, out of band, as `?model=`. What has not changed is who
+// decides: the catalogue is server policy, so a caller can only pick among models
+// this product publishes, and anything else is a 400 before a single unit is
+// charged. The tab still cannot inject an id the catalogue does not contain, which
+// was the entire point of stripping `model` from the body.
+
+export interface ModelSelection {
+  descriptor: ModelDescriptor
+  /** `requested` when the caller named a catalogue model, `default` otherwise. */
+  source: 'requested' | 'default'
+}
+
+/**
+ * Resolve the model for a call.
+ *
+ * Two failure directions, deliberately different answers:
+ *   - a **caller** naming something we do not offer is a hard 400
+ *     (`UnknownModelError`), thrown before authentication and before any charge;
+ *   - the **server's own** configured model being absent from the catalogue is a
+ *     500. That is a misconfiguration, not user error, and reporting it as a 400
+ *     would blame the caller for a bad deploy. It also fails closed: the constant
+ *     is never used to *invent* a rate for a model that is not in the table.
+ *
+ * `requested` arrives as a raw query parameter, so it can be anything at all. An
+ * empty or whitespace-only value is treated as "not named" rather than as an
+ * unknown id, because `?model=` is what a URL builder produces when the tab has
+ * nothing selected yet, and refusing it would be a confusing 400 for a normal
+ * state.
+ */
+export function selectModel(requested: string | null, configured: string): ModelSelection {
+  const named = requested === null ? '' : requested.trim()
+
+  if (named === '') {
+    const fallback = configured.trim() !== '' ? configured.trim() : DEFAULT_MODEL_ID
+    try {
+      return { descriptor: resolveModel(fallback), source: 'default' }
+    } catch {
+      throw new ProxyError(
+        'unknown_model',
+        `AI_GATEWAY_MODEL_ID is '${fallback}', which is not in the fx model catalogue`,
+        500,
+      )
+    }
+  }
+
+  return { descriptor: resolveModel(named), source: 'requested' }
 }
 
 export interface TokenUsage {
@@ -133,6 +386,19 @@ export const UPSTREAM_HEADER_NAMES = [
 
 /** The model travels in this header and nowhere else. */
 export const MODEL_HEADER = 'ai-language-model-id'
+
+/**
+ * How the tab *names* a model to this function.
+ *
+ * A query parameter rather than a header or a body field, and the choice is
+ * deliberate: the body is the one caller-supplied channel we already had to strip
+ * `model` from, and a request header would be a caller-supplied header — the exact
+ * thing `buildUpstreamRequest` is built so that cannot reach the gateway. Keeping
+ * the selection on the URL leaves the property intact: the tab names a model, this
+ * function decides which one actually runs, and the header is written from that
+ * decision rather than from the request.
+ */
+export const MODEL_QUERY_PARAM = 'model'
 
 /** Value for `ai-gateway-protocol-version`. Vercel AI Gateway's current protocol
  *  version; the SDKs send the same constant. */
@@ -292,6 +558,14 @@ export function quotaDenied(result: unknown): boolean {
 // defines, and the body's `model` is *removed* rather than left to be ignored —
 // one channel means there is nothing left to disagree with, now or after a
 // gateway version starts honouring a field it currently drops.
+//
+// The tab may now *name* a model, on `?model=`, and the distinction that keeps
+// this from being a contradiction is worth stating plainly: naming is not
+// choosing. The set of names that can be named is the catalogue in `models.ts`,
+// which is server policy — a caller cannot reach an id this function does not
+// publish, so the header is still written from a server-side decision. What
+// changed is the size of that set, from one to the catalogue, and the price is
+// that the catalog's rate table is now load-bearing for money.
 
 export interface RequestReconciliation {
   /** The exact bytes to forward. */
@@ -558,36 +832,94 @@ export function buildBrowserHeaders(
 }
 
 export interface BootstrapInfo {
-  /** The model that will run — resolved server-side, never the caller's. */
+  /** The model that will run when the caller names none — resolved server-side. */
   model: string
   /** The proxied base URL, i.e. this function. */
   gatewayBaseUrl: string
   used: number
   limit: number
   unitsCharged: number
+  /** Passed in so the anti-leak assertion below is a fact rather than an
+   *  assumption: the payload is serialised into a response body, and a body is
+   *  not covered by the header check in `buildBrowserHeaders`. */
+  apiKey: string
+}
+
+/** What the tab may know about a model. The fields are exactly the ones needed to
+ *  price a call and render a picker — and nothing that could route anything. */
+export interface CatalogEntry {
+  id: string
+  label: string
+  contextWindow: number
+  maxOutputTokens: number
+  tier: ModelDescriptor['tier']
+  quotaRateTokensPerMin: number
+  supportsTools: boolean
+  supportsVision: boolean
+  supportsReasoning: boolean
+  provider: string
 }
 
 export interface BootstrapPayload {
   model: string
   provider: string
-  gateway: { baseUrl: string; protocolVersion: string; modelHeader: string }
+  gateway: { baseUrl: string; protocolVersion: string; modelHeader: string; modelQueryParam: string }
   quota: { used: number; limit: number; remaining: number }
   unitsCharged: number
+  /** Every model this product offers, so the tab never has to guess or fetch a
+   *  third-party catalogue to populate a picker. */
+  models: ReadonlyArray<CatalogEntry>
 }
 
-/** What the tab reads before its first agent call, so the `fetch` override can
- *  build proxied URLs and the UI can name the model that will run. No key, no
- *  model the user did not get, nothing caller-supplied. */
-export function buildBootstrapPayload(info: BootstrapInfo): BootstrapPayload {
+/** Project a descriptor down to the published shape. An explicit allow-list, for
+ *  the same reason the header sets are: a field nobody thought about is a field
+ *  nobody audited. */
+function toCatalogEntry(d: ModelDescriptor): CatalogEntry {
   return {
+    id: d.id,
+    label: d.label,
+    contextWindow: d.contextWindow,
+    maxOutputTokens: d.maxOutputTokens,
+    tier: d.tier,
+    quotaRateTokensPerMin: d.quotaRateTokensPerMin,
+    supportsTools: d.supportsTools,
+    supportsVision: d.supportsVision,
+    supportsReasoning: d.supportsReasoning,
+    provider: d.provider,
+  }
+}
+
+/**
+ * What the tab reads before its first agent call, so the `fetch` override can
+ * build proxied URLs, the UI can name the model that will run, and the picker can
+ * be populated without a second discovery route.
+ *
+ * Nothing caller-supplied reaches this payload, and the catalogue is server data
+ * read from a frozen table — so the credential check is belt-and-braces the way
+ * `buildBrowserHeaders`' is. It is kept anyway: `buildBrowserHeaders` guards the
+ * response *headers*, and this is the response *body*. A new body field is exactly
+ * how a key escapes a function that has a check on everything else.
+ */
+export function buildBootstrapPayload(info: BootstrapInfo): BootstrapPayload {
+  const payload: BootstrapPayload = {
     model: info.model,
     provider: providerOf(info.model),
     gateway: {
       baseUrl: info.gatewayBaseUrl,
       protocolVersion: GATEWAY_PROTOCOL_VERSION,
       modelHeader: MODEL_HEADER,
+      modelQueryParam: MODEL_QUERY_PARAM,
     },
     quota: { used: info.used, limit: info.limit, remaining: Math.max(0, info.limit - info.used) },
     unitsCharged: info.unitsCharged,
+    models: listCatalog().map(toCatalogEntry),
   }
+
+  if (info.apiKey !== '') {
+    const serialised = JSON.stringify(payload)
+    if (serialised.includes(info.apiKey)) {
+      throw new ProxyError('credential_in_response', 'the bootstrap body would have carried the gateway key', 500)
+    }
+  }
+  return payload
 }
