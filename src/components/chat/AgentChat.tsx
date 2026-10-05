@@ -4,37 +4,91 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { readSelection } from '../../app/workspace';
+import { prepareFxAgent, type FxAgentVerdict } from '../../lib/fx/agent';
+import { SiteReadiness } from '../analysis/SiteReadiness';
 
 interface SiteOption {
   id: string;
   name: string;
 }
 
-/**
- * The workspace's centre column: the agent chat.
- *
- * This component owns the conversation and the site it is about: `?site=` names
- * the site, and the select in the header writes it. It does not own a route — the
- * chat is a column of the same screen as the site list and the preview, so the
- * selection reaches it as a selection rather than as a destination.
- *
- * It does not yet own a turn. The in-browser `libfx` runtime is the next unit
- * of this change, so there is no agent to talk to yet and the surface says so
- * instead of pretending otherwise — the composer is disabled rather than
- * accepting a message that would be silently dropped. Wiring the runtime means
- * replacing `AGENT_STATUS` and the disabled submit, not this component's shape.
- */
-const AGENT_STATUS: 'not-connected' | 'connected' = 'not-connected';
+interface AgentChatProps {
+  /**
+   * The URL the visitor typed on the landing, consumed once by `AppShell`.
+   *
+   * A prop and not something this component reads from storage: the handoff is
+   * cleared as it is read, so a second reader would race this one for the key and
+   * one of the two would come up empty. Whoever takes it is the screen that shows
+   * the analysis, and that is the chat column.
+   */
+  pendingUrl?: string;
+}
 
-export function AgentChat() {
+/**
+ * The workspace's centre column: the analysis and the agent chat.
+ *
+ * The column now opens with what Mizpa **measured**, not with a form. Someone
+ * who typed an address on the landing arrives here and the first thing in the
+ * column is that address being measured — grade, score, and the failing signals
+ * grouped by category — with the conversation available underneath it. The
+ * "name your site" step that used to sit between the URL and any output is gone
+ * from this path; it remains in the left column for someone who arrived without
+ * a URL, which is the only reason it is still there.
+ *
+ * ## Why the agent's state is probed rather than declared
+ *
+ * This used to read `const AGENT_STATUS = 'not-connected'`. A constant cannot be
+ * wrong, which means it cannot be right either: it said the same thing whether
+ * this browser lacks JSPI, whether `fx-gateway` is not deployed, whether it is
+ * deployed without an `AI_GATEWAY_API_KEY`, or whether the whole path works. Those
+ * are four different problems for four different people, and the only one this
+ * screen can act on is knowing which.
+ *
+ * So `prepareFxAgent` is called for real, once, and its verdict is rendered. In
+ * this environment the answer is measured, not assumed: the browser has JSPI, and
+ * `GET /` on `fx-gateway` returns **404 `NOT_FOUND`**, because no edge function is
+ * deployed. That is the sentence the visitor reads, and it is the true one.
+ *
+ * The report above is **not** the agent's output, and the copy says so. It comes
+ * from Mizpa's own call to the public IsAgentReady scanner — no key, no model, no
+ * agent involved. A panel that looked like agent output while the agent cannot
+ * answer would be the most misleading thing on this screen.
+ */
+export function AgentChat({ pendingUrl = '' }: AgentChatProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [sites, setSites] = useState<SiteOption[]>([]);
+  /**
+   * `null` while the probe is in flight, which is a third state and not a fourth
+   * verdict: "we have not asked yet" must not render as "we asked and it failed".
+   */
+  const [verdict, setVerdict] = useState<FxAgentVerdict | 'ready' | null>(null);
+  const [verdictDetail, setVerdictDetail] = useState<string | null>(null);
 
   const { siteId } = readSelection(searchParams);
 
   const [draft, setDraft] = useState('');
+
+  useEffect(() => {
+    if (user === null) {
+      setVerdict('no_session');
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const outcome = await prepareFxAgent({
+        supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
+        getToken: async () => (await supabase.auth.getSession()).data.session?.access_token ?? null,
+      });
+      if (cancelled) return;
+      setVerdict(outcome.verdict);
+      setVerdictDetail(outcome.verdict === 'ready' ? null : outcome.detail);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -93,15 +147,37 @@ export function AgentChat() {
 
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto">
-          {AGENT_STATUS === 'not-connected' && (
-            <div className="bg-surface-container border border-white/5 px-5 py-4 mb-6">
-              <p className="font-label-mono text-label-mono text-on-surface mb-1">{t('surfaces.chat.notConnected')}</p>
-              <p className="font-label-mono text-[10px] text-tertiary/60">{t('surfaces.chat.notConnectedHint')}</p>
+          {/* The analysis, and the conversation, in that order. The report is
+              first because it is the answer to the only question the visitor
+              actually arrived with: "what did you find about my site?"
+
+              Rendered only when there is a URL. A visitor who came straight to
+              `/app` has nothing to measure, and an empty panel with a header
+              would be a dead control in the column; the create-site form in the
+              left column is their way in, and the hint below says so. */}
+          {pendingUrl !== '' && <SiteReadiness url={pendingUrl} />}
+
+          {pendingUrl !== '' && (
+            <p className="font-label-mono text-[10px] text-tertiary/60 mb-4" data-testid="chat-handoff-note">
+              {t('onboarding.body')}
+            </p>
+          )}
+
+          {verdict !== 'ready' && (
+            <div className="bg-surface-container border border-white/5 px-5 py-4 mb-6" data-testid="agent-verdict">
+              <p className="font-label-mono text-label-mono text-on-surface mb-1">
+                {verdict === null
+                  ? t('surfaces.chat.agentChecking')
+                  : t(`surfaces.chat.agent.${verdict}`, { defaultValue: t('surfaces.chat.notConnected') })}
+              </p>
+              <p className="font-label-mono text-[10px] text-tertiary/60">
+                {verdictDetail ?? t('surfaces.chat.notConnectedHint')}
+              </p>
             </div>
           )}
 
           {/* No link here: the site list is the column to the left, not a route. */}
-          {!siteId && (
+          {!siteId && pendingUrl === '' && (
             <p className="font-label-mono text-label-mono text-tertiary mb-4">{t('surfaces.chat.pickSiteHint')}</p>
           )}
 
@@ -119,7 +195,7 @@ export function AgentChat() {
             }}
             placeholder={t('surfaces.chat.placeholder')}
             rows={2}
-            disabled={AGENT_STATUS !== 'connected'}
+            disabled={verdict !== 'ready'}
             className="w-full bg-surface-container border border-white/10 rounded-2xl px-4 py-2 font-body-md text-body-md text-on-surface outline-none resize-none transition-all focus:border-primary/50 placeholder:text-tertiary/40 disabled:opacity-60"
           />
           <div className="mt-2 text-center">

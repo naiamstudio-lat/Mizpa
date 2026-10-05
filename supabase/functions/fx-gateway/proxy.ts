@@ -443,6 +443,36 @@ export class ProxyError extends Error {
  * day the SDK moves. `$` is not `m`-flagged, so a trailing newline does not
  * satisfy it, and the anchors reject traversal, protocol-relative and absolute
  * forms for free.
+ *
+ * **These two entries cover every gateway path `fx-core.wasm` contains**, which
+ * was measured rather than assumed, because "the model catalogue route is missing"
+ * is a claim that gets re-litigated every time someone reads the browser's
+ * `fetch` override:
+ *
+ *     strings -n 8 node_modules/libfx/fx-core.wasm | grep -E 'ai-gateway|coding-agent|language-model'
+ *       /coding-agent/v1/models
+ *       ai-gateway-protocol-version
+ *       ai-language-model-id
+ *       ai-language-model-specification-version
+ *       ai-language-model-streaming
+ *       https://ai-gateway.vercel.sh
+ *       https://ai-gateway.vercel.sh/v4/ai/language-model
+ *       x-vercel-ai-gateway-team
+ *
+ * The SDK asks for the catalogue route with `GET` (`fx-sdk.js#listModels`,
+ * verbatim: `fetch("https://ai-gateway.vercel.sh/coding-agent/v1/models", {
+ * method: "GET", … })`), which is why it is paired with `GET` rather than with
+ * `POST`. Both regular expressions were then exercised directly:
+ * `/coding-agent/v1/models` and `/v3/ai/language-model` match;
+ * `/v4/ai/language-model`, `/coding-agent/vx/models`, a trailing slash and a
+ * doubled slash do not.
+ *
+ * The one thing that could **not** be measured here is the method the *wasm* uses
+ * for its own catalogue call, as opposed to the method the SDK's JavaScript path
+ * uses — that would need a completed agent turn, and no `AI_GATEWAY_API_KEY` or
+ * deployed function exists to complete one. The failure mode if that guess is
+ * wrong is a 403 `path_not_allowed` naming the exact method and path, before any
+ * quota is charged, and the fix is one entry in this array.
  */
 const ROUTES: ReadonlyArray<{ method: string; re: RegExp }> = [
   { method: 'GET', re: /^\/coding-agent\/v\d+\/models$/ },

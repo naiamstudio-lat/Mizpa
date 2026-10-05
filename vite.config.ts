@@ -1,5 +1,6 @@
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { dirname, join } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -136,8 +137,174 @@ function fxCoreWasm(): Plugin {
   };
 }
 
+/**
+ * A same-origin relay to the IsAgentReady MCP server.
+ *
+ * ## Why a relay exists at all
+ *
+ * `https://isagentready.com` publishes no `Access-Control-Allow-Origin` on any
+ * route and answers `OPTIONS /mcp` with 405. Measured 2026-10-02 with
+ * `Origin: http://localhost:5173`, against `/mcp` (POST), `/mcp` (OPTIONS),
+ * `/api/v1/scan`, `/llms.txt` and `/openapi.json`: **zero** CORS headers, five
+ * times. A cross-origin response with no `Access-Control-Allow-Origin` is
+ * unreadable by JavaScript no matter how the request is shaped, so a tab cannot
+ * reach the scanner directly and a client that tried would fail at the network
+ * layer with a bare `TypeError`.
+ *
+ * ## What this is, precisely
+ *
+ * A **byte forwarder and nothing else**. It does not speak MCP, does not know the
+ * tool names, does not parse a report and holds no session state: it adds
+ * `Access-Control-Allow-Origin` and copies the request headers and the response
+ * headers back. `mcp-session-id` is in the copied set on purpose — the client in
+ * `src/lib/agentready/mcp.ts` reads the session from the response headers, and a
+ * relay that dropped it would force the client down a different code path in dev
+ * than in production, which is precisely the kind of divergence this repo has
+ * been bitten by twice.
+ *
+ * The *production* answer is an edge function, not a static host: a static host
+ * cannot terminate CORS for a third party's origin. Nothing is deployed by this
+ * change, so the browser path below is what makes the scanner verifiable now and
+ * the edge function is the remaining step. What the tab cannot do is *look* like
+ * it worked: with no relay answering, `scan.ts` surfaces
+ * `ScanError('unreachable')` and the panel says the scanner was unreachable.
+ *
+ * ## Why it is in `configureServer` and not `configurePreviewServer` too
+ *
+ * `npm run preview` serves `dist/`, and the built app calls the same
+ * same-origin path. Registering on the preview server too is what lets the
+ * production bundle be verified against the real scanner instead of only against
+ * the dev server — a build that works in dev and 404s in preview is a bug this
+ * plugin would otherwise hide until deploy.
+ */
+function agentReadyRelay(): Plugin {
+  const UPSTREAM = 'https://isagentready.com/mcp';
+  /** The one path this relay answers. Nothing else is proxied out of the dev server. */
+  const RELAY_PATH = '/api/agentready';
+  /** Mirrors `UpstreamRequestSpec` in fx-gateway: the scanner crawls for 30 s. */
+  const UPSTREAM_TIMEOUT_MS = 45_000;
+
+  const handler = async (
+    request: IncomingMessage,
+    response: ServerResponse,
+    next: (error?: unknown) => void,
+  ): Promise<void> => {
+    // MCP is POST-only. Answering GET here rather than falling through keeps the
+    // dev server's 404 HTML out of a JSON-RPC client's error path.
+    if (request.method !== 'POST') {
+      response.statusCode = 405;
+      response.setHeader('Allow', 'POST, OPTIONS');
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.end();
+      return;
+    }
+
+    const chunks: Buffer[] = [];
+    let received = 0;
+    try {
+      for await (const chunk of request) {
+        const buffer = chunk as Buffer;
+        received += buffer.byteLength;
+        // A JSON-RPC envelope is a few KB. The cap stops this dev middleware
+        // from being an unbounded upload buffer for anything that finds the path.
+        if (received > 1024 * 1024) {
+          response.statusCode = 413;
+          response.end('payload too large');
+          return;
+        }
+        chunks.push(buffer);
+      }
+    } catch (error) {
+      response.statusCode = 400;
+      response.end(error instanceof Error ? error.message : 'unreadable body');
+      return;
+    }
+
+    // Only what the MCP transport is defined to send. A dev server that echoed
+    // the browser's cookie or `authorization` header to a third party would be a
+    // worse bug than the one this plugin exists to solve.
+    const headers: Record<string, string> = {
+      'content-type': 'application/json',
+      accept: 'application/json, text/event-stream',
+    };
+    const session = request.headers['mcp-session-id'];
+    if (typeof session === 'string' && session !== '') headers['mcp-session-id'] = session;
+
+    try {
+      const upstream = await fetch(UPSTREAM, {
+        method: 'POST',
+        headers,
+        body: Buffer.concat(chunks).toString('utf8'),
+        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+      });
+      response.statusCode = upstream.status;
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      // The session travels in the response headers, so it has to survive the
+      // relay or the client re-initialises on every single call.
+      const upstreamSession = upstream.headers.get('mcp-session-id');
+      if (upstreamSession !== null) response.setHeader('mcp-session-id', upstreamSession);
+      const contentType = upstream.headers.get('content-type');
+      if (contentType !== null) response.setHeader('content-type', contentType);
+      // The scanner caps itself at 100 requests an hour per IP and says when the
+      // budget refills (`retry-after`, `ratelimit-remaining`). Forwarding those
+      // is what lets the UI say "try again in 38 minutes" instead of a bare
+      // "too many requests" the visitor can do nothing about. Measured 429.
+      for (const name of ['retry-after', 'ratelimit', 'ratelimit-limit', 'ratelimit-remaining', 'ratelimit-reset'] as const) {
+        const value = upstream.headers.get(name);
+        if (value !== null) response.setHeader(name, value);
+      }
+      response.end(Buffer.from(await upstream.arrayBuffer()));
+    } catch (error) {
+      // A relay that answers nothing leaves the client with a network-level
+      // failure, which it reports as `unreachable`. A relay that answers 502 with
+      // a body is easier to read in the dev server's own log.
+      const name = (error as { name?: string } | null)?.name;
+      const timedOut = name === 'TimeoutError' || name === 'AbortError';
+      response.statusCode = timedOut ? 504 : 502;
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('content-type', 'application/json');
+      response.end(
+        JSON.stringify({
+          error: timedOut ? 'isagentready did not answer in time' : 'isagentready is unreachable',
+          relay: true,
+        }),
+      );
+    }
+  };
+
+  return {
+    name: 'agent-ready-relay',
+    configureServer(server) {
+      server.middlewares.use(RELAY_PATH, (request, response, next) => {
+        if (request.method === 'OPTIONS') {
+          response.statusCode = 204;
+          response.setHeader('Access-Control-Allow-Origin', '*');
+          response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+          response.setHeader('Access-Control-Allow-Headers', 'content-type, accept, mcp-session-id');
+          response.end();
+          return;
+        }
+        void handler(request, response, next);
+      });
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(RELAY_PATH, (request, response) => {
+        if (request.method === 'OPTIONS') {
+          response.statusCode = 204;
+          response.setHeader('Access-Control-Allow-Origin', '*');
+          response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+          response.setHeader('Access-Control-Allow-Headers', 'content-type, accept, mcp-session-id');
+          response.end();
+          return;
+        }
+        void handler(request, response, () => undefined);
+      });
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), fxCoreWasm()],
+  plugins: [react(), fxCoreWasm(), agentReadyRelay()],
   // `libfx` ships ESM and does its own relative asset resolution. Excluding it
   // from pre-bundling is what lets the `transform` above see the original
   // `new URL("./fx-*.wasm", ...)` text in dev: esbuild would otherwise collapse

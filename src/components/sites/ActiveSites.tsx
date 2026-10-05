@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
-import { takePendingUrl, workspacePath } from '../../app/workspace';
+import { workspacePath } from '../../app/workspace';
 
 interface Site {
   id: string;
@@ -23,10 +23,19 @@ interface Site {
  * Nothing here navigates: `workspacePath` can only change what this one screen
  * shows, never where it lives.
  *
- * This form is also where a first-time visitor starts. Someone who typed a URL
- * into the landing hero arrives with that URL already sitting in the input, so
- * the one thing they already did does not have to be done again, and no second
- * URL field had to exist to carry it.
+ * ## Why the form no longer prefills from the landing
+ *
+ * It used to: `AppShell` now consumes the pending URL and the chat column turns
+ * it into a measured report, which removed the "name your site" step from the
+ * path a visitor who typed an address actually takes. Prefilling here as well
+ * would have been worse than leaving it out — it would put the same URL in two
+ * places at once, so the report and the form would show different subjects and
+ * the visitor would have to work out which one was real.
+ *
+ * The form is kept, unchanged in purpose, for the other way in: someone who
+ * navigates to `/app` directly has no URL to be measured from and needs somewhere
+ * to name the thing they are about to build. Deleting it would have left that
+ * visitor with no way in at all.
  */
 export function ActiveSites() {
   const { t } = useTranslation();
@@ -34,10 +43,7 @@ export function ActiveSites() {
   const [searchParams] = useSearchParams();
   const [sites, setSites] = useState<Site[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  // Seeded from the landing handoff, and consumed on mount: reading it in the
-  // initializer rather than an effect means the URL never renders in the field
-  // for a frame, and an empty store leaves the field empty with no special case.
-  const [name, setName] = useState(() => takePendingUrl(window.sessionStorage));
+  const [name, setName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

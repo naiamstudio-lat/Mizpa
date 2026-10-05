@@ -11,15 +11,26 @@ interface WelcomeModalProps {
   isOpen: boolean;
   /** Every way out lands here: the primary action, Escape and the backdrop. */
   onClose: () => void;
+  /**
+   * The URL the visitor typed on the landing, if any. Only used to pick which of
+   * the two arrival messages to show — see this component's header.
+   */
+  pendingUrl?: string;
 }
 
 /**
  * First-run onboarding.
  *
- * A first visit to `/app` lands on a workspace with three empty columns and no
+ * A first visit to `/app` lands on a workspace with three columns and no
  * explanation, which reads as broken rather than as new. This dialog is the one
- * screen that says what the thing is, and it offers one way forward: name a
- * site, and the other two columns have something to work on.
+ * screen that says what the thing is.
+ *
+ * It says one thing that depends on how the visitor arrived, because the two
+ * arrivals are genuinely different: someone who typed an address on the landing
+ * already has a measurement running, and someone who came straight to `/app`
+ * does not and needs to name something first. Telling the first visitor to "name
+ * your site" would be describing a step that no longer exists on their path, and
+ * telling the second one that a report is on its way would be inventing one.
  *
  * The visual language is `AuthModal` verbatim — same backdrop, same card, same
  * wordmark, same close affordance — because the product already has a modal and
@@ -33,7 +44,7 @@ interface WelcomeModalProps {
  * storage failure harmless: the flag can be lost, but the dialog's visibility is
  * React state, so it can always be closed.
  */
-export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
+export function WelcomeModal({ isOpen, onClose, pendingUrl = '' }: WelcomeModalProps) {
   const { t } = useTranslation();
   const cardRef = useRef<HTMLDivElement>(null);
   const restoreFocusTo = useRef<HTMLElement | null>(null);
@@ -144,19 +155,21 @@ export function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
         {/* One message, not a walkthrough. The three-column layout is visible
             behind this card, so naming the columns would be describing what the
             user can already see; a numbered list in front of a live layout just
-            slows the first run down. */}
+            slows the first run down. Which message it is depends on how the
+            visitor got here — see the header. */}
         <p className="font-body-md text-body-md text-on-surface/90 leading-relaxed mb-8 text-center">
-          {t('onboarding.body')}
+          {pendingUrl !== '' ? t('onboarding.withUrl', { url: pendingUrl }) : t('onboarding.body')}
         </p>
 
-        {/* The one way forward: the create-site form in the left column. */}
+        {/* The one way forward: the report behind this card, or the create-site
+            form in the left column when there is nothing to report yet. */}
         <button
           type="button"
           data-welcome-primary
           onClick={onClose}
           className="w-full bg-primary text-on-primary py-3 font-body-md font-bold rounded-lg hover:glow-primary transition-all duration-300 cursor-pointer"
         >
-          {t('onboarding.primary')}
+          {pendingUrl !== '' ? t('onboarding.primary') : t('onboarding.startHere')}
         </button>
       </div>
     </div>
