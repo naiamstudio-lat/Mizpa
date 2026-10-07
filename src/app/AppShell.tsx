@@ -13,6 +13,7 @@ import { ActiveSites } from '../components/sites/ActiveSites';
 import { AgentChat } from '../components/chat/AgentChat';
 import { SitePreview } from '../components/preview/SitePreview';
 import { WelcomeModal } from '../components/onboarding/WelcomeModal';
+import { FxReplicaProvider } from '../components/replica/FxReplicaProvider';
 
 /** DOM id the collapse toggle controls, and the test hook for the column. */
 const HISTORY_COLUMN_ID = 'workspace-history';
@@ -51,6 +52,11 @@ const HISTORY_COLUMN_ID = 'workspace-history';
  * screen is what needs explaining. Its visibility is state seeded once from
  * storage, and every exit writes the flag, so a store that refuses writes costs
  * one repeat visit and never a dialog nobody can dismiss.
+ *
+ * `FxReplicaProvider` wraps the three columns and **not** the dialog: it owns the
+ * single `prepareFxAgent` probe, and the chat column's verdict panel and the
+ * preview column's replica result both read it. Two columns, one measurement —
+ * the alternative is two probes that can disagree on one screen.
  */
 export function AppShell() {
   const { t } = useTranslation();
@@ -86,7 +92,8 @@ export function AppShell() {
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
+    <FxReplicaProvider>
+      <div className="h-screen bg-background flex flex-col overflow-hidden">
       <header className="h-12 border-b border-white/5 bg-background/80 backdrop-blur-xl flex items-center justify-between px-4 gap-4 shrink-0">
         {/* The page's one `h1`; every column below it is an `h2`. */}
         <h1 className="font-display-lg text-sm tracking-tighter text-on-surface uppercase font-extrabold shrink-0">
@@ -161,6 +168,7 @@ export function AppShell() {
       </main>
 
       <WelcomeModal isOpen={welcomeOpen} onClose={closeWelcome} pendingUrl={pendingUrl} />
-    </div>
+      </div>
+    </FxReplicaProvider>
   );
 }

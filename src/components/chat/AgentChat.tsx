@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { supabase } from '../../lib/supabase';
 import { readSelection } from '../../app/workspace';
-import { prepareFxAgent, type FxAgentVerdict } from '../../lib/fx/agent';
+import { useFxReplica } from '../replica/FxReplicaProvider';
 import { SiteReadiness } from '../analysis/SiteReadiness';
 
 interface SiteOption {
@@ -49,6 +49,13 @@ interface AgentChatProps {
  * `GET /` on `fx-gateway` returns **404 `NOT_FOUND`**, because no edge function is
  * deployed. That is the sentence the visitor reads, and it is the true one.
  *
+ * The `await` now lives in `FxReplicaProvider` rather than here. The replica
+ * request underneath the report needs the same verdict, and two components each
+ * probing would mean two wasm loads and — worse — the chance of this column and
+ * the replica flow printing different answers about the same environment. The
+ * measurement is shared; **the rendering is not**, and it is rendered here
+ * exactly as before.
+ *
  * The report above is **not** the agent's output, and the copy says so. It comes
  * from Mizpa's own call to the public IsAgentReady scanner — no key, no model, no
  * agent involved. A panel that looked like agent output while the agent cannot
@@ -63,32 +70,11 @@ export function AgentChat({ pendingUrl = '' }: AgentChatProps) {
    * `null` while the probe is in flight, which is a third state and not a fourth
    * verdict: "we have not asked yet" must not render as "we asked and it failed".
    */
-  const [verdict, setVerdict] = useState<FxAgentVerdict | 'ready' | null>(null);
-  const [verdictDetail, setVerdictDetail] = useState<string | null>(null);
+  const { verdict, detail: verdictDetail } = useFxReplica();
 
   const { siteId } = readSelection(searchParams);
 
   const [draft, setDraft] = useState('');
-
-  useEffect(() => {
-    if (user === null) {
-      setVerdict('no_session');
-      return;
-    }
-    let cancelled = false;
-    void (async () => {
-      const outcome = await prepareFxAgent({
-        supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
-        getToken: async () => (await supabase.auth.getSession()).data.session?.access_token ?? null,
-      });
-      if (cancelled) return;
-      setVerdict(outcome.verdict);
-      setVerdictDetail(outcome.verdict === 'ready' ? null : outcome.detail);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
 
   useEffect(() => {
     if (!user) return;
