@@ -179,6 +179,22 @@
     "expandAll": "Show all signals",
     "collapseAll": "Hide signals",
     "fullReport": "Open the full report",
+    "print": {
+      "button": "Print report",
+      "hint": "Opens this browser's print dialog. Choose \"Save as PDF\" there to keep a copy of the report.",
+      "title": "Agent readiness report",
+      "grade": "Grade",
+      "score": "Score",
+      "methodology": "Methodology",
+      "scannedAt": "Scanned",
+      "scannedAtUnknown": "The scanner did not report a scan time.",
+      "receivedAt": "Received",
+      "age": "Age",
+      "copyAt": "Copy made",
+      "findings": "Findings",
+      "categoryScore": "{{score}}/{{max}} points",
+      "fullReport": "Full report"
+    },
     "progress": {
       "connecting": "Connecting to the scanner…",
       "starting": "Asking the scanner for {{domain}}…",
@@ -201,6 +217,33 @@
       "retry": "Try again",
       "rate_limited": "The scanner allows 100 requests an hour per IP address, and this one has used them. It will answer again shortly.",
       "retryAfter": "Try again in about {{minutes}} minutes."
+    }
+  },
+  "replica": {
+    "request": "Build an optimised replica",
+    "requestHint": "Mizpa's agent writes a copy of this site into a workspace inside this tab. Nothing is published and nothing leaves your browser.",
+    "requested": "Starting the agent…",
+    "running": "The agent is working on {{domain}}…",
+    "runningPreview": "The agent is building your replica…",
+    "step": "Last step: {{tool}}",
+    "produced": "Replica written. It is in the preview column on the right.",
+    "producedSize": "{{bytes}} bytes of HTML, written to /workspace/index.html.",
+    "producedHint": "It lives in this tab's virtual workspace and is gone when the tab closes.",
+    "took": "Took {{seconds}}s.",
+    "unavailable": {
+      "heading": "No replica was created",
+      "unsupported": "This browser cannot run the agent at all: it does not support JSPI, which is what the agent's runtime needs to start. No other fix is possible from here.",
+      "no_session": "Nobody is signed in, so there is no account to run the agent against and nothing to spend on a model response.",
+      "gateway_unreachable": "Mizpa's fx-gateway edge function did not answer. The problem is that it is not deployed — the browser never reached a function to talk to. Adding an API key would not change this; the function has to be deployed first.",
+      "gateway_unconfigured": "Mizpa's fx-gateway answered, and refused: it has no AI_GATEWAY_API_KEY set. So the function is deployed and this is not a deployment problem — it is a missing secret. Deploying it again would not change this.",
+      "quota_exhausted": "The agent's budget for your account is used up, so it cannot generate anything.",
+      "runtime_unavailable": "The agent's in-browser runtime started but could not be brought up, so no turn could be run.",
+      "no_artifact": "The agent ran and finished its turn, but it did not write index.html into the workspace. Its own words are below.",
+      "turn_failed": "The turn started and then failed before anything was written.",
+      "detail": "What the app measured: {{detail}}",
+      "nothingWritten": "Nothing was written, so the preview column still says there is nothing to show.",
+      "retry": "Try again",
+      "unknown": "The replica could not be built for a reason this build does not recognise."
     }
   },
   "surfaces": {

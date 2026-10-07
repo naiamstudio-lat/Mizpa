@@ -179,6 +179,22 @@
     "expandAll": "Ver todas las señales",
     "collapseAll": "Ocultar señales",
     "fullReport": "Abrir el informe completo",
+    "print": {
+      "button": "Imprimir informe",
+      "hint": "Abre el diálogo de impresión de este navegador. Ahí elegí \"Guardar como PDF\" para conservar una copia del informe.",
+      "title": "Informe de preparación para agentes",
+      "grade": "Nota",
+      "score": "Puntaje",
+      "methodology": "Metodología",
+      "scannedAt": "Escaneado",
+      "scannedAtUnknown": "El escáner no informó cuándo lo escaneó.",
+      "receivedAt": "Recibido",
+      "age": "Antigüedad",
+      "copyAt": "Copia generada",
+      "findings": "Hallazgos",
+      "categoryScore": "{{score}}/{{max}} puntos",
+      "fullReport": "Informe completo"
+    },
     "progress": {
       "connecting": "Conectando con el escáner…",
       "starting": "Pidiendo el escáner para {{domain}}…",
@@ -201,6 +217,33 @@
       "retry": "Reintentar",
       "rate_limited": "El escáner permite 100 requests por hora y por dirección IP, y esta ya las gastó. Va a responder de nuevo en un rato.",
       "retryAfter": "Reintentá en unos {{minutes}} minutos."
+    }
+  },
+  "replica": {
+    "request": "Crear una réplica optimizada",
+    "requestHint": "El agente de Mizpa escribe una copia de este sitio en un workspace dentro de esta pestaña. No se publica nada y nada sale de tu navegador.",
+    "requested": "Arrancando el agente…",
+    "running": "El agente está trabajando en {{domain}}…",
+    "runningPreview": "El agente está construyendo tu réplica…",
+    "step": "Último paso: {{tool}}",
+    "produced": "Réplica escrita. Está en la columna de vista previa, a la derecha.",
+    "producedSize": "{{bytes}} bytes de HTML, escritos en /workspace/index.html.",
+    "producedHint": "Vive en el workspace virtual de esta pestaña y desaparece cuando la cerrás.",
+    "took": "Tardó {{seconds}}s.",
+    "unavailable": {
+      "heading": "No se creó ninguna réplica",
+      "unsupported": "Este navegador no puede ejecutar el agente: no soporta JSPI, que es lo que necesita el runtime del agente para arrancar. No hay otro arreglo posible desde acá.",
+      "no_session": "No hay sesión iniciada, así que no hay ninguna cuenta contra la cual ejecutar el agente ni nada con lo que pagar una respuesta del modelo.",
+      "gateway_unreachable": "La edge function fx-gateway de Mizpa no respondió. El problema es que no está desplegada: el navegador nunca llegó a una función con la que hablar. Agregar una API key no cambia esto; primero hay que desplegar la función.",
+      "gateway_unconfigured": "La edge function fx-gateway de Mizpa respondió y rechazó: no tiene ninguna AI_GATEWAY_API_KEY configurada. Así que la función está desplegada y esto no es un problema de despliegue — es una clave faltante. Volver a desplegarla no cambia esto.",
+      "quota_exhausted": "El presupuesto del agente para tu cuenta está agotado, así que no puede generar nada.",
+      "runtime_unavailable": "El runtime del agente en el navegador arrancó pero no pudo levantarse, así que no se pudo ejecutar ningún turno.",
+      "no_artifact": "El agente corrió y terminó su turno, pero no escribió index.html en el workspace. Sus propias palabras están abajo.",
+      "turn_failed": "El turno arrancó y falló antes de que se escribiera nada.",
+      "detail": "Lo que midió la app: {{detail}}",
+      "nothingWritten": "No se escribió nada, así que la columna de vista previa sigue diciendo que no hay nada que mostrar.",
+      "retry": "Reintentar",
+      "unknown": "La réplica no se pudo construir por una razón que esta build no reconoce."
     }
   },
   "surfaces": {

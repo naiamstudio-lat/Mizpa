@@ -1,0 +1,247 @@
+/**
+ * Print output for the readiness report.
+ *
+ * ## Why `window.print()` and not a PDF library
+ *
+ * A PDF writer in the browser is roughly 300 KB to re-implement something the
+ * browser already does, and it does it worse: hand-rolled text layout breaks on
+ * long evidence strings, on Cyrillic (WinAnsi cannot encode it), and on any
+ * glyph the base-14 fonts lack. `window.print()` gives real text wrapping, the
+ * page box, `@page` margins and "Save as PDF" in the browser's own dialog, with
+ * selectable, searchable, correctly-encoded text — for zero bytes. The cost is
+ * that a dialog opens, and the button says so rather than claiming a download.
+ *
+ * ## How it is scoped, and the trap it avoids
+ *
+ * The document is rendered into a **portal on `document.body`**, so it is a
+ * *sibling* of `#root`, never a descendant of the app shell. That single
+ * decision is what makes the scoping two declarations instead of a fight:
+ *
+ *   - `body > *:not(.mizpa-print-root) { display: none }` removes the whole shell,
+ *     including its `h-screen` flow height — which is why page 1 is the report and
+ *     not a blank sheet followed by the report.
+ *   - `.mizpa-print-root` is then the only thing in flow, so pagination is
+ *     entirely its own.
+ *
+ * The trap: if the document had been rendered *inside* `#root` and hidden with
+ * `display: none` on the shell, it would have been hidden too — `display: none` on
+ * an ancestor removes the entire subtree, which is the usual reason "print only
+ * this element" recipes collapse to a blank page. The other common trap is
+ * `visibility: hidden` on the shell, which does not collapse flow: the shell's
+ * `100vh` still occupies page 1, so the report starts on page 2. Both are avoided
+ * by the portal, and both are avoided for the same structural reason.
+ *
+ * Nothing can leak in either direction: `body` has exactly two element children
+ * in production (`#root` and the module script), and the rule covers both.
+ *
+ * ## Why it is always mounted rather than mounted on click
+ *
+ * `window.print()` prints the layout that exists **at the moment it is called**.
+ * A document rendered in response to the click would need a render tick before
+ * the dialog opens, so the print job would capture the pre-render layout — a
+ * blank or half-drawn first page. So the document is mounted from the start with
+ * `display: none` off-print, and the click is a single synchronous call. The
+ * cost is one hidden copy of the report in the DOM.
+ *
+ * ## Colour
+ *
+ * Black on white, and no background fills anywhere. Browsers drop background
+ * colours from printed output unless a rule asks for `print-color-adjust`, and a
+ * dark-on-dark block that silently loses its background is unreadable; so the
+ * document uses type weight and rules for hierarchy instead of panels of colour.
+ */
+
+@media print {
+  /* Page box. Chromium honours this for the real print dialog and for
+     "Save as PDF"; other engines fall back to their own margins. */
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+
+  /* The shell is removed outright, not made invisible: `display: none` also
+     removes its flow height, so there is no leading blank page. See the header
+     for why this is safe — the document is a sibling of `#root`, not a child. */
+  body > *:not(.mizpa-print-root) {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    /* The app's `overflow-x: hidden` on `body` plus the shell's own scroll
+       containers must not become print containers. */
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .mizpa-print-root {
+    display: block !important;
+    position: static;
+    width: 100%;
+    color: #000;
+    /* The app's own stack is JetBrains Mono for labels and Inter for display;
+       both are loaded from the network, so neither may be assumed present on
+       paper. A generic stack keeps a Cyrillic evidence string on the page
+       instead of dropping it to a fallback box. */
+    font-family: 'Helvetica Neue', Helvetica, Arial, 'Liberation Sans', sans-serif;
+    font-size: 10pt;
+    line-height: 1.45;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* --- masthead ------------------------------------------------------- */
+
+  .mizpa-print-root h1 {
+    font-size: 18pt;
+    font-weight: 700;
+    margin: 0 0 2mm;
+    letter-spacing: -0.01em;
+  }
+
+  .mizpa-print-root h2 {
+    font-size: 12pt;
+    font-weight: 700;
+    margin: 7mm 0 2mm;
+    padding-bottom: 1mm;
+    border-bottom: 0.4pt solid #000;
+  }
+
+  .mizpa-print-root h3 {
+    font-size: 10pt;
+    font-weight: 700;
+    margin: 4mm 0 1mm;
+  }
+
+  .mizpa-print-root p {
+    margin: 0 0 2mm;
+  }
+
+  /* --- the facts that make the number attributable ------------------- */
+
+  .mizpa-print-subtitle {
+    font-size: 11pt;
+    margin-bottom: 1mm;
+  }
+
+  /* Two columns, and it must not reflow to one if the page is narrow: a fact
+     table that collapses mid-way stops reading as a set of facts. */
+  .mizpa-print-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2mm 8mm;
+    margin: 0 0 4mm;
+    padding: 2mm 0;
+    border-top: 0.4pt solid #000;
+    border-bottom: 0.4pt solid #000;
+  }
+
+  .mizpa-print-facts div {
+    min-width: 34mm;
+  }
+
+  .mizpa-print-facts dt,
+  .mizpa-print-fact-label {
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.5mm;
+  }
+
+  .mizpa-print-facts dd,
+  .mizpa-print-fact-value {
+    font-size: 11pt;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .mizpa-print-disclaimer {
+    font-size: 8.5pt;
+    font-style: italic;
+    border-left: 1pt solid #000;
+    padding-left: 3mm;
+    margin-bottom: 4mm;
+  }
+
+  /* --- findings ------------------------------------------------------- */
+
+  /* Never split one finding across two sheets: an evidence sentence that runs
+     onto the next page reads as a second, shorter finding. */
+  .mizpa-print-issue {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin: 0 0 3mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.2pt dotted #999;
+  }
+
+  .mizpa-print-issue:last-child {
+    border-bottom: none;
+  }
+
+  .mizpa-print-issue-head {
+    font-weight: 700;
+  }
+
+  .mizpa-print-issue-id,
+  .mizpa-print-issue-status {
+    font-size: 7.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #444;
+    font-weight: 400;
+  }
+
+  /* The scanner's own words. Never truncated and never summarised: this is the
+     evidence, and a shortened evidence line is a claim the scanner did not make. */
+  .mizpa-print-evidence,
+  .mizpa-print-recommendation {
+    font-size: 8.5pt;
+    margin: 1mm 0 0;
+  }
+
+  .mizpa-print-recommendation strong {
+    font-weight: 700;
+  }
+
+  .mizpa-print-blocker {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border: 0.6pt solid #000;
+    padding: 2mm 3mm;
+    margin-bottom: 4mm;
+  }
+
+  .mizpa-print-footer {
+    font-size: 8pt;
+    color: #333;
+    margin-top: 6mm;
+    padding-top: 2mm;
+    border-top: 0.4pt solid #000;
+    /* The last thing on the sheet: never alone on a page of its own. */
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .mizpa-print-url {
+    word-break: break-all;
+  }
+
+  }
+
+/**
+ * Off paper the document does not exist at all — not transparent, not moved off
+ * screen, not `aria-hidden`. This is what keeps the hidden duplicate out of the
+ * workspace screenshot someone takes to show a colleague, and out of the tab's
+ * accessibility tree, which is why the component sets `aria-hidden` on it too
+ * rather than trusting CSS alone.
+ *
+ * Deliberately outside the `@media print` block and without `!important`: the
+ * print half of the pair is `display: block !important` above, and one flag each
+ * way means neither half can be silently undone by source order.
+ */
+.mizpa-print-root {
+  display: none;
+}
